@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>لوحة التحكم | الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</title>
+
+  <!-- Google Fonts: IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Canvas Confetti for Victories -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Top Notification Toast Bar -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Main Header / Navbar -->
+  <header class="app-navbar">
+    <div class="nav-container">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div class="brand-text">
+          <span class="system-title">لوحة التحكم</span>
+          <span class="course-subtitle">الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Theme Mode Switcher (Light / Dark) -->
+        <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleThemeMode()" title="تغيير المظهر">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <!-- System Mode Switcher (Teacher / Student view) -->
+        <div class="role-selector">
+          <button id="btn-role-teacher" class="role-btn active" onclick="switchRole('teacher')">
+            <i class="fa-solid fa-user-tie"></i> <span class="role-label">المعلم</span>
+          </button>
+          <button id="btn-role-student" class="role-btn" onclick="switchRole('student')">
+            <i class="fa-solid fa-user-graduate"></i> <span class="role-label">الطالب</span>
+          </button>
+        </div>
+
+        <!-- Current User Info Badge -->
+        <div id="user-badge" class="user-badge">
+          <img id="header-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Teacher" alt="Avatar"
+            class="avatar-sm">
+          <div class="user-meta">
+            <span id="header-user-name" class="user-name">د. المعلم</span>
+            <span id="header-user-role" class="user-role-tag">المشرف</span>
+          </div>
+          <button id="btn-logout" class="logout-btn hidden" onclick="logoutStudent()" title="تسجيل الخروج">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Bottom Navigation Bar (< 768px screens) -->
+  <nav class="mobile-bottom-nav" id="mobile-nav">
+    <button class="mobile-nav-btn active" onclick="showTeacherTab('dashboard-tab', this)">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>الرئيسية</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('students-tab', this)">
+      <i class="fa-solid fa-users"></i>
+      <span>الطلاب</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('attendance-tab', this)">
+      <i class="fa-solid fa-clipboard-user"></i>
+      <span>الحضور</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('battle-tab', this)">
+      <i class="fa-solid fa-swords text-rose"></i>
+      <span>المواجهة</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('lectures-tab', this)">
+      <i class="fa-solid fa-book-open"></i>
+      <span>المحاضرات</span>
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- ============================================================== -->
+    <!-- TEACHER VIEW / لوحة المعلم                                     -->
+    <!-- ============================================================== -->
+    <div id="view-teacher" class="view-panel active">
+
+      <!-- Desktop Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="side-nav">
+          <button class="nav-item active" onclick="showTeacherTab('dashboard-tab')">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>نظرة عامة</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('students-tab')">
+            <i class="fa-solid fa-users"></i>
+            <span>إدارة الطلاب والـ QR</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('groups-tab')">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>المجموعات والشُعب</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('attendance-tab')">
+            <i class="fa-solid fa-clipboard-user"></i>
+            <span>تتبع الحضور والغياب</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('lectures-tab')">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>المحاضرات والمحتوى</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('tasks-tab')">
+            <i class="fa-solid fa-list-check"></i>
+            <span>المهام والواجبات</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('battle-tab')">
+            <i class="fa-solid fa-swords text-rose"></i>
+            <span>حلبة المواجهة (Battle)</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('grades-tab')">
+            <i class="fa-solid fa-star-half-stroke"></i>
+            <span>الدرجات والتقييمات</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Dashboard Content Area -->
+      <section class="content-area">
+
+        <!-- 1. DASHBOARD OVERVIEW TAB -->
+        <div id="dashboard-tab" class="tab-content active">
+          <div class="tab-header">
+            <div>
+              <h2>لوحة التتبع والتحكم بالأنظمة الذكية</h2>
+              <p class="text-muted">متابعة الأداء، الحضور، وتفاعل الطلاب بنظام فائاق السرعة.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openRegisterStudentModal()">
+              <i class="fa-solid fa-user-plus"></i> تسجيل طالب جديد
+            </button>
+          </div>
+
+          <!-- Quick Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon bg-cyan"><i class="fa-solid fa-user-graduate"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">إجمالي الطلاب</span>
+                <h3 id="stat-total-students">0</h3>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-emerald"><i class="fa-solid fa-user-check"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">نسبة الحضور اليوم</span>
+                <h3 id="stat-attendance-rate">0%</h3>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-purple"><i class="fa-solid fa-layer-group"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">المجموعات</span>
+                <h3 id="stat-total-groups">0</h3>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-amber"><i class="fa-solid fa-trophy"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">المواجهات المحسومة</span>
+                <h3 id="stat-total-battles">0</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overview Grid -->
+          <div class="grid-2col mt-4">
+            <!-- Recent Students & Badges -->
+            <div class="card">
+              <div class="card-header p-3 border-bottom flex-between">
+                <h3><i class="fa-solid fa-shield-halved text-amber"></i> أحدث دروع الطلاب</h3>
+                <button class="btn btn-xs btn-outline" onclick="showTeacherTab('students-tab')">عرض الكل</button>
+              </div>
+              <div class="card-body p-3">
+                <div id="overview-badge-list" class="recent-list">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action & Battle Mode Hero -->
+            <div class="card p-4 text-center bg-subtle">
+              <div class="login-icon-box bg-purple">
+                <i class="fa-solid fa-swords"></i>
+              </div>
+              <h3>حلبة المنافسة والمواجهة M3 المباشرة</h3>
+              <p class="text-muted text-sm mt-1">منافسة فورية بين طالبين واحتساب النقاط وترقية دروع التطور تلقائياً!</p>
+              <button class="btn btn-battle btn-block mt-3" onclick="showTeacherTab('battle-tab')">
+                <i class="fa-solid fa-bolt"></i> دخول حلبة المواجهة الان
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. STUDENTS MANAGEMENT TAB -->
+        <div id="students-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>سجلات الطلاب ورموز QR الذكية</h2>
+              <p class="text-muted">إضافة، تعديل، حذف، وإنشاء كروت تعريفية مزودة برموز QR.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openRegisterStudentModal()">
+              <i class="fa-solid fa-user-plus"></i> تسجيل طالب جديد
+            </button>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="card p-3 mb-3">
+            <div class="grid-2col gap-2">
+              <input type="text" id="student-search-input" class="form-control"
+                placeholder="بحث بالاسم أو الرقم الأكاديمي..." oninput="renderStudentsTable()">
+              <select id="student-group-filter" class="form-control" onchange="renderStudentsTable()">
+                <option value="all">كل المجموعات والشُعب</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Students Table -->
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>الطالب والرمز</th>
+                    <th>ID</th>
+                    <th>العمر</th>
+                    <th>المجموعة</th>
+                    <th>درع التطور</th>
+                    <th>النقاط</th>
+                    <th>رمز QR</th>
+                    <th>الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="students-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. GROUPS & CLASSES TAB -->
+        <div id="groups-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>مجموعات وشُعب المقرر</h2>
+              <p class="text-muted">تنظيم الطلاب في شُعب دراسية وتوزيع مشاريع الأنظمة الذكية.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('create-group-modal')">
+              <i class="fa-solid fa-plus"></i> إنشاء مجموعة جديد
+            </button>
+          </div>
+
+          <div id="groups-grid" class="groups-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 4. ATTENDANCE TAB -->
+        <div id="attendance-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>تتبع الحضور والغياب</h2>
+              <p class="text-muted">تسجيل الحضور يدويًا أو عبر رمز QR التفاعلي.</p>
+            </div>
+          </div>
+
+          <div class="card p-3 mb-3 flex-between flex-wrap gap-2">
+            <div class="form-inline flex-align-center gap-2">
+              <label>التاريخ:</label>
+              <input type="date" id="attendance-date" class="form-control-inline" onchange="loadAttendanceForDate()">
+            </div>
+            <div class="flex-align-center gap-2">
+              <button class="btn btn-emerald btn-sm" onclick="openQRScannerModal()">
+                <i class="fa-solid fa-camera"></i> مسح QR بالكاميرا
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="saveAttendanceRecord()">
+                <i class="fa-solid fa-floppy-disk"></i> حفظ كشف الحضور
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>الطالب</th>
+                    <th>المجموعة</th>
+                    <th>حالة الحضور</th>
+                    <th>تسجيل سريع</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. LECTURES TAB -->
+        <div id="lectures-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>المحاضرات ومحتوى المقرر</h2>
+              <p class="text-muted">مقرر الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('add-lecture-modal')">
+              <i class="fa-solid fa-plus"></i> إضافة محاضرة
+            </button>
+          </div>
+
+          <div id="lectures-grid" class="cards-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 6. TASKS TAB -->
+        <div id="tasks-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>الواجبات والتكاليف</h2>
+              <p class="text-muted">متابعة تكاليف الطلاب الميدانية والبرمجية.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('add-task-modal')">
+              <i class="fa-solid fa-plus"></i> رفع واجب
+            </button>
+          </div>
+
+          <div id="tasks-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 7. BATTLE MODE TAB -->
+        <div id="battle-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>حلبة المواجهة والأسئلة (Battle Mode)</h2>
+              <p class="text-muted">تحديات مباشرة 1v1 لزيادة النقاط وتطوير الدرع!</p>
+            </div>
+          </div>
+
+          <div id="battle-setup-card" class="card p-4">
+            <div class="text-center mb-4">
+              <h2 class="text-indigo mb-1"><i class="fa-solid fa-swords text-rose"></i> مواجهة الذكاء الاصطناعي 1v1</h2>
+              <p class="text-muted text-sm">اختر طالبين من القائمة لبدء الجولة المباشرة</p>
+            </div>
+
+            <div class="battle-vs-container">
+              <div class="player-select-box">
+                <label>المتنافس الأول:</label>
+                <select id="battle-p1-select" class="form-control mt-1" onchange="updateBattlePreview('p1')"></select>
+                <div id="p1-preview" class="player-card-preview mt-2"></div>
+              </div>
+
+              <div class="vs-badge">VS</div>
+
+              <div class="player-select-box">
+                <label>المتنافس الثاني:</label>
+                <select id="battle-p2-select" class="form-control mt-1" onchange="updateBattlePreview('p2')"></select>
+                <div id="p2-preview" class="player-card-preview mt-2"></div>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button class="btn btn-battle btn-lg btn-block" onclick="startBattleArena()">
+                <i class="fa-solid fa-play"></i> انطلاق التحدي الان
+              </button>
+            </div>
+          </div>
+
+          <div id="active-battle-screen" class="card p-4 hidden"></div>
+        </div>
+
+        <!-- 8. GRADES TAB -->
+        <div id="grades-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>سجل الدرجات والتقييم الأكاديمي</h2>
+              <p class="text-muted">عرض وتحديث التقييم النهائي لكل طالب.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>اسم الطالب</th>
+                    <th>المجموعة</th>
+                    <th>الدرجة العلمية (/100)</th>
+                    <th>نقاط التقييم</th>
+                    <th>الشارة الحالية</th>
+                    <th>التقدير</th>
+                  </tr>
+                </thead>
+                <tbody id="grades-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- STUDENT VIEW / لوحة الطالب                                     -->
+    <!-- ============================================================== -->
+    <div id="view-student" class="view-panel">
+
+      <!-- Student Login Form -->
+      <div id="student-login-card" class="student-login-wrapper card">
+        <div class="text-center mb-4">
+          <div class="login-icon-box">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <h2>بوابة الطالب</h2>
+          <p class="text-muted text-sm">أدخل الرقم الأكاديمي وكلمة المرور للدخول</p>
+        </div>
+
+        <form id="student-login-form" onsubmit="handleStudentLogin(event)">
+          <div class="form-group">
+            <label>الرقم الأكاديمي (ID):</label>
+            <input type="text" id="login-student-id" class="form-control" placeholder="2026101" required>
+          </div>
+
+          <div class="form-group">
+            <label>كلمة المرور:</label>
+            <input type="password" id="login-student-pass" class="form-control" placeholder="أدخل كلمة المرور" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-3">
+            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+          </button>
+        </form>
+
+        <div class="card bg-subtle p-3 mt-3 text-center text-xs">
+          <span>حساب للتجربة السريعة:</span>
+          <div class="mt-2 flex-between gap-1">
+            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026101', '123456')">أحمد (2026101)</button>
+            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026102', '123456')">سارة (2026102)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Dashboard Content -->
+      <div id="student-dashboard-content" class="student-dashboard hidden width-100">
+
+        <!-- Hero Header -->
+        <div class="card student-hero-card">
+          <div class="student-profile-header">
+            <div class="profile-avatar-container">
+              <img id="st-profile-img" src="" alt="Student Avatar" class="avatar-lg">
+              <div id="st-badge-floating" class="badge-floating">🪵</div>
+            </div>
+
+            <div class="profile-info-main">
+              <div class="flex-align-center gap-2">
+                <h2 id="st-profile-name">اسم الطالب</h2>
+                <span id="st-group-tag" class="badge bg-indigo">المجموعة</span>
+              </div>
+              <p class="text-muted text-sm mb-2">
+                الرقم الأكاديمي: <strong id="st-profile-id" class="text-indigo">2026101</strong> | العمر: <span
+                  id="st-profile-age">20</span> سنة
+              </p>
+
+              <div class="gamification-bar-box">
+                <div class="flex-between text-xs mb-1">
+                  <span>درع التطور الحالي: <strong id="st-badge-name" class="text-amber">درع خشبي</strong></span>
+                  <span>النقاط: <strong id="st-rating-pts">500</strong> / <span
+                      id="st-next-level-pts">1000</span></span>
+                </div>
+                <div class="progress-track">
+                  <div id="st-progress-fill" class="progress-fill" style="width: 50%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="student-qr-card">
+              <span class="text-xs text-muted block mb-1">رمز الـ QR الخاص بك</span>
+              <div id="st-qr-code-box" class="qr-code-box"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Tabs Navigation -->
+        <div class="student-nav-tabs card p-2 mb-3">
+          <button class="st-tab-btn active" onclick="showStudentTab('st-leaderboard')">
+            <i class="fa-solid fa-trophy text-amber"></i> المتصدرون والدروع
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-lectures')">
+            <i class="fa-solid fa-book-open"></i> المحاضرات
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-attendance')">
+            <i class="fa-solid fa-calendar-check text-emerald"></i> الحضور والغياب
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-grades')">
+            <i class="fa-solid fa-graduation-cap text-indigo"></i> الدرجات والواجبات
+          </button>
+        </div>
+
+        <!-- Student Tab Contents -->
+        <div id="st-leaderboard" class="st-tab-content active">
+          <div class="card p-3">
+            <h3 class="mb-3"><i class="fa-solid fa-crown text-amber"></i> قائمة متصدري الشُعبة</h3>
+            <div id="st-leaderboard-list" class="leaderboard-list"></div>
+          </div>
+        </div>
+
+        <div id="st-lectures" class="st-tab-content">
+          <div id="st-lectures-grid" class="cards-grid"></div>
+        </div>
+
+        <div id="st-attendance" class="st-tab-content">
+          <div class="card p-4 text-center mb-3">
+            <span class="text-muted text-sm">نسبة حضورك الإجمالية</span>
+            <h1 id="st-attendance-percent" class="text-emerald display-4 font-weight-bold mt-1">100%</h1>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>التاريخ</th>
+                    <th>الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="st-attendance-history-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="st-grades" class="st-tab-content">
+          <div class="card p-4 text-center mb-3">
+            <span class="text-muted text-sm">الدرجة النهائية المستحقة:</span>
+            <h1 id="st-grade-score" class="text-indigo font-weight-bold display-4 mt-1">95 / 100</h1>
+          </div>
+          <div class="card p-3">
+            <h4 class="mb-2">الواجبات والتكاليف</h4>
+            <div id="st-tasks-list"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- MODALS SYSTEM (LIGHTWEIGHT & MOBILE SHEET)                     -->
+  <!-- ============================================================== -->
+
+  <!-- Register / Edit Student Modal -->
+  <div id="student-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="student-modal-title">تسجيل طالب جديد</h3>
+        <button class="modal-close" onclick="closeModal('student-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="student-form" onsubmit="saveStudentForm(event)">
+          <input type="hidden" id="form-student-index">
+          <div class="form-group">
+            <label>اسم الطالب الثلاثي:</label>
+            <input type="text" id="form-student-name" class="form-control" placeholder="أحمد محمد علي" required>
+          </div>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label>الرقم الأكاديمي (ID):</label>
+              <input type="text" id="form-student-id" class="form-control" placeholder="2026105" required>
+            </div>
+            <div class="form-group">
+              <label>كلمة المرور:</label>
+              <input type="text" id="form-student-pass" class="form-control" placeholder="123456" required>
+            </div>
+          </div>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label>العمر:</label>
+              <input type="number" id="form-student-age" class="form-control" min="15" max="60" value="20" required>
+            </div>
+            <div class="form-group">
+              <label>المجموعة:</label>
+              <select id="form-student-group" class="form-control"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>رابط الصورة الشخصية:</label>
+            <div class="input-with-btn">
+              <input type="text" id="form-student-avatar" class="form-control" placeholder="رابط صورة أو اضغط دمج">
+              <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomAvatar()">رمز</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('student-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ الطالب</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable QR Card Modal -->
+  <div id="qr-card-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>بطاقة الطالب ورمز QR</h3>
+        <button class="modal-close" onclick="closeModal('qr-card-modal')">&times;</button>
+      </div>
+      <div class="modal-body text-center" id="qr-printable-area">
+        <div class="card p-4">
+          <img id="qr-modal-img" src="" alt="Avatar" class="avatar-lg mb-2">
+          <h3 id="qr-modal-name" class="mb-1">اسم الطالب</h3>
+          <p class="text-indigo mb-2">ID: <span id="qr-modal-id">2026101</span></p>
+          <div id="qr-modal-code" class="qr-canvas-holder mb-3"></div>
+          <span id="qr-modal-shield" class="badge-shield shield-wood">🪵 درع خشبي</span>
+        </div>
+      </div>
+      <div class="modal-footer text-center">
+        <button class="btn btn-primary btn-block" onclick="window.print()">طباعة البطاقة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div id="create-group-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>إنشاء مجموعة جديدة</h3>
+        <button class="modal-close" onclick="closeModal('create-group-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveGroupForm(event)">
+          <div class="form-group">
+            <label>اسم المجموعة / الشعبة:</label>
+            <input type="text" id="group-name-input" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>الوصف:</label>
+            <textarea id="group-desc-input" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('create-group-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">إنشاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Lecture Modal -->
+  <div id="add-lecture-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>إضافة محاضرة جديدة</h3>
+        <button class="modal-close" onclick="closeModal('add-lecture-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveLectureForm(event)">
+          <div class="form-group">
+            <label>عنوان المحاضرة:</label>
+            <input type="text" id="lec-title-input" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>الوصف والمحتوى:</label>
+            <textarea id="lec-desc-input" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>رابط الشرائح:</label>
+            <input type="url" id="lec-link-input" class="form-control">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-lecture-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">نشر المحاضرة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div id="add-task-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>إضافة واجب جديد</h3>
+        <button class="modal-close" onclick="closeModal('add-task-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveTaskForm(event)">
+          <div class="form-group">
+            <label>عنوان الواجب:</label>
+            <input type="text" id="task-title-input" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>التفاصيل والشروط:</label>
+            <textarea id="task-desc-input" class="form-control" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>موعد التسليم:</label>
+            <input type="date" id="task-deadline-input" class="form-control" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-task-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Scanner Camera Modal -->
+  <div id="qr-scanner-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-qrcode text-emerald"></i> ماسح QR الحضور السريع</h3>
+        <button class="modal-close" onclick="closeQRScannerModal()">&times;</button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="text-muted mb-2">وجه كاميرا الجهاز نحو رمز QR الخاص بالطالب للتسجيل التلقائي</p>
+        <div id="qr-reader" style="width: 100%; border-radius: 12px; overflow: hidden; background: #0f172a; min-height: 250px;"></div>
+        <div id="scanner-result" class="mt-3 p-2 border-radius text-emerald font-weight-bold" style="min-height: 24px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeQRScannerModal()">إغلاق الكاميرا</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HTML5 QR Code Reader Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Firebase Compatibility SDKs & App Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
