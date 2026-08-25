@@ -14,7 +14,44 @@ const INITIAL_DATA = {
   questionCollections: [],
   lectures: [],
   tasks: [],
-  exams: [],
+  exams: [
+    {
+      id: 'ex-101',
+      title: 'اختبار خوارزميات التعلم الآلي والأنظمة المدمجة',
+      group: 'all',
+      durationMinutes: 15,
+      description: 'اختبار تقييمي لقياس مدى استيعاب خوارزميات التعلم الآلي والأنظمة الإلكترونية.',
+      questions: [
+        {
+          id: 'q1',
+          type: 'select',
+          optionsCount: 4,
+          text: 'ما هي الخوارزمية الأكثر استخداماً في تصنيف البيانات الخطية؟',
+          options: ['Linear Regression', 'Logistic Regression', 'K-Means Clustering', 'Decision Trees'],
+          correctIndex: 1,
+          correctText: ''
+        },
+        {
+          id: 'q2',
+          type: 'select',
+          optionsCount: 4,
+          text: 'أي من المكونات التالية يُستخدم لمعالجة مصفوفات الأعداد في الحسابات الفائقة للذكاء الاصطناعي؟',
+          options: ['GPU / TPU', 'Hard Disk Drive', 'Audio Card', 'Power Supply Unit'],
+          correctIndex: 0,
+          correctText: ''
+        },
+        {
+          id: 'q3',
+          type: 'text',
+          text: 'ما هو اختصار مصطلح الذكاء الاصطناعي باللغة الإنجليزية؟',
+          options: [],
+          correctIndex: 0,
+          correctText: 'AI'
+        }
+      ],
+      createdAt: new Date().toISOString().split('T')[0]
+    }
+  ],
   examSubmissions: [],
   sessionAttendance: {},
   battles: []
@@ -76,8 +113,8 @@ function loadState() {
   if (!appState.questionCollections || appState.questionCollections.length === 0) {
     appState.questionCollections = [...INITIAL_DATA.questionCollections];
   }
-  if (!appState.exams) {
-    appState.exams = [];
+  if (!appState.exams || appState.exams.length === 0) {
+    appState.exams = [...INITIAL_DATA.exams];
   }
   if (!appState.examSubmissions) {
     appState.examSubmissions = [];
@@ -164,11 +201,11 @@ function initFirebaseSync() {
           if (Array.isArray(remoteData.tasks) && remoteData.tasks.length > 0) {
             appState.tasks = mergeDataLists(appState.tasks, remoteData.tasks, 'id');
           }
-          if (Array.isArray(remoteData.exams)) {
-            appState.exams = remoteData.exams;
+          if (Array.isArray(remoteData.exams) && remoteData.exams.length > 0) {
+            appState.exams = mergeDataLists(appState.exams, remoteData.exams, 'id');
           }
-          if (Array.isArray(remoteData.examSubmissions)) {
-            appState.examSubmissions = remoteData.examSubmissions;
+          if (Array.isArray(remoteData.examSubmissions) && remoteData.examSubmissions.length > 0) {
+            appState.examSubmissions = mergeDataLists(appState.examSubmissions, remoteData.examSubmissions, 'id');
           }
           if (remoteData.sessionAttendance && Object.keys(remoteData.sessionAttendance).length > 0) {
             appState.sessionAttendance = { ...appState.sessionAttendance, ...remoteData.sessionAttendance };
@@ -337,6 +374,10 @@ function openModal(id) {
 
 function closeModal(id) {
   document.getElementById(id)?.classList.remove('active');
+  if (id === 'st-exam-modal' && window.examTimerInterval) {
+    clearInterval(window.examTimerInterval);
+    window.examTimerInterval = null;
+  }
 }
 
 // ==========================================================================
@@ -2191,6 +2232,14 @@ function renderStudentExamsView() {
 }
 
 let activeStudentExam = null;
+window.examTimerInterval = null;
+let examSecondsRemaining = 0;
+
+function formatExamTimer(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
 
 function openStudentExamModal(examId) {
   const ex = (appState.exams || []).find(e => e.id === examId);
@@ -2205,22 +2254,45 @@ function openStudentExamModal(examId) {
     return;
   }
 
+  if (window.examTimerInterval) {
+    clearInterval(window.examTimerInterval);
+    window.examTimerInterval = null;
+  }
+
   activeStudentExam = ex;
   document.getElementById('st-exam-modal-title').textContent = ex.title;
   document.getElementById('st-exam-modal-desc').textContent = ex.description || 'أجب على الأسئلة التالية واضغط تسليم التقييم.';
   
+  const durationMins = ex.durationMinutes || 15;
+  examSecondsRemaining = durationMins * 60;
+
+  const timerClock = document.getElementById('st-exam-timer-clock');
+  if (timerClock) timerClock.textContent = formatExamTimer(examSecondsRemaining);
+
+  window.examTimerInterval = setInterval(() => {
+    examSecondsRemaining--;
+    if (timerClock) timerClock.textContent = formatExamTimer(Math.max(0, examSecondsRemaining));
+
+    if (examSecondsRemaining <= 0) {
+      clearInterval(window.examTimerInterval);
+      window.examTimerInterval = null;
+      showToast("⏱️ انتهى وقت الاختبار المحدد! تم تسليم إجاباتك تلقائياً.", "info");
+      submitStudentExam(null);
+    }
+  }, 1000);
+
   const container = document.getElementById('st-exam-questions-list');
   if (container && ex.questions) {
     container.innerHTML = ex.questions.map((q, idx) => `
       <div class="card p-3 mb-3 bg-subtle">
         <strong class="text-main block mb-2 font-weight-bold text-sm">س${idx + 1}: ${q.text}</strong>
         ${q.type === 'text' ? `
-          <input type="text" name="st-question-${idx}" class="form-control form-control-sm" placeholder="اكتب إجابتك النصية هنا..." required>
+          <input type="text" name="st-question-${idx}" class="form-control form-control-sm" placeholder="اكتب إجابتك النصية هنا...">
         ` : `
           <div class="flex-column gap-2">
             ${(q.options || []).map((opt, optIdx) => `
               <label class="exam-option-pill flex-align-center gap-2 p-2 border-radius cursor-pointer border">
-                <input type="radio" name="st-question-${idx}" value="${optIdx}" required>
+                <input type="radio" name="st-question-${idx}" value="${optIdx}">
                 <span class="text-sm">${opt}</span>
               </label>
             `).join('')}
@@ -2234,8 +2306,13 @@ function openStudentExamModal(examId) {
 }
 
 function submitStudentExam(event) {
-  event.preventDefault();
+  if (event && event.preventDefault) event.preventDefault();
   if (!activeStudentExam || !appState.activeStudent) return;
+
+  if (window.examTimerInterval) {
+    clearInterval(window.examTimerInterval);
+    window.examTimerInterval = null;
+  }
 
   const ex = activeStudentExam;
   const st = appState.activeStudent;

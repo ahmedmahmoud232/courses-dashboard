@@ -61,29 +61,7 @@
     </div>
   </header>
 
-  <!-- Student Mobile Bottom Navigation Bar (< 768px screens) -->
-  <nav class="mobile-bottom-nav hidden" id="student-mobile-nav">
-    <button class="mobile-nav-btn active" onclick="showStudentTab('st-leaderboard', this)">
-      <i class="fa-solid fa-trophy"></i>
-      <span>المتصدرون</span>
-    </button>
-    <button class="mobile-nav-btn" onclick="showStudentTab('st-lectures', this)">
-      <i class="fa-solid fa-book-open"></i>
-      <span>المحاضرات</span>
-    </button>
-    <button class="mobile-nav-btn" onclick="showStudentTab('st-attendance', this)">
-      <i class="fa-solid fa-calendar-check"></i>
-      <span>الحضور</span>
-    </button>
-    <button class="mobile-nav-btn" onclick="showStudentTab('st-grades', this)">
-      <i class="fa-solid fa-graduation-cap"></i>
-      <span>الدرجات</span>
-    </button>
-    <button class="mobile-nav-btn" onclick="showStudentTab('st-exams', this)">
-      <i class="fa-solid fa-file-pen"></i>
-      <span>الاختبارات</span>
-    </button>
-  </nav>
+
 
   <!-- Main Container -->
   <main class="main-wrapper">
@@ -113,16 +91,6 @@
             <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
           </button>
         </form>
-
-        <div class="border-top pt-3 mt-4 text-center">
-          <span class="text-xs text-muted block mb-2">تسجيل سريع للتجربة:</span>
-          <div class="flex-center gap-2 flex-wrap">
-            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026101', '123456')">طالب 1
-              (2026101)</button>
-            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026102', '123456')">طالب 2
-              (2026102)</button>
-          </div>
-        </div>
       </div>
 
       <!-- Student Dashboard Content -->
@@ -239,12 +207,17 @@
   <!-- Student Take Exam Modal -->
   <div id="st-exam-modal" class="modal-overlay">
     <div class="modal-card max-w-md" style="max-width: 650px;">
-      <div class="modal-header">
+      <div class="modal-header flex-between flex-wrap gap-2">
         <div>
           <h3 id="st-exam-modal-title">الاختبار الأكاديمي</h3>
           <p id="st-exam-modal-desc" class="text-xs text-muted mt-1"></p>
         </div>
-        <button class="modal-close" onclick="closeModal('st-exam-modal')">&times;</button>
+        <div class="flex-align-center gap-2">
+          <span id="st-exam-timer-badge" class="badge bg-amber text-xs flex-align-center gap-1" style="font-size: 0.95rem; padding: 0.4rem 0.75rem;">
+            <i class="fa-solid fa-stopwatch"></i> <span id="st-exam-timer-clock">00:15:00</span>
+          </span>
+          <button class="modal-close" onclick="closeModal('st-exam-modal')">&times;</button>
+        </div>
       </div>
       <div class="modal-body">
         <form id="st-exam-form" onsubmit="submitStudentExam(event)">
