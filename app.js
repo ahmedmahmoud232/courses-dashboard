@@ -99,28 +99,50 @@ function saveState() {
 
   localStorage.setItem('course_control_panel_state_v5', JSON.stringify(stateData));
 
-  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured) {
-    window.FirebaseSystem.saveCloudState('dashboard', 'main_state', stateData);
+  if (window.FirebaseSystem) {
+    if (!window.FirebaseSystem.isConfigured) {
+      window.FirebaseSystem.init();
+    }
+    if (window.FirebaseSystem.isConfigured) {
+      window.FirebaseSystem.saveCloudState('dashboard', 'main_state', stateData);
+    }
   }
 }
 
 function initFirebaseSync() {
-  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured) {
-    window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
-      if (remoteData) {
-        if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
-        if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
-        if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
-        if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
-        if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
-        if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
-        if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
+  if (window.FirebaseSystem) {
+    if (!window.FirebaseSystem.isConfigured) {
+      window.FirebaseSystem.init();
+    }
+    if (window.FirebaseSystem.isConfigured) {
+      window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
+        if (remoteData) {
+          if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
+          if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
+          if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
+          if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
+          if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
+          if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
+          if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
 
-        refreshAllUI();
-      }
-    });
+          localStorage.setItem('course_control_panel_state_v5', JSON.stringify({
+            students: appState.students,
+            groups: appState.groups,
+            questionCollections: appState.questionCollections,
+            lectures: appState.lectures,
+            tasks: appState.tasks,
+            sessionAttendance: appState.sessionAttendance,
+            battles: appState.battles,
+            updatedAt: new Date().toISOString()
+          }));
+
+          refreshAllUI();
+        }
+      });
+    }
   }
 }
+
 
 
 function calculateStudentPoints(student) {
@@ -492,11 +514,18 @@ function saveStudentForm(event) {
 
   saveState();
   closeModal('student-modal');
+
+  const searchInput = document.getElementById('student-search-input');
+  if (searchInput) searchInput.value = '';
+  const groupFilter = document.getElementById('student-group-filter');
+  if (groupFilter) groupFilter.value = 'all';
+
   renderStudentsTable();
   renderDashboardStats();
   renderGroupsGrid();
   renderPointsManagementTable();
 }
+
 
 
 function deleteStudent(studentId) {
