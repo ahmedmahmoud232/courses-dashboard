@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>بوابة الطالب | الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</title>
+
+  <!-- Google Fonts: IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Top Notification Toast Bar -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Main Header / Navbar (Hidden on Login Screen) -->
+  <header class="app-navbar hidden" id="student-app-navbar">
+    <div class="nav-container">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <div class="brand-text">
+          <span class="system-title">بوابة الطالب</span>
+          <span class="course-subtitle">الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Theme Mode Switcher (Light / Dark) -->
+        <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleThemeMode()" title="تغيير المظهر">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <!-- Current User Info Badge -->
+        <div id="user-badge" class="user-badge">
+          <img id="header-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Student" alt="Avatar"
+            class="avatar-sm">
+          <div class="user-meta">
+            <span id="header-user-name" class="user-name">الطالب</span>
+            <span id="header-user-role" class="user-role-tag">طالب</span>
+          </div>
+          <button id="btn-logout" class="logout-btn hidden" onclick="logoutStudent()" title="تسجيل الخروج">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+    <div id="view-student" class="view-panel active">
+
+      <!-- Student Login Form (Clean Distraction-Free Mobile Login) -->
+      <div id="student-login-card" class="student-login-wrapper card">
+        <div class="text-center mb-4">
+          <div class="login-icon-box">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <h2>تسجيل دخول الطالب</h2>
+          <p class="text-muted text-sm">أدخل الرقم الأكاديمي وكلمة المرور للدخول إلى حسابك</p>
+        </div>
+
+        <form onsubmit="handleStudentLogin(event)">
+          <div class="form-group mb-3">
+            <label>الرقم الأكاديمي (ID):</label>
+            <input type="text" id="login-student-id" class="form-control" placeholder="أدخل الرقم الأكاديمي" required>
+          </div>
+          <div class="form-group mb-4">
+            <label>كلمة المرور:</label>
+            <input type="password" id="login-student-pass" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">
+            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+          </button>
+        </form>
+      </div>
+
+      <!-- Student Dashboard Content -->
+      <div id="student-dashboard-content" class="student-dashboard hidden">
+        <!-- Student Header Card -->
+        <div class="student-hero-card card p-4 mb-4">
+          <div class="flex-between flex-wrap gap-3">
+            <div class="flex-align-center gap-3">
+              <div class="student-avatar-holder">
+                <img id="st-profile-img" src="" alt="Avatar" class="avatar-lg">
+                <span id="st-badge-floating" class="floating-badge">👑</span>
+              </div>
+              <div>
+                <h2 id="st-profile-name" class="mb-1">اسم الطالب</h2>
+                <div class="flex-align-center gap-2 text-sm text-muted">
+                  <span>ID: <code id="st-profile-id" class="text-indigo">2026101</code></span>
+                  <span>•</span>
+                  <span>العمر: <span id="st-profile-age">20</span> سنة</span>
+                </div>
+                <div class="mt-2">
+                  <span id="st-group-tag" class="badge bg-purple">شُعبة الذكاء الاصطناعي 1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shield Level Progress -->
+            <div class="shield-progress-card">
+              <div class="flex-between mb-1">
+                <span id="st-badge-name" class="badge-shield shield-gold">درع ذهبي</span>
+                <span class="text-xs text-muted">مستوى التطور</span>
+              </div>
+              <div class="points-progress-bar">
+                <div class="flex-between text-xs text-muted mb-1">
+                  <span>النقاط: <strong id="st-rating-pts">500</strong> / <span
+                      id="st-next-level-pts">1000</span></span>
+                </div>
+                <div class="progress-track">
+                  <div id="st-progress-fill" class="progress-fill" style="width: 50%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Tabs Navigation -->
+        <div class="student-nav-tabs card p-2 mb-3">
+          <button class="st-tab-btn active" onclick="showStudentTab('st-leaderboard')">
+            <i class="fa-solid fa-trophy text-amber"></i> المتصدرون والدروع
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-lectures')">
+            <i class="fa-solid fa-book-open"></i> المحاضرات
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-attendance')">
+            <i class="fa-solid fa-calendar-check text-emerald"></i> الحضور والغياب
+          </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-grades')">
+            <i class="fa-solid fa-graduation-cap text-indigo"></i> الدرجات والواجبات
+          </button>
+        </div>
+
+        <!-- Student Tab Contents -->
+        <div id="st-leaderboard" class="st-tab-content active">
+          <div class="card p-3">
+            <h3 class="mb-3"><i class="fa-solid fa-crown text-amber"></i> قائمة متصدري الشُعبة</h3>
+            <div id="st-leaderboard-list" class="leaderboard-list"></div>
+          </div>
+        </div>
+
+        <div id="st-lectures" class="st-tab-content">
+          <div id="st-lectures-grid" class="cards-grid"></div>
+        </div>
+
+        <div id="st-attendance" class="st-tab-content">
+          <div class="card p-4 text-center mb-3">
+            <span class="text-muted text-sm">نسبة حضورك الإجمالية</span>
+            <h1 id="st-attendance-percent" class="text-emerald display-4 font-weight-bold mt-1">100%</h1>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>التاريخ</th>
+                    <th>الجلسة / المحاضرة</th>
+                    <th>الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="st-attendance-history-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="st-grades" class="st-tab-content">
+          <div class="card p-4 text-center mb-3">
+            <span class="text-muted text-sm">الدرجة النهائية المستحقة:</span>
+            <h1 id="st-grade-score" class="text-indigo font-weight-bold display-4 mt-1">95 / 100</h1>
+          </div>
+          <div class="card p-3">
+            <h4 class="mb-2">الواجبات والتكاليف</h4>
+            <div id="st-tasks-list"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase Compatibility SDKs & App Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

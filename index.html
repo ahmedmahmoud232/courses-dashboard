@@ -34,7 +34,7 @@
           <i class="fa-solid fa-microchip"></i>
         </div>
         <div class="brand-text">
-          <span class="system-title">لوحة التحكم</span>
+          <span class="system-title">لوحة التحكم الأكاديمية</span>
           <span class="course-subtitle">الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</span>
         </div>
       </div>
@@ -45,15 +45,10 @@
           <i class="fa-solid fa-moon" id="theme-icon"></i>
         </button>
 
-        <!-- System Mode Switcher (Teacher / Student view) -->
-        <div class="role-selector">
-          <button id="btn-role-teacher" class="role-btn active" onclick="switchRole('teacher')">
-            <i class="fa-solid fa-user-tie"></i> <span class="role-label">المعلم</span>
-          </button>
-          <button id="btn-role-student" class="role-btn" onclick="switchRole('student')">
-            <i class="fa-solid fa-user-graduate"></i> <span class="role-label">الطالب</span>
-          </button>
-        </div>
+        <!-- Student Portal External Link -->
+        <a href="student.html" target="_blank" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> بوابة الطلاب الخارجية
+        </a>
 
         <!-- Current User Info Badge -->
         <div id="user-badge" class="user-badge">
@@ -61,11 +56,8 @@
             class="avatar-sm">
           <div class="user-meta">
             <span id="header-user-name" class="user-name">د. المعلم</span>
-            <span id="header-user-role" class="user-role-tag">المشرف</span>
+            <span id="header-user-role" class="user-role-tag">المشرف الأكاديمي</span>
           </div>
-          <button id="btn-logout" class="logout-btn hidden" onclick="logoutStudent()" title="تسجيل الخروج">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -81,13 +73,13 @@
       <i class="fa-solid fa-users"></i>
       <span>الطلاب</span>
     </button>
-    <button class="mobile-nav-btn" onclick="showTeacherTab('attendance-tab', this)">
-      <i class="fa-solid fa-clipboard-user"></i>
-      <span>الحضور</span>
-    </button>
     <button class="mobile-nav-btn" onclick="showTeacherTab('battle-tab', this)">
       <i class="fa-solid fa-swords text-rose"></i>
       <span>المواجهة</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('question-collections-tab', this)">
+      <i class="fa-solid fa-layer-group text-purple"></i>
+      <span>الأسئلة</span>
     </button>
     <button class="mobile-nav-btn" onclick="showTeacherTab('lectures-tab', this)">
       <i class="fa-solid fa-book-open"></i>
@@ -97,10 +89,6 @@
 
   <!-- Main Container -->
   <main class="main-wrapper">
-
-    <!-- ============================================================== -->
-    <!-- TEACHER VIEW / لوحة المعلم                                     -->
-    <!-- ============================================================== -->
     <div id="view-teacher" class="view-panel active">
 
       <!-- Desktop Sidebar Navigation -->
@@ -112,15 +100,23 @@
           </button>
           <button class="nav-item" onclick="showTeacherTab('students-tab')">
             <i class="fa-solid fa-users"></i>
-            <span>إدارة الطلاب والـ QR</span>
+            <span>إدارة الطلاب</span>
           </button>
           <button class="nav-item" onclick="showTeacherTab('groups-tab')">
             <i class="fa-solid fa-layer-group"></i>
-            <span>المجموعات والشُعب</span>
+            <span>المجموعات والجلسات</span>
           </button>
           <button class="nav-item" onclick="showTeacherTab('attendance-tab')">
             <i class="fa-solid fa-clipboard-user"></i>
-            <span>تتبع الحضور والغياب</span>
+            <span>حضور الجلسات</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('battle-tab')">
+            <i class="fa-solid fa-swords text-rose"></i>
+            <span>حلبة المواجهة (Battle)</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('question-collections-tab')">
+            <i class="fa-solid fa-layer-group text-purple"></i>
+            <span>مجموعات الأسئلة</span>
           </button>
           <button class="nav-item" onclick="showTeacherTab('lectures-tab')">
             <i class="fa-solid fa-book-open-reader"></i>
@@ -130,13 +126,13 @@
             <i class="fa-solid fa-list-check"></i>
             <span>المهام والواجبات</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('battle-tab')">
-            <i class="fa-solid fa-swords text-rose"></i>
-            <span>حلبة المواجهة (Battle)</span>
-          </button>
           <button class="nav-item" onclick="showTeacherTab('grades-tab')">
             <i class="fa-solid fa-star-half-stroke"></i>
             <span>الدرجات والتقييمات</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('points-tab')">
+            <i class="fa-solid fa-coins text-amber"></i>
+            <span>إدارة النقاط</span>
           </button>
         </nav>
       </aside>
@@ -169,7 +165,7 @@
             <div class="stat-card">
               <div class="stat-icon bg-emerald"><i class="fa-solid fa-user-check"></i></div>
               <div class="stat-info">
-                <span class="stat-label">نسبة الحضور اليوم</span>
+                <span class="stat-label">نسبة الحضور التراكمية</span>
                 <h3 id="stat-attendance-rate">0%</h3>
               </div>
             </div>
@@ -177,7 +173,7 @@
             <div class="stat-card">
               <div class="stat-icon bg-purple"><i class="fa-solid fa-layer-group"></i></div>
               <div class="stat-info">
-                <span class="stat-label">المجموعات</span>
+                <span class="stat-label">المجموعات والشُعب</span>
                 <h3 id="stat-total-groups">0</h3>
               </div>
             </div>
@@ -224,8 +220,8 @@
         <div id="students-tab" class="tab-content">
           <div class="tab-header">
             <div>
-              <h2>سجلات الطلاب ورموز QR الذكية</h2>
-              <p class="text-muted">إضافة، تعديل، حذف، وإنشاء كروت تعريفية مزودة برموز QR.</p>
+              <h2>سجلات وإدارة الطلاب</h2>
+              <p class="text-muted">إضافة، تعديل، وحذف بيانات الطلاب ومتابعة النقاط والدروع.</p>
             </div>
             <button class="btn btn-primary" onclick="openRegisterStudentModal()">
               <i class="fa-solid fa-user-plus"></i> تسجيل طالب جديد
@@ -249,13 +245,13 @@
               <table class="custom-table">
                 <thead>
                   <tr>
-                    <th>الطالب والرمز</th>
+                    <th>الطالب</th>
                     <th>ID</th>
+                    <th>كلمة المرور</th>
                     <th>العمر</th>
                     <th>المجموعة</th>
                     <th>درع التطور</th>
                     <th>النقاط</th>
-                    <th>رمز QR</th>
                     <th>الإجراءات</th>
                   </tr>
                 </thead>
@@ -267,15 +263,15 @@
           </div>
         </div>
 
-        <!-- 3. GROUPS & CLASSES TAB -->
+        <!-- 3. GROUPS & SESSIONS TAB -->
         <div id="groups-tab" class="tab-content">
           <div class="tab-header">
             <div>
-              <h2>مجموعات وشُعب المقرر</h2>
-              <p class="text-muted">تنظيم الطلاب في شُعب دراسية وتوزيع مشاريع الأنظمة الذكية.</p>
+              <h2>المجموعات والشُعب والجلسات</h2>
+              <p class="text-muted">تنظيم الطلاب وإنشاء جلسات حضور محددة بالاسم والتاريخ لكل مجموعة.</p>
             </div>
-            <button class="btn btn-primary" onclick="openModal('create-group-modal')">
-              <i class="fa-solid fa-plus"></i> إنشاء مجموعة جديد
+            <button class="btn btn-primary" onclick="openCreateGroupModal()">
+              <i class="fa-solid fa-plus"></i> إضافة مجموعة جديدة
             </button>
           </div>
 
@@ -288,35 +284,52 @@
         <div id="attendance-tab" class="tab-content">
           <div class="tab-header">
             <div>
-              <h2>تتبع الحضور والغياب</h2>
-              <p class="text-muted">تسجيل الحضور يدويًا أو عبر رمز QR التفاعلي.</p>
+              <h2>تسجيل حضور وتفقد الجلسات</h2>
+              <p class="text-muted">اختر المجموعة والجلسة لتسجيل الحضور بزر التبديل (Toggle).</p>
             </div>
           </div>
 
           <div class="card p-3 mb-3 flex-between flex-wrap gap-2">
-            <div class="form-inline flex-align-center gap-2">
-              <label>التاريخ:</label>
-              <input type="date" id="attendance-date" class="form-control-inline" onchange="loadAttendanceForDate()">
+            <div class="form-inline flex-align-center gap-2 flex-wrap">
+              <label>المجموعة:</label>
+              <select id="attendance-group-select" class="form-control-inline" onchange="onAttendanceGroupChange()">
+                <!-- Populated dynamically -->
+              </select>
+
+              <label class="mr-2">الجلسة:</label>
+              <select id="attendance-session-select" class="form-control-inline"
+                onchange="loadAttendanceForSelectedSession()">
+                <!-- Populated dynamically -->
+              </select>
             </div>
-            <div class="flex-align-center gap-2">
-              <button class="btn btn-emerald btn-sm" onclick="openQRScannerModal()">
-                <i class="fa-solid fa-camera"></i> مسح QR بالكاميرا
-              </button>
+            <div>
               <button class="btn btn-primary btn-sm" onclick="saveAttendanceRecord()">
-                <i class="fa-solid fa-floppy-disk"></i> حفظ كشف الحضور
+                <i class="fa-solid fa-floppy-disk"></i> حفظ تغييرات الحضور
               </button>
             </div>
           </div>
 
-          <div class="card">
+          <div class="card p-4">
+            <div id="session-info-banner" class="mb-3 p-3 bg-subtle border-radius flex-between flex-wrap gap-2">
+              <div>
+                <h4 id="active-session-title" class="text-indigo">اسم الجلسة</h4>
+                <span id="active-session-date" class="text-xs text-muted">تاريخ الجلسة</span>
+              </div>
+              <div class="flex-align-center gap-2">
+                <button class="btn btn-xs btn-emerald" onclick="markAllSessionAttendance(true)">تحضير الكل ✅</button>
+                <button class="btn btn-xs btn-outline text-rose" onclick="markAllSessionAttendance(false)">غياب الكل
+                  ❌</button>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
                     <th>الطالب</th>
+                    <th>الرقم الأكاديمي</th>
                     <th>المجموعة</th>
-                    <th>حالة الحضور</th>
-                    <th>تسجيل سريع</th>
+                    <th>حالة الحضور (Toggle)</th>
                   </tr>
                 </thead>
                 <tbody id="attendance-table-body">
@@ -327,53 +340,36 @@
           </div>
         </div>
 
-        <!-- 5. LECTURES TAB -->
-        <div id="lectures-tab" class="tab-content">
-          <div class="tab-header">
-            <div>
-              <h2>المحاضرات ومحتوى المقرر</h2>
-              <p class="text-muted">مقرر الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية.</p>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('add-lecture-modal')">
-              <i class="fa-solid fa-plus"></i> إضافة محاضرة
-            </button>
-          </div>
-
-          <div id="lectures-grid" class="cards-grid">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- 6. TASKS TAB -->
-        <div id="tasks-tab" class="tab-content">
-          <div class="tab-header">
-            <div>
-              <h2>الواجبات والتكاليف</h2>
-              <p class="text-muted">متابعة تكاليف الطلاب الميدانية والبرمجية.</p>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('add-task-modal')">
-              <i class="fa-solid fa-plus"></i> رفع واجب
-            </button>
-          </div>
-
-          <div id="tasks-list">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- 7. BATTLE MODE TAB -->
+        <!-- 5. BATTLE MODE TAB -->
         <div id="battle-tab" class="tab-content">
           <div class="tab-header">
             <div>
               <h2>حلبة المواجهة والأسئلة (Battle Mode)</h2>
               <p class="text-muted">تحديات مباشرة 1v1 لزيادة النقاط وتطوير الدرع!</p>
             </div>
+            <button class="btn btn-purple" onclick="openCreateCollectionModal()">
+              <i class="fa-solid fa-folder-plus"></i> إضافة بنك أسئلة جديد
+            </button>
           </div>
 
           <div id="battle-setup-card" class="card p-4">
             <div class="text-center mb-4">
               <h2 class="text-indigo mb-1"><i class="fa-solid fa-swords text-rose"></i> مواجهة الذكاء الاصطناعي 1v1</h2>
-              <p class="text-muted text-sm">اختر طالبين من القائمة لبدء الجولة المباشرة</p>
+              <p class="text-muted text-sm">اختر طالبين ومجموعة الأسئلة المطلوبة لبدء المواجهة المباشرة</p>
+            </div>
+
+            <!-- Question Collection Selection & Edit Controls in Battle Setup -->
+            <div class="form-group mb-4 max-w-md mx-auto">
+              <div class="flex-between mb-1">
+                <label class="font-weight-bold block"><i class="fa-solid fa-folder-open text-purple"></i> اختر مجموعة
+                  الأسئلة للمواجهة:</label>
+                <button class="btn btn-xs btn-outline" onclick="openEditSelectedBattleCollection()">
+                  <i class="fa-solid fa-pen"></i> تعديل البنك المحدد
+                </button>
+              </div>
+              <select id="battle-collection-select" class="form-control text-center"
+                onchange="onBattleCollectionChange()"></select>
+              <span id="battle-collection-info" class="text-xs text-muted block text-center mt-1"></span>
             </div>
 
             <div class="battle-vs-container">
@@ -402,7 +398,58 @@
           <div id="active-battle-screen" class="card p-4 hidden"></div>
         </div>
 
-        <!-- 8. GRADES TAB -->
+        <!-- 6. QUESTION COLLECTIONS MANAGEMENT TAB -->
+        <div id="question-collections-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>مجموعات الأسئلة (Question Collections)</h2>
+              <p class="text-muted">إنشاء وتعديل وتصنيف بنوك الأسئلة لاستخدامها في حلبة المواجهة (Battle Mode).</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateCollectionModal()">
+              <i class="fa-solid fa-folder-plus"></i> إنشاء مجموعة أسئلة جديد
+            </button>
+          </div>
+
+          <div id="collections-grid" class="cards-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 7. LECTURES TAB -->
+        <div id="lectures-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>المحاضرات ومحتوى المقرر</h2>
+              <p class="text-muted">مقرر الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateLectureModal()">
+              <i class="fa-solid fa-plus"></i> إضافة محاضرة جديدة
+            </button>
+          </div>
+
+          <div id="lectures-grid" class="cards-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 8. TASKS TAB -->
+        <div id="tasks-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>المهام والواجبات</h2>
+              <p class="text-muted">متابعة تكاليف الطلاب الميدانية والبرمجية.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateTaskModal()">
+              <i class="fa-solid fa-plus"></i> إضافة واجب جديد
+            </button>
+          </div>
+
+          <div id="tasks-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- 9. GRADES TAB -->
         <div id="grades-tab" class="tab-content">
           <div class="tab-header">
             <div>
@@ -430,155 +477,77 @@
           </div>
         </div>
 
-      </section>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- STUDENT VIEW / لوحة الطالب                                     -->
-    <!-- ============================================================== -->
-    <div id="view-student" class="view-panel">
-
-      <!-- Student Login Form -->
-      <div id="student-login-card" class="student-login-wrapper card">
-        <div class="text-center mb-4">
-          <div class="login-icon-box">
-            <i class="fa-solid fa-user-graduate"></i>
-          </div>
-          <h2>بوابة الطالب</h2>
-          <p class="text-muted text-sm">أدخل الرقم الأكاديمي وكلمة المرور للدخول</p>
-        </div>
-
-        <form id="student-login-form" onsubmit="handleStudentLogin(event)">
-          <div class="form-group">
-            <label>الرقم الأكاديمي (ID):</label>
-            <input type="text" id="login-student-id" class="form-control" placeholder="2026101" required>
-          </div>
-
-          <div class="form-group">
-            <label>كلمة المرور:</label>
-            <input type="password" id="login-student-pass" class="form-control" placeholder="أدخل كلمة المرور" required>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-block btn-lg mt-3">
-            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
-          </button>
-        </form>
-
-        <div class="card bg-subtle p-3 mt-3 text-center text-xs">
-          <span>حساب للتجربة السريعة:</span>
-          <div class="mt-2 flex-between gap-1">
-            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026101', '123456')">أحمد (2026101)</button>
-            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026102', '123456')">سارة (2026102)</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Student Dashboard Content -->
-      <div id="student-dashboard-content" class="student-dashboard hidden width-100">
-
-        <!-- Hero Header -->
-        <div class="card student-hero-card">
-          <div class="student-profile-header">
-            <div class="profile-avatar-container">
-              <img id="st-profile-img" src="" alt="Student Avatar" class="avatar-lg">
-              <div id="st-badge-floating" class="badge-floating">🪵</div>
+        <!-- 10. POINTS MANAGEMENT TAB -->
+        <div id="points-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2>إدارة واحتساب النقاط والدروع</h2>
+              <p class="text-muted">احتساب تلقائي 50 نقطة لكل جلسة حضور + إضافة وتعديل نقاط التميز والمكافآت اليدوية.</p>
             </div>
+          </div>
 
-            <div class="profile-info-main">
-              <div class="flex-align-center gap-2">
-                <h2 id="st-profile-name">اسم الطالب</h2>
-                <span id="st-group-tag" class="badge bg-indigo">المجموعة</span>
-              </div>
-              <p class="text-muted text-sm mb-2">
-                الرقم الأكاديمي: <strong id="st-profile-id" class="text-indigo">2026101</strong> | العمر: <span
-                  id="st-profile-age">20</span> سنة
-              </p>
-
-              <div class="gamification-bar-box">
-                <div class="flex-between text-xs mb-1">
-                  <span>درع التطور الحالي: <strong id="st-badge-name" class="text-amber">درع خشبي</strong></span>
-                  <span>النقاط: <strong id="st-rating-pts">500</strong> / <span
-                      id="st-next-level-pts">1000</span></span>
+          <!-- Quick Points Allocation Card -->
+          <div class="card p-4 mb-3">
+            <h3 class="text-indigo mb-3"><i class="fa-solid fa-gift text-amber"></i> إسناد مكافأة أو نقاط تميز</h3>
+            <form id="points-grant-form" onsubmit="grantManualPoints(event)">
+              <div class="grid-2col gap-2 mb-3">
+                <div class="form-group">
+                  <label>اختر الطالب:</label>
+                  <select id="points-student-select" class="form-control" required></select>
                 </div>
-                <div class="progress-track">
-                  <div id="st-progress-fill" class="progress-fill" style="width: 50%;"></div>
+                <div class="form-group">
+                  <label>عدد النقاط (+ أو -):</label>
+                  <input type="number" id="points-amount-input" class="form-control" placeholder="مثال: 50 أو -20" required>
                 </div>
               </div>
-            </div>
-
-            <div class="student-qr-card">
-              <span class="text-xs text-muted block mb-1">رمز الـ QR الخاص بك</span>
-              <div id="st-qr-code-box" class="qr-code-box"></div>
-            </div>
+              <div class="form-group mb-3">
+                <label>سبب التقييم / نوع النشاط:</label>
+                <input type="text" id="points-reason-input" class="form-control" placeholder="مثال: مشاركة متميزة، الإجابة على سؤال التحدي، واجب إضافي...">
+              </div>
+              <button type="submit" class="btn btn-emerald">
+                <i class="fa-solid fa-plus-circle"></i> إضافة النقاط للحساب
+              </button>
+            </form>
           </div>
-        </div>
 
-        <!-- Student Tabs Navigation -->
-        <div class="student-nav-tabs card p-2 mb-3">
-          <button class="st-tab-btn active" onclick="showStudentTab('st-leaderboard')">
-            <i class="fa-solid fa-trophy text-amber"></i> المتصدرون والدروع
-          </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-lectures')">
-            <i class="fa-solid fa-book-open"></i> المحاضرات
-          </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-attendance')">
-            <i class="fa-solid fa-calendar-check text-emerald"></i> الحضور والغياب
-          </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-grades')">
-            <i class="fa-solid fa-graduation-cap text-indigo"></i> الدرجات والواجبات
-          </button>
-        </div>
-
-        <!-- Student Tab Contents -->
-        <div id="st-leaderboard" class="st-tab-content active">
-          <div class="card p-3">
-            <h3 class="mb-3"><i class="fa-solid fa-crown text-amber"></i> قائمة متصدري الشُعبة</h3>
-            <div id="st-leaderboard-list" class="leaderboard-list"></div>
-          </div>
-        </div>
-
-        <div id="st-lectures" class="st-tab-content">
-          <div id="st-lectures-grid" class="cards-grid"></div>
-        </div>
-
-        <div id="st-attendance" class="st-tab-content">
-          <div class="card p-4 text-center mb-3">
-            <span class="text-muted text-sm">نسبة حضورك الإجمالية</span>
-            <h1 id="st-attendance-percent" class="text-emerald display-4 font-weight-bold mt-1">100%</h1>
-          </div>
+          <!-- Students Points Table -->
           <div class="card">
+            <div class="card-header p-3 border-bottom flex-between">
+              <h3><i class="fa-solid fa-list-ol text-indigo"></i> تفاصيل النقاط ومصادرها لكل طالب</h3>
+              <span class="badge bg-emerald">حضور الجلسة = 50 نقطة</span>
+            </div>
             <div class="table-responsive">
               <table class="custom-table">
                 <thead>
                   <tr>
-                    <th>التاريخ</th>
-                    <th>الحالة</th>
+                    <th>الطالب</th>
+                    <th>المجموعة</th>
+                    <th>جلسات الحضور</th>
+                    <th>نقاط الحضور (50/جلسة)</th>
+                    <th>نقاط المواجهات (50/سؤال)</th>
+                    <th>نقاط المكافآت والتميز</th>
+                    <th>إجمالي النقاط</th>
+                    <th>الدرع المستحق</th>
+                    <th>إجراء سريع</th>
                   </tr>
                 </thead>
-                <tbody id="st-attendance-history-body"></tbody>
+                <tbody id="points-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
               </table>
             </div>
+
           </div>
         </div>
 
-        <div id="st-grades" class="st-tab-content">
-          <div class="card p-4 text-center mb-3">
-            <span class="text-muted text-sm">الدرجة النهائية المستحقة:</span>
-            <h1 id="st-grade-score" class="text-indigo font-weight-bold display-4 mt-1">95 / 100</h1>
-          </div>
-          <div class="card p-3">
-            <h4 class="mb-2">الواجبات والتكاليف</h4>
-            <div id="st-tasks-list"></div>
-          </div>
-        </div>
+      </section>
 
-      </div>
     </div>
 
   </main>
 
   <!-- ============================================================== -->
-  <!-- MODALS SYSTEM (LIGHTWEIGHT & MOBILE SHEET)                     -->
+  <!-- MODALS SYSTEM                                                  -->
   <!-- ============================================================== -->
 
   <!-- Register / Edit Student Modal -->
@@ -608,7 +577,7 @@
           <div class="grid-2col">
             <div class="form-group">
               <label>العمر:</label>
-              <input type="number" id="form-student-age" class="form-control" min="15" max="60" value="20" required>
+              <input type="number" id="form-student-age" class="form-control" min="10" max="60" value="20" required>
             </div>
             <div class="form-group">
               <label>المجموعة:</label>
@@ -618,8 +587,8 @@
           <div class="form-group">
             <label>رابط الصورة الشخصية:</label>
             <div class="input-with-btn">
-              <input type="text" id="form-student-avatar" class="form-control" placeholder="رابط صورة أو اضغط دمج">
-              <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomAvatar()">رمز</button>
+              <input type="text" id="form-student-avatar" class="form-control" placeholder="رابط صورة أو اضغط إنشاء">
+              <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomAvatar()">رمز عشوائي</button>
             </div>
           </div>
           <div class="modal-footer">
@@ -631,63 +600,112 @@
     </div>
   </div>
 
-  <!-- Printable QR Card Modal -->
-  <div id="qr-card-modal" class="modal-overlay">
+  <!-- Create / Edit Group Modal -->
+  <div id="group-modal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>بطاقة الطالب ورمز QR</h3>
-        <button class="modal-close" onclick="closeModal('qr-card-modal')">&times;</button>
-      </div>
-      <div class="modal-body text-center" id="qr-printable-area">
-        <div class="card p-4">
-          <img id="qr-modal-img" src="" alt="Avatar" class="avatar-lg mb-2">
-          <h3 id="qr-modal-name" class="mb-1">اسم الطالب</h3>
-          <p class="text-indigo mb-2">ID: <span id="qr-modal-id">2026101</span></p>
-          <div id="qr-modal-code" class="qr-canvas-holder mb-3"></div>
-          <span id="qr-modal-shield" class="badge-shield shield-wood">🪵 درع خشبي</span>
-        </div>
-      </div>
-      <div class="modal-footer text-center">
-        <button class="btn btn-primary btn-block" onclick="window.print()">طباعة البطاقة</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Create Group Modal -->
-  <div id="create-group-modal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>إنشاء مجموعة جديدة</h3>
-        <button class="modal-close" onclick="closeModal('create-group-modal')">&times;</button>
+        <h3 id="group-modal-title">إنشاء مجموعة جديدة</h3>
+        <button class="modal-close" onclick="closeModal('group-modal')">&times;</button>
       </div>
       <div class="modal-body">
         <form onsubmit="saveGroupForm(event)">
+          <input type="hidden" id="form-group-id">
           <div class="form-group">
             <label>اسم المجموعة / الشعبة:</label>
             <input type="text" id="group-name-input" class="form-control" required>
           </div>
           <div class="form-group">
-            <label>الوصف:</label>
+            <label>الوصف والتفاصيل:</label>
             <textarea id="group-desc-input" class="form-control" rows="3"></textarea>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('create-group-modal')">إلغاء</button>
-            <button type="submit" class="btn btn-primary">إنشاء</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('group-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ المجموعة</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Add Lecture Modal -->
-  <div id="add-lecture-modal" class="modal-overlay">
+  <!-- Add / Edit Session Modal -->
+  <div id="session-modal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>إضافة محاضرة جديدة</h3>
-        <button class="modal-close" onclick="closeModal('add-lecture-modal')">&times;</button>
+        <h3 id="session-modal-title">إنشاء جلسة جديدة للمجموعة</h3>
+        <button class="modal-close" onclick="closeModal('session-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveSessionForm(event)">
+          <input type="hidden" id="form-session-group-id">
+          <input type="hidden" id="form-session-id">
+          <div class="form-group">
+            <label>اسم الجلسة / عنوان المحاضرة:</label>
+            <input type="text" id="session-name-input" class="form-control" placeholder="مثال: الجلسة 1 - مقدمة الـ AI"
+              required>
+          </div>
+          <div class="form-group">
+            <label>تاريخ الجلسة:</label>
+            <input type="date" id="session-date-input" class="form-control" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('session-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ الجلسة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create / Edit Question Collection Modal -->
+  <div id="collection-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 id="collection-modal-title">إنشاء مجموعة أسئلة جديد</h3>
+        <button class="modal-close" onclick="closeModal('collection-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveCollectionForm(event)">
+          <input type="hidden" id="form-collection-id">
+          <div class="form-group">
+            <label>اسم مجموعة الأسئلة:</label>
+            <input type="text" id="col-title-input" class="form-control"
+              placeholder="مثال: أسئلة مستشعر MPU6050 والـ TinyML" required>
+          </div>
+          <div class="form-group">
+            <label>وصف المجموعة:</label>
+            <input type="text" id="col-desc-input" class="form-control" placeholder="الوصف والموضوعات المفتاحية">
+          </div>
+
+          <hr class="my-3">
+          <div class="flex-between mb-2">
+            <h4 class="text-indigo"><i class="fa-solid fa-list-ol"></i> قائمة الأسئلة المتضمنة</h4>
+            <button type="button" class="btn btn-xs btn-outline" onclick="addQuestionItemToForm()">+ إضافة سؤال
+              جديد</button>
+          </div>
+
+          <div id="collection-questions-container" style="max-height: 280px; overflow-y: auto;" class="pr-1">
+            <!-- Dynamic Questions list inside Collection -->
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('collection-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ المجموعة بالكامل</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Lecture Modal -->
+  <div id="lecture-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="lecture-modal-title">إضافة محاضرة جديدة</h3>
+        <button class="modal-close" onclick="closeModal('lecture-modal')">&times;</button>
       </div>
       <div class="modal-body">
         <form onsubmit="saveLectureForm(event)">
+          <input type="hidden" id="form-lecture-id">
           <div class="form-group">
             <label>عنوان المحاضرة:</label>
             <input type="text" id="lec-title-input" class="form-control" required>
@@ -697,27 +715,28 @@
             <textarea id="lec-desc-input" class="form-control" rows="3"></textarea>
           </div>
           <div class="form-group">
-            <label>رابط الشرائح:</label>
-            <input type="url" id="lec-link-input" class="form-control">
+            <label>رابط الشرائح / المصدر:</label>
+            <input type="url" id="lec-link-input" class="form-control" placeholder="https://...">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('add-lecture-modal')">إلغاء</button>
-            <button type="submit" class="btn btn-primary">نشر المحاضرة</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('lecture-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ المحاضرة</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Add Task Modal -->
-  <div id="add-task-modal" class="modal-overlay">
+  <!-- Add / Edit Task Modal -->
+  <div id="task-modal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>إضافة واجب جديد</h3>
-        <button class="modal-close" onclick="closeModal('add-task-modal')">&times;</button>
+        <h3 id="task-modal-title">إضافة واجب جديد</h3>
+        <button class="modal-close" onclick="closeModal('task-modal')">&times;</button>
       </div>
       <div class="modal-body">
         <form onsubmit="saveTaskForm(event)">
+          <input type="hidden" id="form-task-id">
           <div class="form-group">
             <label>عنوان الواجب:</label>
             <input type="text" id="task-title-input" class="form-control" required>
@@ -731,34 +750,13 @@
             <input type="date" id="task-deadline-input" class="form-control" required>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('add-task-modal')">إلغاء</button>
-            <button type="submit" class="btn btn-primary">حفظ</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('task-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary">حفظ الواجب</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
-  <!-- QR Scanner Camera Modal -->
-  <div id="qr-scanner-modal" class="modal-overlay">
-    <div class="modal-card" style="max-width: 480px;">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-qrcode text-emerald"></i> ماسح QR الحضور السريع</h3>
-        <button class="modal-close" onclick="closeQRScannerModal()">&times;</button>
-      </div>
-      <div class="modal-body text-center">
-        <p class="text-muted mb-2">وجه كاميرا الجهاز نحو رمز QR الخاص بالطالب للتسجيل التلقائي</p>
-        <div id="qr-reader" style="width: 100%; border-radius: 12px; overflow: hidden; background: #0f172a; min-height: 250px;"></div>
-        <div id="scanner-result" class="mt-3 p-2 border-radius text-emerald font-weight-bold" style="min-height: 24px;"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeQRScannerModal()">إغلاق الكاميرا</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HTML5 QR Code Reader Library -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <!-- Firebase Compatibility SDKs & App Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>

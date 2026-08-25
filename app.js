@@ -1,7 +1,7 @@
 /**
  * Course Control Panel Application Engine (لوحة التحكم)
  * Course: AI in Electronic Systems Production (الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية)
- * Performance: Ultra-Fast Light-Mode SaaS Engine
+ * Performance: Ultra-Fast SaaS Engine
  */
 
 // ==========================================================================
@@ -9,120 +9,15 @@
 // ==========================================================================
 
 const INITIAL_DATA = {
-  students: [
-    {
-      id: "2026101",
-      name: "أحمد علي الفارس",
-      pass: "123456",
-      age: 21,
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Ahmed",
-      group: "شُعبة الذكاء الاصطناعي 1",
-      rating: 1650, // Gold Shield
-      gradeScore: 94,
-      createdAt: "2026-08-01"
-    },
-    {
-      id: "2026102",
-      name: "سارة محمود الخالد",
-      pass: "123456",
-      age: 20,
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Sara",
-      group: "شُعبة الذكاء الاصطناعي 1",
-      rating: 2600, // Diamond Shield
-      gradeScore: 98,
-      createdAt: "2026-08-01"
-    },
-    {
-      id: "2026103",
-      name: "عمر خالد الجابر",
-      pass: "123456",
-      age: 22,
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Omar",
-      group: "شُعبة الأنظمة المدمجة 2",
-      rating: 850, // Bronze Shield
-      gradeScore: 82,
-      createdAt: "2026-08-02"
-    },
-    {
-      id: "2026104",
-      name: "مريم عبد الله حسن",
-      pass: "123456",
-      age: 20,
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Mariam",
-      group: "شُعبة الأنظمة المدمجة 2",
-      rating: 450, // Wooden Shield (New student default)
-      gradeScore: 75,
-      createdAt: "2026-08-03"
-    }
-  ],
-  groups: [
-    { id: "g1", name: "شُعبة الذكاء الاصطناعي 1", desc: "تطبيقات التعلم العميق في معالجة إشارات الدوائر الإلكترونية" },
-    { id: "g2", name: "شُعبة الأنظمة المدمجة 2", desc: "برمجة متحكمات STM32 وحساسات إنترنت الأشياء IoT" }
-  ],
-  lectures: [
-    {
-      id: "l1",
-      title: "المحاضرة 1: مقدمة في المستشعرات والأنظمة الإلكترونية الذكية",
-      desc: "استعراض أنواع الحساسات وتكاملها مع المعالجات الدقيقة ومعالجة البيانات.",
-      link: "https://example.com/lecture1.pdf"
-    },
-    {
-      id: "l2",
-      title: "المحاضرة 2: بناء وتصميم الدوائر المدمجة للذكاء الاصطناعي",
-      desc: "تحليل تصميم ألواح الـ PCB وتوزيع طاقة المعالجة وتيار التغذية.",
-      link: "https://example.com/lecture2.pdf"
-    },
-    {
-      id: "l3",
-      title: "المحاضرة 3: تطبيقات TinyML والشبكات العصبية المدمجة",
-      desc: "تدريب نماذج TensorFlow Lite وتقليص حجم البرمجيات للعمل على المايكروكنترولر.",
-      link: "https://example.com/lecture3.pdf"
-    }
-  ],
-  tasks: [
-    {
-      id: "t1",
-      title: "مشروع المستشعر الذكي للحرارة والتيار",
-      desc: "تصميم دائرة إلكترونية لقراءة القيم وتطبيق خوارزمية التنبؤ بالأعطال.",
-      deadline: "2026-09-01"
-    },
-    {
-      id: "t2",
-      title: "تقرير تقليص نموذج الشبكة العصبية TinyML",
-      desc: "تقديم تقرير شامل عن قمع النماذج (Quantization) وتجربتها على المتحكم.",
-      deadline: "2026-09-15"
-    }
-  ],
-  attendance: {},
-  battles: [],
-  questions: [
-    {
-      q: "ما المقصود بتطبيقات TinyML في الأنظمة الإلكترونية؟",
-      options: ["تشغيل نماذج الذكاء الاصطناعي على متحكمات منخفضة الطاقة", "استخدام خوادم ضخمة جداً", "تصنيع ألواح النحاس", "شاشات العرض الكبيرة"],
-      answer: 0
-    },
-    {
-      q: "أي من الحساسات التالية يُستخدم لقياس التسارع والزوايا في الأنظمة الذكية؟",
-      options: ["حساس LDR", "حساس IMU (MPU6050)", "المقاومة الحرارية NTC", "المكثف السعوي"],
-      answer: 1
-    },
-    {
-      q: "ما الفائدة الرئيسية من تكميم النماذج (Quantization) في خوارزميات الذكاء الاصطناعي المدمج؟",
-      options: ["زيادة حجم الملف", "تقليل استهلاك الذاكرة والطاقة بترقية 32-bit إلى 8-bit", "إلغاء الحاجة للتغذية الكهربائية", "تبطئ سرعة المعالجة"],
-      answer: 1
-    },
-    {
-      q: "في تصميم الدوائر المدمجة، ما الوظيفة الرئيسية للمايكروكنترولر STM32؟",
-      options: ["تنفيذ التعليمات البرمجية والتحكم في المداخل والمخارج", "تخزين شحنة كهربائية", "تحويل التيار المتناوب فقط", "تبريد المكونات"],
-      answer: 0
-    },
-    {
-      q: "ما هو البروتوكول الأكثر استخداماً لتوصيل المستشعرات الذكية بالمعالج على مسافات قصيرة؟",
-      options: ["I2C / SPI", "HTTP", "FTP", "HDMI"],
-      answer: 0
-    }
-  ]
+  students: [],
+  groups: [],
+  questionCollections: [],
+  lectures: [],
+  tasks: [],
+  sessionAttendance: {},
+  battles: []
 };
+
 
 // ==========================================================================
 // 2. GLOBAL STATE & THEME LOGIC
@@ -133,12 +28,13 @@ let appState = {
   activeStudent: null,
   students: [],
   groups: [],
+  questionCollections: [],
   lectures: [],
   tasks: [],
-  attendance: {},
+  sessionAttendance: {},
   battles: [],
   currentBattle: null,
-  themeMode: 'light' // Default White Light Mode
+  themeMode: 'light'
 };
 
 const SHIELDS = {
@@ -161,7 +57,7 @@ function getShieldForRating(rating) {
 }
 
 function loadState() {
-  const saved = localStorage.getItem('course_control_panel_state_v2');
+  const saved = localStorage.getItem('course_control_panel_state_v5');
   if (saved) {
     try {
       appState = { ...appState, ...JSON.parse(saved) };
@@ -173,11 +69,19 @@ function loadState() {
     saveState();
   }
 
-  // Load saved theme
+  if (!appState.questionCollections || appState.questionCollections.length === 0) {
+    appState.questionCollections = [...INITIAL_DATA.questionCollections];
+  }
+  if (appState.groups) {
+    appState.groups.forEach(g => {
+      if (!g.sessions) g.sessions = [];
+    });
+  }
+  if (!appState.sessionAttendance) appState.sessionAttendance = {};
+
   const savedTheme = localStorage.getItem('theme_mode') || 'light';
   applyThemeMode(savedTheme);
 
-  // Initialize Firebase Realtime Firestore Sync
   initFirebaseSync();
 }
 
@@ -185,192 +89,149 @@ function saveState() {
   const stateData = {
     students: appState.students,
     groups: appState.groups,
+    questionCollections: appState.questionCollections,
     lectures: appState.lectures,
     tasks: appState.tasks,
-    attendance: appState.attendance,
+    sessionAttendance: appState.sessionAttendance,
     battles: appState.battles,
     updatedAt: new Date().toISOString()
   };
 
-  localStorage.setItem('course_control_panel_state_v2', JSON.stringify(stateData));
+  localStorage.setItem('course_control_panel_state_v5', JSON.stringify(stateData));
 
-  // Sync to Firebase Firestore
-  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured && window.FirebaseSystem.db) {
-    window.FirebaseSystem.db.collection('dashboard').doc('main_state').set(stateData)
-      .then(() => {
-        console.log("⚡ [Firebase] State successfully saved to Firestore!");
-      })
-      .catch((err) => {
-        console.error("❌ [Firebase] Error saving state to Firestore:", err);
-      });
+  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured) {
+    window.FirebaseSystem.saveCloudState('dashboard', 'main_state', stateData);
   }
 }
-
-let isFirebaseListenerActive = false;
 
 function initFirebaseSync() {
-  if (isFirebaseListenerActive) return;
-  
-  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured && window.FirebaseSystem.db) {
-    isFirebaseListenerActive = true;
-    console.log("⚡ [Firebase] Connecting real-time listener to Firestore...");
-    
-    window.FirebaseSystem.db.collection('dashboard').doc('main_state')
-      .onSnapshot((doc) => {
-        if (doc.exists) {
-          const remoteData = doc.data();
-          if (remoteData) {
-            console.log("⚡ [Firebase] Received data from Firestore!", remoteData);
-            if (remoteData.students) appState.students = remoteData.students;
-            if (remoteData.groups) appState.groups = remoteData.groups;
-            if (remoteData.lectures) appState.lectures = remoteData.lectures;
-            if (remoteData.tasks) appState.tasks = remoteData.tasks;
-            if (remoteData.attendance) appState.attendance = remoteData.attendance;
-            if (remoteData.battles) appState.battles = remoteData.battles;
+  if (window.FirebaseSystem && window.FirebaseSystem.isConfigured) {
+    window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
+      if (remoteData) {
+        if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
+        if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
+        if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
+        if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
+        if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
+        if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
+        if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
 
-            localStorage.setItem('course_control_panel_state_v2', JSON.stringify(remoteData));
-            
-            // Re-render UI components with updated data
-            refreshCurrentUI();
-          }
-        } else {
-          console.log("⚡ [Firebase] No main_state found in Firestore yet. Creating initial document...");
-          saveState();
-        }
-      }, (error) => {
-        console.warn("⚠️ [Firebase] Sync listener error:", error.message);
-      });
-  } else {
-    // Retry shortly if Firebase system is initializing
-    setTimeout(() => {
-      if (!isFirebaseListenerActive) initFirebaseSync();
-    }, 500);
+        refreshAllUI();
+      }
+    });
   }
 }
 
-function refreshCurrentUI() {
+
+function calculateStudentPoints(student) {
+  if (!student) return { attendedSessionsCount: 0, attendancePts: 0, bonusPts: 0, battlePts: 0, total: 0 };
+
+  let attendedSessionsCount = 0;
+
+  if (appState.groups && student.group) {
+    appState.groups.forEach(g => {
+      if (g.name === student.group && g.sessions) {
+        g.sessions.forEach(sess => {
+          const sessMap = appState.sessionAttendance[sess.id] || {};
+          const isPresent = sessMap[student.id] !== undefined ? sessMap[student.id] : true;
+          if (isPresent) attendedSessionsCount++;
+        });
+      }
+    });
+  }
+
+  const attendancePts = attendedSessionsCount * 50;
+  const bonusPts = student.bonusPoints || 0;
+  const battlePts = student.battlePoints || 0;
+  const total = attendancePts + bonusPts + battlePts;
+
+  return {
+    attendedSessionsCount,
+    attendancePts,
+    bonusPts,
+    battlePts,
+    total
+  };
+}
+
+function refreshAllUI() {
+  populateDropdowns();
   renderDashboardStats();
   renderStudentsTable();
   renderGroupsGrid();
+  renderQuestionCollectionsGrid();
   renderLecturesGrid();
   renderTasksList();
   renderGradesTable();
+  renderPointsManagementTable();
+  populateAttendanceGroupDropdown();
+  populateBattleCollectionDropdown();
+  populateBattleSelectors();
+  if (appState.activeStudent) {
+    renderStudentDashboardView();
+  }
 }
 
+function showTeacherTab(tabId, clickedBtn = null) {
+  document.querySelectorAll('.sidebar .nav-item').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (clickedBtn) {
+      btn.classList.toggle('active', btn === clickedBtn);
+    } else {
+      btn.classList.toggle('active', onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
+    }
+  });
+
+  document.querySelectorAll('.mobile-bottom-nav .mobile-nav-btn').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (clickedBtn) {
+      btn.classList.toggle('active', btn === clickedBtn);
+    } else {
+      btn.classList.toggle('active', onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
+    }
+  });
+
+  document.querySelectorAll('.content-area .tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  const target = document.getElementById(tabId);
+  if (target) {
+    target.classList.add('active');
+  }
+
+  if (tabId === 'dashboard-tab') renderDashboardStats();
+  if (tabId === 'students-tab') renderStudentsTable();
+  if (tabId === 'groups-tab') renderGroupsGrid();
+  if (tabId === 'attendance-tab') populateAttendanceGroupDropdown();
+  if (tabId === 'battle-tab') {
+    populateBattleCollectionDropdown();
+    populateBattleSelectors();
+  }
+  if (tabId === 'question-collections-tab') renderQuestionCollectionsGrid();
+  if (tabId === 'lectures-tab') renderLecturesGrid();
+  if (tabId === 'tasks-tab') renderTasksList();
+  if (tabId === 'grades-tab') renderGradesTable();
+  if (tabId === 'points-tab') renderPointsManagementTable();
+}
+
+
 function toggleThemeMode() {
-  const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = current === 'dark' ? 'light' : 'dark';
   applyThemeMode(newTheme);
   localStorage.setItem('theme_mode', newTheme);
 }
 
 function applyThemeMode(theme) {
-  appState.themeMode = theme;
-  const icon = document.getElementById('theme-icon');
-  if (theme === 'dark') {
-    document.body.classList.add('dark-mode');
-    if (icon) icon.className = 'fa-solid fa-sun text-amber';
-  } else {
-    document.body.classList.remove('dark-mode');
-    if (icon) icon.className = 'fa-solid fa-moon';
+  document.documentElement.setAttribute('data-theme', theme);
+  const themeIcon = document.getElementById('theme-icon');
+  if (themeIcon) {
+    themeIcon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   }
 }
 
-// Real Scannable QR Code Generator Engine
-function generateInlineSVGQRCode(container, text) {
-  if (!container) return;
-  const size = 150;
-  const encodedText = encodeURIComponent(text);
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedText}&margin=2`;
-
-  container.innerHTML = `
-    <img src="${qrApiUrl}" 
-         alt="QR Code" 
-         width="${size}" 
-         height="${size}" 
-         style="background:#ffffff; border-radius:8px; padding:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1); object-fit:contain;" 
-         onerror="this.onerror=null; this.src='https://quickchart.io/qr?size=${size}&text=${encodedText}';" />
-  `;
-}
-
-// Camera Live QR Code Scanner Engine
-let html5QrScanner = null;
-
-function openQRScannerModal() {
-  openModal('qr-scanner-modal');
-  const resultDiv = document.getElementById('scanner-result');
-  if (resultDiv) resultDiv.textContent = 'جاري تشغيل كاميرا الجهاز...';
-
-  if (!html5QrScanner) {
-    html5QrScanner = new Html5Qrcode("qr-reader");
-  }
-
-  const config = { fps: 10, qrbox: { width: 220, height: 220 } };
-
-  html5QrScanner.start(
-    { facingMode: "environment" },
-    config,
-    onQrCodeScannedSuccess,
-    (err) => {}
-  ).catch(err => {
-    console.warn("Unable to start camera scanner:", err);
-    if (resultDiv) {
-      resultDiv.innerHTML = `<span class="text-rose">تعذر فتح الكاميرا (يرجى السماح بالتصريح للكاميرا).</span>`;
-    }
-  });
-}
-
-function onQrCodeScannedSuccess(decodedText) {
-  try {
-    let studentId = '';
-
-    if (decodedText.startsWith('{')) {
-      const parsed = JSON.parse(decodedText);
-      studentId = parsed.id;
-    } else {
-      studentId = decodedText.trim();
-    }
-
-    const student = appState.students.find(s => s.id === studentId);
-    if (student) {
-      const dateVal = document.getElementById('attendance-date')?.value || new Date().toISOString().split('T')[0];
-      if (!appState.attendance[dateVal]) appState.attendance[dateVal] = {};
-      
-      // Prevent rapid duplicate toast alerts
-      if (appState.attendance[dateVal][student.id] !== 'present') {
-        appState.attendance[dateVal][student.id] = 'present';
-        saveState();
-        loadAttendanceForDate();
-        showToast(`تم تسجيل حضور الطالب: ${student.name}`, 'success');
-      }
-
-      const resultDiv = document.getElementById('scanner-result');
-      if (resultDiv) {
-        resultDiv.innerHTML = `<i class="fa-solid fa-circle-check text-emerald"></i> تم تسجيل: <strong>${student.name}</strong> (${student.id})`;
-      }
-    } else {
-      const resultDiv = document.getElementById('scanner-result');
-      if (resultDiv) {
-        resultDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber"></i> رمز غير مسجل لكورس: ${decodedText}`;
-      }
-    }
-  } catch (e) {
-    console.error("QR Code processing error:", e);
-  }
-}
-
-function closeQRScannerModal() {
-  if (html5QrScanner && html5QrScanner.isScanning) {
-    html5QrScanner.stop().then(() => {
-      closeModal('qr-scanner-modal');
-    }).catch(() => {
-      closeModal('qr-scanner-modal');
-    });
-  } else {
-    closeModal('qr-scanner-modal');
-  }
-}
-
-// Toast Helper
+// Helpers
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -394,74 +255,27 @@ function closeModal(id) {
 }
 
 // ==========================================================================
-// 3. NAVIGATION LOGIC
+// 3. INITIALIZATION & NAVIGATION LOGIC
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
-  initUI();
-  populateDropdowns();
-  renderDashboardStats();
-  renderStudentsTable();
-  renderGroupsGrid();
-  renderLecturesGrid();
-  renderTasksList();
-  renderGradesTable();
-  loadAttendanceForDate();
 
-  const dateInput = document.getElementById('attendance-date');
-  if (dateInput) {
-    dateInput.value = new Date().toISOString().split('T')[0];
-  }
-});
-
-function initUI() {
   const savedStudentId = localStorage.getItem('logged_student_id');
   if (savedStudentId) {
     const st = appState.students.find(s => s.id === savedStudentId);
-    if (st) appState.activeStudent = st;
-  }
-}
-
-function switchRole(role) {
-  appState.currentRole = role;
-
-  const btnTeacher = document.getElementById('btn-role-teacher');
-  const btnStudent = document.getElementById('btn-role-student');
-  const viewTeacher = document.getElementById('view-teacher');
-  const viewStudent = document.getElementById('view-student');
-  const userHeaderName = document.getElementById('header-user-name');
-  const userHeaderRole = document.getElementById('header-user-role');
-  const btnLogout = document.getElementById('btn-logout');
-
-  if (role === 'teacher') {
-    btnTeacher.classList.add('active');
-    btnStudent.classList.remove('active');
-    viewTeacher.classList.add('active');
-    viewStudent.classList.remove('active');
-
-    userHeaderName.textContent = "د. المعلم";
-    userHeaderRole.textContent = "المشرف الأكاديمي";
-    btnLogout.classList.add('hidden');
-  } else {
-    btnStudent.classList.add('active');
-    btnTeacher.classList.remove('active');
-    viewStudent.classList.add('active');
-    viewTeacher.classList.remove('active');
-
-    if (appState.activeStudent) {
+    if (st) {
+      appState.activeStudent = st;
       renderStudentDashboardView();
-    } else {
-      document.getElementById('student-login-card').classList.remove('hidden');
-      document.getElementById('student-dashboard-content').classList.add('hidden');
     }
   }
-}
+
+  populateDropdowns();
+  refreshAllUI();
+});
 
 function showTeacherTab(tabId, clickedBtn = null) {
-  // Update desktop sidebar buttons
   document.querySelectorAll('.sidebar .nav-item').forEach(btn => btn.classList.remove('active'));
-  // Update mobile bottom nav buttons
   document.querySelectorAll('.mobile-bottom-nav .mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
 
   if (clickedBtn) {
@@ -475,8 +289,12 @@ function showTeacherTab(tabId, clickedBtn = null) {
   if (tabId === 'dashboard-tab') renderDashboardStats();
   if (tabId === 'students-tab') renderStudentsTable();
   if (tabId === 'groups-tab') renderGroupsGrid();
-  if (tabId === 'attendance-tab') loadAttendanceForDate();
-  if (tabId === 'battle-tab') populateBattleSelectors();
+  if (tabId === 'attendance-tab') populateAttendanceGroupDropdown();
+  if (tabId === 'battle-tab') {
+    populateBattleCollectionDropdown();
+    populateBattleSelectors();
+  }
+  if (tabId === 'question-collections-tab') renderQuestionCollectionsGrid();
   if (tabId === 'grades-tab') renderGradesTable();
 }
 
@@ -484,27 +302,49 @@ function populateDropdowns() {
   const studentGroupSel = document.getElementById('form-student-group');
   const filterGroupSel = document.getElementById('student-group-filter');
 
-  if (studentGroupSel && filterGroupSel) {
-    studentGroupSel.innerHTML = appState.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('');
+  if (studentGroupSel) {
+    if (appState.groups && appState.groups.length > 0) {
+      studentGroupSel.innerHTML = appState.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('');
+    } else {
+      studentGroupSel.innerHTML = `<option value="">⚠️ يرجى إضافة مجموعة أولاً</option>`;
+    }
+  }
+
+  if (filterGroupSel) {
     filterGroupSel.innerHTML = `<option value="all">كل المجموعات والشُعب</option>` +
-      appState.groups.map(g => `<option value="${g.name}">${g.name}</option>`).join('');
+      (appState.groups || []).map(g => `<option value="${g.name}">${g.name}</option>`).join('');
   }
 }
 
 // ==========================================================================
-// 4. STUDENT CRUD & RENDER
+// 4. DASHBOARD & STUDENTS CRUD
 // ==========================================================================
 
 function renderDashboardStats() {
-  document.getElementById('stat-total-students').textContent = appState.students.length;
-  document.getElementById('stat-total-groups').textContent = appState.groups.length;
-  document.getElementById('stat-total-battles').textContent = appState.battles.length;
+  const totalSt = document.getElementById('stat-total-students');
+  const totalGr = document.getElementById('stat-total-groups');
+  const totalBat = document.getElementById('stat-total-battles');
+  const attRate = document.getElementById('stat-attendance-rate');
 
-  const today = new Date().toISOString().split('T')[0];
-  const todayRecords = appState.attendance[today] || {};
-  const presentCount = Object.values(todayRecords).filter(v => v === 'present').length;
-  const rate = appState.students.length > 0 ? Math.round((presentCount / appState.students.length) * 100) : 0;
-  document.getElementById('stat-attendance-rate').textContent = `${rate}%`;
+  if (totalSt) totalSt.textContent = appState.students.length;
+  if (totalGr) totalGr.textContent = appState.groups.length;
+  if (totalBat) totalBat.textContent = appState.battles.length;
+
+  let totalSessions = 0;
+  let totalPresentCount = 0;
+
+  Object.keys(appState.sessionAttendance).forEach(sessionId => {
+    const sessionMap = appState.sessionAttendance[sessionId];
+    const presentInSession = Object.values(sessionMap).filter(v => v === true).length;
+    totalSessions++;
+    totalPresentCount += presentInSession;
+  });
+
+  const avgRate = (totalSessions > 0 && appState.students.length > 0)
+    ? Math.round((totalPresentCount / (totalSessions * appState.students.length)) * 100)
+    : 100;
+
+  if (attRate) attRate.textContent = `${avgRate}%`;
 
   const badgeList = document.getElementById('overview-badge-list');
   if (badgeList) {
@@ -516,7 +356,7 @@ function renderDashboardStats() {
             <img src="${s.avatar}" class="avatar-sm" alt="Avatar">
             <div>
               <strong>${s.name}</strong>
-              <div class="text-xs text-muted">ID: ${s.id}</div>
+              <div class="text-xs text-muted">ID: ${s.id} • ${s.group || 'غير محدد'}</div>
             </div>
           </div>
           <span class="badge-shield ${shield.class}">${shield.name}</span>
@@ -539,7 +379,21 @@ function renderStudentsTable() {
     return matchesSearch && matchesGroup;
   });
 
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center p-4 text-muted">
+          <i class="fa-solid fa-users-slash mb-2 block text-indigo" style="font-size: 1.5rem;"></i>
+          لا يوجد طلاب مسجلين حالياً. اضغط على "تسجيل طالب جديد" للبدء.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
   tbody.innerHTML = filtered.map(s => {
+    const ptsInfo = calculateStudentPoints(s);
+    s.rating = ptsInfo.total;
     const shield = getShieldForRating(s.rating);
     return `
       <tr>
@@ -550,15 +404,11 @@ function renderStudentsTable() {
           </div>
         </td>
         <td><code class="text-indigo">${s.id}</code></td>
+        <td><code>${s.pass}</code></td>
         <td>${s.age} سنة</td>
-        <td><span class="badge bg-subtle">${s.group}</span></td>
+        <td><span class="badge bg-subtle text-indigo font-weight-bold">${s.group || 'غير محدد'}</span></td>
         <td><span class="badge-shield ${shield.class}">${shield.name}</span></td>
         <td><strong class="text-amber">${s.rating}</strong></td>
-        <td>
-          <button class="btn btn-xs btn-outline" onclick="showStudentQRCard('${s.id}')">
-            <i class="fa-solid fa-qrcode"></i> عرض QR
-          </button>
-        </td>
         <td>
           <div class="flex-align-center gap-1">
             <button class="btn btn-xs btn-secondary" onclick="openEditStudentModal('${s.id}')">تعديل</button>
@@ -571,10 +421,11 @@ function renderStudentsTable() {
 }
 
 function openRegisterStudentModal() {
-  document.getElementById('student-modal-title').textContent = "تسجيل طالب جديد";
+  document.getElementById('student-modal-title').textContent = "تسجيل طالب جديد وتعيين المجموعة";
   document.getElementById('student-form').reset();
   document.getElementById('form-student-index').value = '';
   document.getElementById('form-student-id').readOnly = false;
+  populateDropdowns();
   openModal('student-modal');
 }
 
@@ -582,14 +433,15 @@ function openEditStudentModal(studentId) {
   const st = appState.students.find(s => s.id === studentId);
   if (!st) return;
 
-  document.getElementById('student-modal-title').textContent = "تعديل بيانات الطالب";
+  populateDropdowns();
+  document.getElementById('student-modal-title').textContent = "تعديل بيانات الطالب وتغيير المجموعة";
   document.getElementById('form-student-index').value = st.id;
   document.getElementById('form-student-name').value = st.name;
   document.getElementById('form-student-id').value = st.id;
   document.getElementById('form-student-id').readOnly = true;
   document.getElementById('form-student-pass').value = st.pass;
   document.getElementById('form-student-age').value = st.age;
-  document.getElementById('form-student-group').value = st.group;
+  document.getElementById('form-student-group').value = st.group || '';
   document.getElementById('form-student-avatar').value = st.avatar;
 
   openModal('student-modal');
@@ -603,18 +455,23 @@ function generateRandomAvatar() {
 function saveStudentForm(event) {
   event.preventDefault();
   const editId = document.getElementById('form-student-index').value;
-  const name = document.getElementById('form-student-name').value;
-  const id = document.getElementById('form-student-id').value;
-  const pass = document.getElementById('form-student-pass').value;
-  const age = parseInt(document.getElementById('form-student-age').value);
+  const name = document.getElementById('form-student-name').value.trim();
+  const id = document.getElementById('form-student-id').value.trim();
+  const pass = document.getElementById('form-student-pass').value.trim();
+  const age = parseInt(document.getElementById('form-student-age').value) || 20;
   const group = document.getElementById('form-student-group').value;
-  let avatar = document.getElementById('form-student-avatar').value || `https://api.dicebear.com/7.x/bottts/svg?seed=${id}`;
+  let avatar = document.getElementById('form-student-avatar').value.trim() || `https://api.dicebear.com/7.x/bottts/svg?seed=${id}`;
+
+  if (!group || group.includes('يرجى إضافة مجموعة')) {
+    showToast("يرجى اختيار مجموعة دراسية للطالب أولاً أو إضافة مجموعة جديدة!", "error");
+    return;
+  }
 
   if (editId) {
     const idx = appState.students.findIndex(s => s.id === editId);
     if (idx !== -1) {
       appState.students[idx] = { ...appState.students[idx], name, pass, age, group, avatar };
-      showToast("تم تحديث الطالب بنجاح", "success");
+      showToast("تم تحديث بيانات الطالب وتعيين مجموعته بنجاح", "success");
     }
   } else {
     if (appState.students.some(s => s.id === id)) {
@@ -624,18 +481,23 @@ function saveStudentForm(event) {
 
     appState.students.push({
       id, name, pass, age, avatar, group,
-      rating: 450, // Wooden shield initial
+      bonusPoints: 0,
+      battlePoints: 0,
+      rating: 0,
       gradeScore: 80,
       createdAt: new Date().toISOString().split('T')[0]
     });
-    showToast("تم إضافة الطالب وإسناد الدرع الخشبي 🪵", "success");
+    showToast(`تم إضافة الطالب وتعيينه لـ (${group}) بنجاح! 🪵`, "success");
   }
 
   saveState();
   closeModal('student-modal');
   renderStudentsTable();
   renderDashboardStats();
+  renderGroupsGrid();
+  renderPointsManagementTable();
 }
+
 
 function deleteStudent(studentId) {
   if (confirm("هل أنت تأكد من حذف بيانات الطالب؟")) {
@@ -647,24 +509,8 @@ function deleteStudent(studentId) {
   }
 }
 
-function showStudentQRCard(studentId) {
-  const st = appState.students.find(s => s.id === studentId);
-  if (!st) return;
-
-  const shield = getShieldForRating(st.rating);
-  document.getElementById('qr-modal-img').src = st.avatar;
-  document.getElementById('qr-modal-name').textContent = st.name;
-  document.getElementById('qr-modal-id').textContent = st.id;
-  document.getElementById('qr-modal-shield').className = `badge-shield ${shield.class}`;
-  document.getElementById('qr-modal-shield').textContent = shield.name;
-
-  const qrHolder = document.getElementById('qr-modal-code');
-  generateInlineSVGQRCode(qrHolder, JSON.stringify({ id: st.id, name: st.name }));
-  openModal('qr-card-modal');
-}
-
 // ==========================================================================
-// 5. GROUPS, LECTURES, TASKS & ATTENDANCE
+// 5. GROUPS & SESSIONS MANAGEMENT
 // ==========================================================================
 
 function renderGroupsGrid() {
@@ -673,14 +519,49 @@ function renderGroupsGrid() {
 
   container.innerHTML = appState.groups.map(g => {
     const groupStudents = appState.students.filter(s => s.group === g.name);
+    const sessions = g.sessions || [];
+
     return `
-      <div class="card p-3">
+      <div class="card p-4">
         <div class="flex-between mb-2">
           <h3 class="text-indigo">${g.name}</h3>
-          <span class="badge bg-subtle">${groupStudents.length} طلاب</span>
+          <div class="flex-align-center gap-1">
+            <span class="badge bg-subtle">${groupStudents.length} طلاب</span>
+            <button class="btn btn-xs btn-outline" onclick="openEditGroupModal('${g.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-xs btn-outline text-rose" onclick="deleteGroup('${g.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
         </div>
-        <p class="text-muted text-xs mb-3">${g.desc || 'مجموعة متخصصة في الأنظمة الذكية'}</p>
-        <div class="flex-align-center gap-1 flex-wrap">
+        <p class="text-muted text-xs mb-3">${g.desc || 'مجموعة دراسية'}</p>
+
+        <div class="border-top pt-3 mt-2">
+          <div class="flex-between mb-2">
+            <span class="font-weight-bold text-sm"><i class="fa-solid fa-calendar-days text-indigo"></i> جلسات الحضور (${sessions.length})</span>
+            <button class="btn btn-xs btn-primary" onclick="openCreateSessionModal('${g.id}')">
+              <i class="fa-solid fa-plus"></i> جلسة جديدة
+            </button>
+          </div>
+
+          <div class="sessions-list mb-3">
+            ${sessions.length > 0 ? sessions.map(sess => `
+              <div class="p-2 mb-1 bg-subtle border-radius flex-between text-xs">
+                <div>
+                  <strong>${sess.name}</strong>
+                  <span class="text-muted block">${sess.date}</span>
+                </div>
+                <div class="flex-align-center gap-1">
+                  <button class="btn btn-xs btn-emerald" onclick="openSessionAttendanceTab('${g.id}', '${sess.id}')">
+                    <i class="fa-solid fa-clipboard-check"></i> تفقد الحضور
+                  </button>
+                  <button class="btn btn-xs btn-outline text-rose" onclick="deleteSession('${g.id}', '${sess.id}')">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+            `).join('') : '<span class="text-xs text-muted block text-center p-2">لا يوجد جلسات مضافة بعد</span>'}
+          </div>
+        </div>
+
+        <div class="border-top pt-2 flex-align-center gap-1 flex-wrap">
           ${groupStudents.map(s => `<img src="${s.avatar}" class="avatar-sm" title="${s.name}">`).join('')}
         </div>
       </div>
@@ -688,45 +569,520 @@ function renderGroupsGrid() {
   }).join('');
 }
 
+function openCreateGroupModal() {
+  document.getElementById('group-modal-title').textContent = "إنشاء مجموعة جديدة";
+  document.getElementById('form-group-id').value = '';
+  document.getElementById('group-name-input').value = '';
+  document.getElementById('group-desc-input').value = '';
+  openModal('group-modal');
+}
+
+function openEditGroupModal(groupId) {
+  const g = appState.groups.find(group => group.id === groupId);
+  if (!g) return;
+
+  document.getElementById('group-modal-title').textContent = "تعديل المجموعة";
+  document.getElementById('form-group-id').value = g.id;
+  document.getElementById('group-name-input').value = g.name;
+  document.getElementById('group-desc-input').value = g.desc || '';
+  openModal('group-modal');
+}
+
 function saveGroupForm(event) {
   event.preventDefault();
+  const id = document.getElementById('form-group-id').value;
   const name = document.getElementById('group-name-input').value;
   const desc = document.getElementById('group-desc-input').value;
-  appState.groups.push({ id: `g_${Date.now()}`, name, desc });
+
+  if (id) {
+    const idx = appState.groups.findIndex(g => g.id === id);
+    if (idx !== -1) {
+      const oldName = appState.groups[idx].name;
+      appState.groups[idx].name = name;
+      appState.groups[idx].desc = desc;
+
+      appState.students.forEach(s => {
+        if (s.group === oldName) s.group = name;
+      });
+      showToast("تم تحديث المجموعة بنجاح", "success");
+    }
+  } else {
+    appState.groups.push({
+      id: `g_${Date.now()}`,
+      name,
+      desc,
+      sessions: []
+    });
+    showToast("تم إنشاء الشعبة بنجاح", "success");
+  }
+
   saveState();
   populateDropdowns();
   renderGroupsGrid();
-  closeModal('create-group-modal');
-  showToast("تم إنشاء الشعبة بنجاح", "success");
+  closeModal('group-modal');
 }
+
+function deleteGroup(groupId) {
+  if (confirm("هل أنت تأكد من حذف هذه المجموعة؟")) {
+    appState.groups = appState.groups.filter(g => g.id !== groupId);
+    saveState();
+    populateDropdowns();
+    renderGroupsGrid();
+    showToast("تم حذف المجموعة", "info");
+  }
+}
+
+function openCreateSessionModal(groupId) {
+  const g = appState.groups.find(group => group.id === groupId);
+  if (!g) return;
+
+  document.getElementById('session-modal-title').textContent = `إنشاء جلسة جديدة لـ (${g.name})`;
+  document.getElementById('form-session-group-id').value = g.id;
+  document.getElementById('form-session-id').value = '';
+  document.getElementById('session-name-input').value = `الجلسة ${(g.sessions?.length || 0) + 1}`;
+  document.getElementById('session-date-input').value = new Date().toISOString().split('T')[0];
+  openModal('session-modal');
+}
+
+function saveSessionForm(event) {
+  event.preventDefault();
+  const groupId = document.getElementById('form-session-group-id').value;
+  const sessionId = document.getElementById('form-session-id').value;
+  const name = document.getElementById('session-name-input').value;
+  const date = document.getElementById('session-date-input').value;
+
+  const g = appState.groups.find(group => group.id === groupId);
+  if (!g) return;
+
+  if (!g.sessions) g.sessions = [];
+
+  if (sessionId) {
+    const sIdx = g.sessions.findIndex(s => s.id === sessionId);
+    if (sIdx !== -1) {
+      g.sessions[sIdx].name = name;
+      g.sessions[sIdx].date = date;
+    }
+  } else {
+    const newSessionId = `sess_${Date.now()}`;
+    g.sessions.push({
+      id: newSessionId,
+      name,
+      date
+    });
+
+    if (!appState.sessionAttendance[newSessionId]) {
+      appState.sessionAttendance[newSessionId] = {};
+      const groupStudents = appState.students.filter(s => s.group === g.name);
+      groupStudents.forEach(st => {
+        appState.sessionAttendance[newSessionId][st.id] = true;
+      });
+    }
+  }
+
+  saveState();
+  renderGroupsGrid();
+  closeModal('session-modal');
+  showToast("تم حفظ الجلسة بنجاح", "success");
+}
+
+function deleteSession(groupId, sessionId) {
+  if (confirm("هل أنت تأكد من حذف الجلسة؟")) {
+    const g = appState.groups.find(group => group.id === groupId);
+    if (g && g.sessions) {
+      g.sessions = g.sessions.filter(s => s.id !== sessionId);
+      delete appState.sessionAttendance[sessionId];
+      saveState();
+      renderGroupsGrid();
+      showToast("تم حذف الجلسة", "info");
+    }
+  }
+}
+
+// ==========================================================================
+// 6. QUESTION COLLECTIONS MANAGEMENT (CRUD)
+// ==========================================================================
+
+function renderQuestionCollectionsGrid() {
+  const container = document.getElementById('collections-grid');
+  if (!container) return;
+
+  container.innerHTML = appState.questionCollections.map((col, idx) => `
+    <div class="card p-4 flex-between flex-column">
+      <div>
+        <div class="flex-between mb-2">
+          <span class="badge bg-purple">مجموعة ${idx + 1} (${col.questions ? col.questions.length : 0} أسئلة)</span>
+          <div class="flex-align-center gap-1">
+            <button class="btn btn-xs btn-outline" onclick="openEditCollectionModal('${col.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+            <button class="btn btn-xs btn-outline text-rose" onclick="deleteCollection('${col.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+        <h3 class="mb-1 text-indigo">${col.title}</h3>
+        <p class="text-muted text-xs mb-3">${col.desc || ''}</p>
+
+        <div class="border-top pt-2">
+          <span class="text-xs font-weight-bold text-muted block mb-1">عينات الأسئلة المتضمنة:</span>
+          <ul class="text-xs text-muted pr-3">
+            ${(col.questions || []).slice(0, 3).map(q => `<li>${q.q}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-3 border-top pt-2 flex-between width-100">
+        <button class="btn btn-battle btn-xs btn-block" onclick="startBattleWithCollection('${col.id}')">
+          <i class="fa-solid fa-swords"></i> اختيار هذا البنك للمواجهة
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openCreateCollectionModal() {
+  document.getElementById('collection-modal-title').textContent = "إنشاء مجموعة أسئلة جديد";
+  document.getElementById('form-collection-id').value = '';
+  document.getElementById('col-title-input').value = '';
+  document.getElementById('col-desc-input').value = '';
+
+  const qContainer = document.getElementById('collection-questions-container');
+  qContainer.innerHTML = '';
+  addQuestionItemToForm(); // Add one initial blank question form
+  openModal('collection-modal');
+}
+
+function openEditCollectionModal(colId) {
+  const col = appState.questionCollections.find(c => c.id === colId);
+  if (!col) return;
+
+  document.getElementById('collection-modal-title').textContent = "تعديل مجموعة الأسئلة";
+  document.getElementById('form-collection-id').value = col.id;
+  document.getElementById('col-title-input').value = col.title;
+  document.getElementById('col-desc-input').value = col.desc || '';
+
+  const qContainer = document.getElementById('collection-questions-container');
+  qContainer.innerHTML = '';
+
+  if (col.questions && col.questions.length > 0) {
+    col.questions.forEach(qObj => addQuestionItemToForm(qObj));
+  } else {
+    addQuestionItemToForm();
+  }
+
+  openModal('collection-modal');
+}
+
+function openEditSelectedBattleCollection() {
+  const colId = document.getElementById('battle-collection-select')?.value;
+  if (colId) {
+    openEditCollectionModal(colId);
+  } else {
+    showToast("يرجى اختيار بنك أسئلة أولاً أو إنشاء بنك جديد", "error");
+  }
+}
+
+function addQuestionItemToForm(qData = null) {
+  const container = document.getElementById('collection-questions-container');
+  if (!container) return;
+
+  const itemIndex = container.children.length;
+  const qText = qData ? qData.q : '';
+  const opt0 = qData && qData.options ? qData.options[0] || '' : '';
+  const opt1 = qData && qData.options ? qData.options[1] || '' : '';
+  const opt2 = qData && qData.options ? qData.options[2] || '' : '';
+  const opt3 = qData && qData.options ? qData.options[3] || '' : '';
+  const correctIdx = qData ? qData.answer : 0;
+
+  const qCard = document.createElement('div');
+  qCard.className = 'card p-3 mb-2 bg-subtle q-item-card';
+  qCard.innerHTML = `
+    <div class="flex-between mb-2">
+      <span class="font-weight-bold text-xs text-indigo">السؤال #${itemIndex + 1}</span>
+      <button type="button" class="btn btn-xs text-rose" onclick="this.closest('.q-item-card').remove()"><i class="fa-solid fa-trash"></i> حذف</button>
+    </div>
+    <div class="form-group mb-2">
+      <input type="text" class="form-control form-control-sm q-input-title" placeholder="نص السؤال..." value="${qText}" required>
+    </div>
+    <div class="grid-2col gap-1 mb-2">
+      <input type="text" class="form-control form-control-sm q-opt-0" placeholder="خيار (أ)" value="${opt0}" required>
+      <input type="text" class="form-control form-control-sm q-opt-1" placeholder="خيار (ب)" value="${opt1}" required>
+      <input type="text" class="form-control form-control-sm q-opt-2" placeholder="خيار (ج)" value="${opt2}" required>
+      <input type="text" class="form-control form-control-sm q-opt-3" placeholder="خيار (د)" value="${opt3}" required>
+    </div>
+    <div class="form-group">
+      <label class="text-xs">الإجابة الصحيحة:</label>
+      <select class="form-control form-control-sm q-correct-select">
+        <option value="0" ${correctIdx === 0 ? 'selected' : ''}>خيار (أ)</option>
+        <option value="1" ${correctIdx === 1 ? 'selected' : ''}>خيار (ب)</option>
+        <option value="2" ${correctIdx === 2 ? 'selected' : ''}>خيار (ج)</option>
+        <option value="3" ${correctIdx === 3 ? 'selected' : ''}>خيار (د)</option>
+      </select>
+    </div>
+  `;
+
+  container.appendChild(qCard);
+}
+
+function saveCollectionForm(event) {
+  event.preventDefault();
+  const id = document.getElementById('form-collection-id').value;
+  const title = document.getElementById('col-title-input').value;
+  const desc = document.getElementById('col-desc-input').value;
+
+  const qCards = document.querySelectorAll('#collection-questions-container .q-item-card');
+  const questionsArr = [];
+
+  qCards.forEach(card => {
+    const q = card.querySelector('.q-input-title').value;
+    const opt0 = card.querySelector('.q-opt-0').value;
+    const opt1 = card.querySelector('.q-opt-1').value;
+    const opt2 = card.querySelector('.q-opt-2').value;
+    const opt3 = card.querySelector('.q-opt-3').value;
+    const answer = parseInt(card.querySelector('.q-correct-select').value);
+
+    questionsArr.push({
+      q,
+      options: [opt0, opt1, opt2, opt3],
+      answer
+    });
+  });
+
+  if (questionsArr.length === 0) {
+    showToast("يرجى إضافة سؤال واحد على الأقل للمجموعة!", "error");
+    return;
+  }
+
+  if (id) {
+    const idx = appState.questionCollections.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      appState.questionCollections[idx] = { id, title, desc, questions: questionsArr };
+      showToast("تم تحديث مجموعة الأسئلة", "success");
+    }
+  } else {
+    const newColId = `qc_${Date.now()}`;
+    appState.questionCollections.push({
+      id: newColId,
+      title,
+      desc,
+      questions: questionsArr
+    });
+    showToast("تم إنشاء مجموعة الأسئلة بنجاح", "success");
+  }
+
+  saveState();
+  renderQuestionCollectionsGrid();
+  populateBattleCollectionDropdown();
+  closeModal('collection-modal');
+}
+
+function deleteCollection(colId) {
+  if (confirm("هل أنت تأكد من حذف بنك الأسئلة هذا؟")) {
+    appState.questionCollections = appState.questionCollections.filter(c => c.id !== colId);
+    saveState();
+    renderQuestionCollectionsGrid();
+    populateBattleCollectionDropdown();
+    showToast("تم حذف مجموعة الأسئلة", "info");
+  }
+}
+
+// ==========================================================================
+// 7. ATTENDANCE SYSTEM (TOGGLE SWITCH BY SESSIONS)
+// ==========================================================================
+
+function populateAttendanceGroupDropdown() {
+  const grpSel = document.getElementById('attendance-group-select');
+  if (!grpSel) return;
+
+  grpSel.innerHTML = appState.groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+  onAttendanceGroupChange();
+}
+
+function onAttendanceGroupChange() {
+  const groupId = document.getElementById('attendance-group-select')?.value;
+  const sessSel = document.getElementById('attendance-session-select');
+  if (!sessSel) return;
+
+  const g = appState.groups.find(group => group.id === groupId);
+  if (g && g.sessions && g.sessions.length > 0) {
+    sessSel.innerHTML = g.sessions.map(s => `<option value="${s.id}">${s.name} (${s.date})</option>`).join('');
+  } else {
+    sessSel.innerHTML = `<option value="">لا يوجد جلسات (قم بإنشاء جلسة أولاً)</option>`;
+  }
+
+  loadAttendanceForSelectedSession();
+}
+
+function openSessionAttendanceTab(groupId, sessionId) {
+  showTeacherTab('attendance-tab');
+  const grpSel = document.getElementById('attendance-group-select');
+  if (grpSel) grpSel.value = groupId;
+  onAttendanceGroupChange();
+
+  const sessSel = document.getElementById('attendance-session-select');
+  if (sessSel) sessSel.value = sessionId;
+  loadAttendanceForSelectedSession();
+}
+
+function loadAttendanceForSelectedSession() {
+  const groupId = document.getElementById('attendance-group-select')?.value;
+  const sessionId = document.getElementById('attendance-session-select')?.value;
+  const tbody = document.getElementById('attendance-table-body');
+  if (!tbody) return;
+
+  const g = appState.groups.find(group => group.id === groupId);
+  const sess = g?.sessions?.find(s => s.id === sessionId);
+
+  if (!g || !sess) {
+    document.getElementById('active-session-title').textContent = "يرجى تحديد جلسة";
+    document.getElementById('active-session-date').textContent = "";
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted p-4">لا توجد جلسة محددة لهذه المجموعة</td></tr>`;
+    return;
+  }
+
+  document.getElementById('active-session-title').textContent = sess.name;
+  document.getElementById('active-session-date').textContent = `التاريخ: ${sess.date} | الشعبة: ${g.name}`;
+
+  if (!appState.sessionAttendance[sessionId]) {
+    appState.sessionAttendance[sessionId] = {};
+  }
+  const currentMap = appState.sessionAttendance[sessionId];
+
+  const groupStudents = appState.students.filter(s => s.group === g.name);
+
+  if (groupStudents.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted p-4">لا يوجد طلاب ينتمون لهذه المجموعة بعد</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = groupStudents.map(s => {
+    const isPresent = currentMap[s.id] !== undefined ? currentMap[s.id] : true;
+    return `
+      <tr>
+        <td>
+          <div class="flex-align-center gap-2">
+            <img src="${s.avatar}" class="avatar-sm" alt="Avatar">
+            <strong>${s.name}</strong>
+          </div>
+        </td>
+        <td><code class="text-indigo">${s.id}</code></td>
+        <td><span class="badge bg-subtle">${s.group}</span></td>
+        <td>
+          <button class="btn btn-sm ${isPresent ? 'btn-emerald' : 'btn-outline text-rose'}" 
+                  onclick="toggleStudentAttendance('${sessionId}', '${s.id}')">
+            ${isPresent ? '<i class="fa-solid fa-circle-check"></i> حاضر' : '<i class="fa-solid fa-circle-xmark"></i> غائب'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function toggleStudentAttendance(sessionId, studentId) {
+  if (!appState.sessionAttendance[sessionId]) appState.sessionAttendance[sessionId] = {};
+  const current = appState.sessionAttendance[sessionId][studentId];
+  appState.sessionAttendance[sessionId][studentId] = current === undefined ? false : !current;
+  loadAttendanceForSelectedSession();
+}
+
+function markAllSessionAttendance(isPresent) {
+  const sessionId = document.getElementById('attendance-session-select')?.value;
+  const groupId = document.getElementById('attendance-group-select')?.value;
+  const g = appState.groups.find(group => group.id === groupId);
+
+  if (!g || !sessionId) return;
+
+  if (!appState.sessionAttendance[sessionId]) appState.sessionAttendance[sessionId] = {};
+
+  const groupStudents = appState.students.filter(s => s.group === g.name);
+  groupStudents.forEach(st => {
+    appState.sessionAttendance[sessionId][st.id] = isPresent;
+  });
+
+  loadAttendanceForSelectedSession();
+}
+
+function saveAttendanceRecord() {
+  saveState();
+  renderDashboardStats();
+  showToast("تم حفظ كشف الحضور للجلسة بنجاح", "success");
+}
+
+// ==========================================================================
+// 8. LECTURES & TASKS CRUD
+// ==========================================================================
 
 function renderLecturesGrid() {
   const container = document.getElementById('lectures-grid');
   if (!container) return;
   container.innerHTML = appState.lectures.map((l, idx) => `
-    <div class="card p-3 flex-between flex-column">
+    <div class="card p-4 flex-between flex-column">
       <div>
-        <span class="badge bg-indigo mb-1">محاضرة ${idx + 1}</span>
-        <h4 class="mb-1">${l.title}</h4>
+        <div class="flex-between mb-2">
+          <span class="badge bg-indigo">محاضرة ${idx + 1}</span>
+          <div class="flex-align-center gap-1">
+            <button class="btn btn-xs btn-outline" onclick="openEditLectureModal('${l.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-xs btn-outline text-rose" onclick="deleteLecture('${l.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+        <h4 class="mb-2">${l.title}</h4>
         <p class="text-muted text-xs mb-3">${l.desc}</p>
       </div>
-      <a href="${l.link || '#'}" target="_blank" class="btn btn-outline btn-sm btn-block">فتح الشرائح</a>
+      <a href="${l.link || '#'}" target="_blank" class="btn btn-outline btn-sm btn-block">فتح الشرائح / المحتوى</a>
     </div>
   `).join('');
 }
 
+function openCreateLectureModal() {
+  document.getElementById('lecture-modal-title').textContent = "إضافة محاضرة جديدة";
+  document.getElementById('form-lecture-id').value = '';
+  document.getElementById('lec-title-input').value = '';
+  document.getElementById('lec-desc-input').value = '';
+  document.getElementById('lec-link-input').value = '';
+  openModal('lecture-modal');
+}
+
+function openEditLectureModal(lectureId) {
+  const l = appState.lectures.find(lec => lec.id === lectureId);
+  if (!l) return;
+
+  document.getElementById('lecture-modal-title').textContent = "تعديل المحاضرة";
+  document.getElementById('form-lecture-id').value = l.id;
+  document.getElementById('lec-title-input').value = l.title;
+  document.getElementById('lec-desc-input').value = l.desc;
+  document.getElementById('lec-link-input').value = l.link || '';
+  openModal('lecture-modal');
+}
+
 function saveLectureForm(event) {
   event.preventDefault();
+  const id = document.getElementById('form-lecture-id').value;
   const title = document.getElementById('lec-title-input').value;
   const desc = document.getElementById('lec-desc-input').value;
   const link = document.getElementById('lec-link-input').value;
-  appState.lectures.push({ id: `l_${Date.now()}`, title, desc, link });
+
+  if (id) {
+    const idx = appState.lectures.findIndex(l => l.id === id);
+    if (idx !== -1) {
+      appState.lectures[idx] = { ...appState.lectures[idx], title, desc, link };
+      showToast("تم تحديث المحاضرة بنجاح", "success");
+    }
+  } else {
+    appState.lectures.push({ id: `l_${Date.now()}`, title, desc, link });
+    showToast("تم نشر المحاضرة", "success");
+  }
+
   saveState();
   renderLecturesGrid();
-  closeModal('add-lecture-modal');
-  showToast("تم نشر المحاضرة", "success");
+  closeModal('lecture-modal');
 }
 
+function deleteLecture(lectureId) {
+  if (confirm("هل أنت تأكد من حذف المحاضرة؟")) {
+    appState.lectures = appState.lectures.filter(l => l.id !== lectureId);
+    saveState();
+    renderLecturesGrid();
+    showToast("تم حذف المحاضرة", "info");
+  }
+}
+
+// Tasks CRUD
 function renderTasksList() {
   const container = document.getElementById('tasks-list');
   if (!container) return;
@@ -736,71 +1092,103 @@ function renderTasksList() {
         <h4>${t.title}</h4>
         <p class="text-muted text-xs mt-1">${t.desc}</p>
       </div>
-      <span class="badge bg-amber">التسليم: ${t.deadline}</span>
+      <div class="flex-align-center gap-2">
+        <span class="badge bg-amber">التسليم: ${t.deadline}</span>
+        <button class="btn btn-xs btn-outline" onclick="openEditTaskModal('${t.id}')"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-xs btn-outline text-rose" onclick="deleteTask('${t.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
     </div>
   `).join('');
 }
 
+function openCreateTaskModal() {
+  document.getElementById('task-modal-title').textContent = "إضافة واجب جديد";
+  document.getElementById('form-task-id').value = '';
+  document.getElementById('task-title-input').value = '';
+  document.getElementById('task-desc-input').value = '';
+  document.getElementById('task-deadline-input').value = '';
+  openModal('task-modal');
+}
+
+function openEditTaskModal(taskId) {
+  const t = appState.tasks.find(tk => tk.id === taskId);
+  if (!t) return;
+
+  document.getElementById('task-modal-title').textContent = "تعديل الواجب";
+  document.getElementById('form-task-id').value = t.id;
+  document.getElementById('task-title-input').value = t.title;
+  document.getElementById('task-desc-input').value = t.desc;
+  document.getElementById('task-deadline-input').value = t.deadline;
+  openModal('task-modal');
+}
+
 function saveTaskForm(event) {
   event.preventDefault();
+  const id = document.getElementById('form-task-id').value;
   const title = document.getElementById('task-title-input').value;
   const desc = document.getElementById('task-desc-input').value;
   const deadline = document.getElementById('task-deadline-input').value;
-  appState.tasks.push({ id: `t_${Date.now()}`, title, desc, deadline });
+
+  if (id) {
+    const idx = appState.tasks.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      appState.tasks[idx] = { ...appState.tasks[idx], title, desc, deadline };
+      showToast("تم تحديث الواجب بنجاح", "success");
+    }
+  } else {
+    appState.tasks.push({ id: `t_${Date.now()}`, title, desc, deadline });
+    showToast("تم إضافة الواجب", "success");
+  }
+
   saveState();
   renderTasksList();
-  closeModal('add-task-modal');
-  showToast("تم إضافة الواجب", "success");
+  closeModal('task-modal');
 }
 
-function loadAttendanceForDate() {
-  const dateVal = document.getElementById('attendance-date')?.value || new Date().toISOString().split('T')[0];
-  const tbody = document.getElementById('attendance-table-body');
-  if (!tbody) return;
-
-  const dateRecords = appState.attendance[dateVal] || {};
-  tbody.innerHTML = appState.students.map(s => {
-    const status = dateRecords[s.id] || 'unmarked';
-    return `
-      <tr>
-        <td>
-          <div class="flex-align-center gap-2">
-            <img src="${s.avatar}" class="avatar-sm" alt="Avatar">
-            <strong>${s.name}</strong>
-          </div>
-        </td>
-        <td><span class="badge bg-subtle">${s.group}</span></td>
-        <td>
-          <select class="form-control-inline" onchange="updateAttendanceState('${s.id}', this.value)">
-            <option value="unmarked" ${status === 'unmarked' ? 'selected' : ''}>لم يحدد</option>
-            <option value="present" ${status === 'present' ? 'selected' : ''}>حاضر ✅</option>
-            <option value="absent" ${status === 'absent' ? 'selected' : ''}>غائب ❌</option>
-            <option value="late" ${status === 'late' ? 'selected' : ''}>متأخر ⏰</option>
-          </select>
-        </td>
-        <td>
-          <button class="btn btn-xs btn-emerald" onclick="updateAttendanceState('${s.id}', 'present'); saveAttendanceRecord();">تسجيل حضور</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-function updateAttendanceState(studentId, status) {
-  const dateVal = document.getElementById('attendance-date')?.value || new Date().toISOString().split('T')[0];
-  if (!appState.attendance[dateVal]) appState.attendance[dateVal] = {};
-  appState.attendance[dateVal][studentId] = status;
-}
-
-function saveAttendanceRecord() {
-  saveState();
-  renderDashboardStats();
-  showToast("تم حفظ كشف الحضور", "success");
+function deleteTask(taskId) {
+  if (confirm("هل أنت تأكد من حذف هذا الواجب؟")) {
+    appState.tasks = appState.tasks.filter(t => t.id !== taskId);
+    saveState();
+    renderTasksList();
+    showToast("تم حذف الواجب", "info");
+  }
 }
 
 // ==========================================================================
-// 6. BATTLE MODE ARENA
+// 9. BATTLE MODE ARENA (WITH PASS QUESTION TO OTHER STUDENT & FAIR TIE)
 // ==========================================================================
+
+function populateBattleCollectionDropdown() {
+  const colSel = document.getElementById('battle-collection-select');
+  if (!colSel) return;
+
+  if (appState.questionCollections && appState.questionCollections.length > 0) {
+    colSel.innerHTML = appState.questionCollections.map(c =>
+      `<option value="${c.id}">${c.title} (${c.questions ? c.questions.length : 0} أسئلة)</option>`
+    ).join('');
+  } else {
+    colSel.innerHTML = `<option value="">لا يوجد مجموعات أسئلة مضافة</option>`;
+  }
+
+  onBattleCollectionChange();
+}
+
+function onBattleCollectionChange() {
+  const colId = document.getElementById('battle-collection-select')?.value;
+  const infoSpan = document.getElementById('battle-collection-info');
+  const col = appState.questionCollections.find(c => c.id === colId);
+
+  if (col && infoSpan) {
+    infoSpan.textContent = `${col.desc || 'مجموعة أسئلة جاهزة للمواجهة'} • الإجمالي: ${col.questions ? col.questions.length : 0} أسئلة`;
+  }
+}
+
+function startBattleWithCollection(collectionId) {
+  showTeacherTab('battle-tab');
+  const colSel = document.getElementById('battle-collection-select');
+  if (colSel) colSel.value = collectionId;
+  onBattleCollectionChange();
+}
 
 function populateBattleSelectors() {
   const p1Sel = document.getElementById('battle-p1-select');
@@ -836,19 +1224,33 @@ function updateBattlePreview(playerKey) {
 function startBattleArena() {
   const p1Id = document.getElementById('battle-p1-select').value;
   const p2Id = document.getElementById('battle-p2-select').value;
+  const colId = document.getElementById('battle-collection-select').value;
 
   if (p1Id === p2Id) {
-    showToast("يرجى اختيار طالبين مختلفين!", "error");
+    showToast("يرجى اختيار طالبين مختلفين للمواجهة!", "error");
     return;
   }
+
+  const selectedCol = appState.questionCollections.find(c => c.id === colId);
+  let questionPool = selectedCol && selectedCol.questions && selectedCol.questions.length > 0
+    ? [...selectedCol.questions]
+    : [
+      {
+        q: "ما المقصود بتطبيقات TinyML في الأنظمة الإلكترونية؟",
+        options: ["تشغيل نماذج الذكاء الاصطناعي على متحكمات منخفضة الطاقة", "استخدام خوادم ضخمة جداً", "تصنيع ألواح النحاس", "شاشات العرض الكبيرة"],
+        answer: 0
+      }
+    ];
 
   const p1 = appState.students.find(s => s.id === p1Id);
   const p2 = appState.students.find(s => s.id === p2Id);
 
   appState.currentBattle = {
-    p1, p2, p1Score: 0, p2Score: 0,
+    p1, p2,
+    p1Score: 0, p2Score: 0,
+    turnPlayer: 'p1',
     currentQuestionIndex: 0,
-    questions: [...appState.questions].sort(() => 0.5 - Math.random()).slice(0, 5)
+    questions: questionPool.sort(() => 0.5 - Math.random())
   };
 
   document.getElementById('battle-setup-card').classList.add('hidden');
@@ -867,34 +1269,52 @@ function renderBattleQuestion() {
   }
 
   const q = b.questions[b.currentQuestionIndex];
+  const activePlayer = b.turnPlayer === 'p1' ? b.p1 : b.p2;
+  const otherPlayer = b.turnPlayer === 'p1' ? b.p2 : b.p1;
 
   activeScreen.innerHTML = `
     <div class="flex-between mb-3">
       <span class="badge bg-indigo">السؤال ${b.currentQuestionIndex + 1} / ${b.questions.length}</span>
-      <button class="btn btn-xs btn-outline" onclick="cancelBattleArena()">إلغاء</button>
+      <button class="btn btn-xs btn-outline" onclick="cancelBattleArena()">إلغاء المواجهة</button>
     </div>
 
+    <!-- Live Competitor Cards -->
     <div class="grid-2col mb-3">
-      <div class="card p-2 text-center border-cyan">
+      <div class="card p-3 text-center ${b.turnPlayer === 'p1' ? 'border-indigo bg-subtle' : ''}">
         <img src="${b.p1.avatar}" class="avatar-sm" alt="Avatar">
-        <div class="text-xs mt-1">${b.p1.name}</div>
-        <h3 class="text-indigo">${b.p1Score}</h3>
+        <div class="text-xs font-weight-bold mt-1">${b.p1.name}</div>
+        <h3 class="text-indigo mt-1">+${b.p1Score} نقاط</h3>
       </div>
-      <div class="card p-2 text-center border-pink">
+      <div class="card p-3 text-center ${b.turnPlayer === 'p2' ? 'border-pink bg-subtle' : ''}">
         <img src="${b.p2.avatar}" class="avatar-sm" alt="Avatar">
-        <div class="text-xs mt-1">${b.p2.name}</div>
-        <h3 class="text-rose">${b.p2Score}</h3>
+        <div class="text-xs font-weight-bold mt-1">${b.p2.name}</div>
+        <h3 class="text-rose mt-1">+${b.p2Score} نقاط</h3>
       </div>
     </div>
 
-    <div class="card p-3 text-center mb-3">
-      <h4>${q.q}</h4>
+    <!-- Active Question Container -->
+    <div class="card p-4 text-center mb-3">
+      <div class="badge bg-purple mb-2">الدور الآن للـ متنافس: ${activePlayer.name}</div>
+      <h3 class="mb-3">${q.q}</h3>
       <div class="grid-2col gap-2 mt-3">
         ${q.options.map((opt, idx) => `
-          <button class="btn btn-outline p-2 text-right" onclick="submitBattleAnswer(${idx})">
+          <button class="btn btn-outline p-3 text-right" onclick="submitBattleAnswer(${idx})">
             <strong>${['أ', 'ب', 'ج', 'د'][idx]})</strong> ${opt}
           </button>
         `).join('')}
+      </div>
+    </div>
+
+    <!-- Interactive Actions: Pass to Other Student & Fair Tie -->
+    <div class="border-top pt-3 text-center">
+      <span class="text-xs text-muted block mb-2 font-weight-bold">خيارات التحكيم والدور:</span>
+      <div class="flex-center gap-2 flex-wrap" style="display: flex; justify-content: center;">
+        <button class="btn btn-purple btn-sm" onclick="passQuestionToOtherStudent()">
+          <i class="fa-solid fa-share-nodes"></i> تحويل السؤال للمنافس (${otherPlayer.name})
+        </button>
+        <button class="btn btn-outline text-amber btn-sm" onclick="declareBattleManualWinner('draw')">
+          <i class="fa-solid fa-handshake"></i> حسم التعادل العادل (Fair Tie)
+        </button>
       </div>
     </div>
   `;
@@ -903,42 +1323,92 @@ function renderBattleQuestion() {
 function submitBattleAnswer(selectedOptIdx) {
   const b = appState.currentBattle;
   const q = b.questions[b.currentQuestionIndex];
+  const activePlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
 
   if (selectedOptIdx === q.answer) {
-    showToast("إجابة صحيحة! +100 نقطة لكل طالب", "success");
-    b.p1Score += 100;
-    b.p2Score += 100;
+    showToast(`إجابة صحيحة من (${activePlayerName})! +50 نقطة`, "success");
+    if (b.turnPlayer === 'p1') b.p1Score += 50;
+    else b.p2Score += 50;
   } else {
-    showToast("إجابة خاطئة!", "error");
+    showToast(`إجابة خاطئة من (${activePlayerName})!`, "error");
   }
 
+  b.turnPlayer = b.turnPlayer === 'p1' ? 'p2' : 'p1';
   b.currentQuestionIndex++;
   renderBattleQuestion();
+}
+
+function passQuestionToOtherStudent() {
+  const b = appState.currentBattle;
+  if (!b) return;
+
+  const currentPlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
+  b.turnPlayer = b.turnPlayer === 'p1' ? 'p2' : 'p1';
+  const newPlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
+
+  showToast(`لم يعرف (${currentPlayerName}) الإجابة! تم تحويل نفس السؤال إلى (${newPlayerName})`, "info");
+  renderBattleQuestion();
+}
+
+function declareBattleManualWinner(choice) {
+  const b = appState.currentBattle;
+  if (!b) return;
+
+  if (choice === 'draw') {
+    b.p1Score += 100;
+    b.p2Score += 100;
+    showToast(`تم حسم المواجهة بالتعادل العادل لتشجيع المتنافسين! 🤝`, "info");
+  }
+
+  finishBattleArena();
 }
 
 function finishBattleArena() {
   const b = appState.currentBattle;
   const activeScreen = document.getElementById('active-battle-screen');
 
-  let winnerText = "تعادل حماسي!";
-  if (b.p1Score > b.p2Score) winnerText = `الفائز: ${b.p1.name}! 🎉`;
-  else if (b.p2Score > b.p1Score) winnerText = `الفائز: ${b.p2.name}! 🎉`;
+  let winnerText = "تعادل عادل وحماسي بين البطلين! 🤝";
+  if (b.p1Score > b.p2Score) winnerText = `الفائز بالمواجهة: ${b.p1.name}! 🎉`;
+  else if (b.p2Score > b.p1Score) winnerText = `الفائز بالمواجهة: ${b.p2.name}! 🎉`;
 
   const p1Idx = appState.students.findIndex(s => s.id === b.p1.id);
   const p2Idx = appState.students.findIndex(s => s.id === b.p2.id);
-  if (p1Idx !== -1) appState.students[p1Idx].rating += b.p1Score;
-  if (p2Idx !== -1) appState.students[p2Idx].rating += b.p2Score;
+  if (p1Idx !== -1) {
+    appState.students[p1Idx].battlePoints = (appState.students[p1Idx].battlePoints || 0) + b.p1Score;
+  }
+  if (p2Idx !== -1) {
+    appState.students[p2Idx].battlePoints = (appState.students[p2Idx].battlePoints || 0) + b.p2Score;
+  }
 
-  appState.battles.push({ p1: b.p1.id, p2: b.p2.id, p1Score: b.p1Score, p2Score: b.p2Score, date: new Date().toISOString() });
+
+  appState.battles.push({
+    p1: b.p1.id, p2: b.p2.id,
+    p1Score: b.p1Score, p2Score: b.p2Score,
+    date: new Date().toISOString()
+  });
+
   saveState();
 
-  if (window.confetti) confetti({ particleCount: 100, spread: 70 });
+  if (window.confetti) confetti({ particleCount: 150, spread: 90 });
 
   activeScreen.innerHTML = `
     <div class="text-center p-4">
+      <div class="login-icon-box bg-purple mx-auto mb-3">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
       <h2 class="text-indigo mb-2">${winnerText}</h2>
-      <p class="text-muted text-xs mb-3">تم تحديث التقييم والدروع في النظام بنجاح</p>
-      <button class="btn btn-primary" onclick="cancelBattleArena()">العودة</button>
+      <p class="text-muted text-sm mb-4">تم احتساب النقاط وتحديث التقييم والدروع في حسابات الطلاب بنجاح</p>
+      <div class="grid-2col max-w-sm mx-auto mb-4 gap-2">
+        <div class="card p-3 bg-subtle border-cyan">
+          <strong>${b.p1.name}</strong>
+          <div class="text-indigo font-weight-bold mt-1">+${b.p1Score} نقطة</div>
+        </div>
+        <div class="card p-3 bg-subtle border-pink">
+          <strong>${b.p2.name}</strong>
+          <div class="text-rose font-weight-bold mt-1">+${b.p2Score} نقطة</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="cancelBattleArena()">العودة لحلبة المواجهة</button>
     </div>
   `;
 }
@@ -951,7 +1421,7 @@ function cancelBattleArena() {
 }
 
 // ==========================================================================
-// 7. GRADES & STUDENT PORTAL
+// 10. GRADES & STUDENT PORTAL INTEGRATION
 // ==========================================================================
 
 function renderGradesTable() {
@@ -968,7 +1438,7 @@ function renderGradesTable() {
           </div>
         </td>
         <td><span class="badge bg-subtle">${s.group}</span></td>
-        <td><input type="number" class="form-control-inline" style="width:70px" value="${s.gradeScore}" onchange="updateStudentGrade('${s.id}', this.value)"></td>
+        <td><input type="number" class="form-control-inline" style="width:75px" value="${s.gradeScore}" onchange="updateStudentGrade('${s.id}', this.value)"></td>
         <td><strong class="text-amber">${s.rating}</strong></td>
         <td><span class="badge-shield ${shield.class}">${shield.name}</span></td>
         <td><strong class="text-emerald">${s.gradeScore >= 90 ? 'ممتاز مرتفع (A+)' : 'جيد جداً (B)'}</strong></td>
@@ -985,6 +1455,7 @@ function updateStudentGrade(studentId, val) {
   }
 }
 
+// Student Login & Portal View Handlers (Used in student.html)
 function handleStudentLogin(event) {
   event.preventDefault();
   const id = document.getElementById('login-student-id').value;
@@ -1009,39 +1480,58 @@ function quickFillLogin(id, pass) {
 function logoutStudent() {
   appState.activeStudent = null;
   localStorage.removeItem('logged_student_id');
-  document.getElementById('student-login-card').classList.remove('hidden');
-  document.getElementById('student-dashboard-content').classList.add('hidden');
+  document.getElementById('student-app-navbar')?.classList.add('hidden');
+  document.getElementById('student-login-card')?.classList.remove('hidden');
+  document.getElementById('student-dashboard-content')?.classList.add('hidden');
 }
 
 function renderStudentDashboardView() {
   const st = appState.activeStudent;
   if (!st) return;
 
-  document.getElementById('student-login-card').classList.add('hidden');
-  document.getElementById('student-dashboard-content').classList.remove('hidden');
+  document.getElementById('student-app-navbar')?.classList.remove('hidden');
+  document.getElementById('student-login-card')?.classList.add('hidden');
+  document.getElementById('student-dashboard-content')?.classList.remove('hidden');
 
-  document.getElementById('header-user-name').textContent = st.name;
-  document.getElementById('header-user-role').textContent = `طالب | ${st.id}`;
-  document.getElementById('header-avatar').src = st.avatar;
-  document.getElementById('btn-logout').classList.remove('hidden');
+  const uName = document.getElementById('header-user-name');
+  const uRole = document.getElementById('header-user-role');
+  const uAvatar = document.getElementById('header-avatar');
+  const uLogout = document.getElementById('btn-logout');
 
-  document.getElementById('st-profile-img').src = st.avatar;
-  document.getElementById('st-profile-name').textContent = st.name;
-  document.getElementById('st-profile-id').textContent = st.id;
-  document.getElementById('st-profile-age').textContent = st.age;
-  document.getElementById('st-group-tag').textContent = st.group;
+  if (uName) uName.textContent = st.name;
+  if (uRole) uRole.textContent = `طالب | ${st.id}`;
+  if (uAvatar) uAvatar.src = st.avatar;
+  if (uLogout) uLogout.classList.remove('hidden');
+
+  const pImg = document.getElementById('st-profile-img');
+  const pName = document.getElementById('st-profile-name');
+  const pId = document.getElementById('st-profile-id');
+  const pAge = document.getElementById('st-profile-age');
+  const pGrp = document.getElementById('st-group-tag');
+
+  if (pImg) pImg.src = st.avatar;
+  if (pName) pName.textContent = st.name;
+  if (pId) pId.textContent = st.id;
+  if (pAge) pAge.textContent = st.age;
+  if (pGrp) pGrp.textContent = st.group;
 
   const shield = getShieldForRating(st.rating);
-  document.getElementById('st-badge-floating').textContent = shield.icon;
-  document.getElementById('st-badge-name').textContent = shield.name;
-  document.getElementById('st-rating-pts').textContent = st.rating;
-  document.getElementById('st-next-level-pts').textContent = shield.max;
+  const bFloat = document.getElementById('st-badge-floating');
+  const bName = document.getElementById('st-badge-name');
+  const rPts = document.getElementById('st-rating-pts');
+  const nPts = document.getElementById('st-next-level-pts');
+
+  if (bFloat) bFloat.textContent = shield.icon;
+  if (bName) {
+    bName.className = `badge-shield ${shield.class}`;
+    bName.textContent = shield.name;
+  }
+  if (rPts) rPts.textContent = st.rating;
+  if (nPts) nPts.textContent = shield.max;
 
   const fillPercent = Math.min(100, Math.max(10, Math.round((st.rating / shield.max) * 100)));
-  document.getElementById('st-progress-fill').style.width = `${fillPercent}%`;
-
-  const qrBox = document.getElementById('st-qr-code-box');
-  generateInlineSVGQRCode(qrBox, JSON.stringify({ id: st.id, name: st.name }));
+  const pFill = document.getElementById('st-progress-fill');
+  if (pFill) pFill.style.width = `${fillPercent}%`;
 
   renderStudentLeaderboard();
   renderStudentLectures();
@@ -1049,41 +1539,97 @@ function renderStudentDashboardView() {
   renderStudentGrades();
 }
 
-function showStudentTab(tabId) {
-  document.querySelectorAll('.student-nav-tabs .st-tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.student-dashboard .st-tab-content').forEach(tab => tab.classList.remove('active'));
+function showStudentTab(tabId, clickedBtn = null) {
+  document.querySelectorAll('.student-nav-tabs .st-tab-btn').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (clickedBtn) {
+      btn.classList.toggle('active', btn === clickedBtn);
+    } else {
+      btn.classList.toggle('active', onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
+    }
+  });
 
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.student-dashboard .st-tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
   const target = document.getElementById(tabId);
-  if (target) target.classList.add('active');
+  if (target) {
+    target.classList.add('active');
+  }
 }
 
 function renderStudentLeaderboard() {
   const container = document.getElementById('st-leaderboard-list');
   if (!container) return;
+
+  appState.students.forEach(s => {
+    const ptsInfo = calculateStudentPoints(s);
+    s.rating = ptsInfo.total;
+  });
+
   const sorted = [...appState.students].sort((a, b) => b.rating - a.rating);
+
+  if (sorted.length === 0) {
+    container.innerHTML = `
+      <div class="card p-5 text-center text-muted">
+        <i class="fa-solid fa-trophy mb-2 text-amber block" style="font-size: 2rem;"></i>
+        <h4 class="mb-1 text-main">لائحة الصدارة فارغة حالياً</h4>
+        <p class="text-xs">سيتم عرض وترتيب جميع الطلاب هنا فور تسجيلهم وحصولهم على النقاط</p>
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML = sorted.map((s, idx) => {
     const shield = getShieldForRating(s.rating);
-    const isSelf = s.id === appState.activeStudent.id;
+    const isSelf = appState.activeStudent && s.id === appState.activeStudent.id;
+    const rank = idx + 1;
+
+    let rankBadge = `<span class="font-weight-bold text-muted">#${rank}</span>`;
+    let rankClass = '';
+    if (rank === 1) {
+      rankBadge = `<span class="badge bg-amber" style="font-size: 0.9rem;">👑 #1</span>`;
+      rankClass = 'border-amber bg-subtle';
+    } else if (rank === 2) {
+      rankBadge = `<span class="badge bg-subtle text-indigo" style="font-size: 0.85rem;">🥈 #2</span>`;
+    } else if (rank === 3) {
+      rankBadge = `<span class="badge bg-subtle text-rose" style="font-size: 0.85rem;">🥉 #3</span>`;
+    }
+
+    const ptsInfo = calculateStudentPoints(s);
+
     return `
-      <div class="leaderboard-item ${isSelf ? 'border-indigo' : ''}">
-        <div class="flex-align-center gap-2">
-          <span class="font-weight-bold text-amber">#${idx + 1}</span>
-          <img src="${s.avatar}" class="avatar-sm" alt="Avatar">
+      <div class="card p-3 mb-2 flex-between flex-wrap gap-2 ${rankClass} ${isSelf ? 'border-indigo' : ''}">
+        <div class="flex-align-center gap-3">
+          <div class="rank-box text-center" style="min-width: 45px;">
+            ${rankBadge}
+          </div>
+          <img src="${s.avatar}" class="avatar-md" alt="Avatar">
           <div>
-            <strong>${s.name} ${isSelf ? '<span class="badge bg-indigo">أنت</span>' : ''}</strong>
-            <div class="text-xs text-muted">${s.group}</div>
+            <div class="flex-align-center gap-2">
+              <strong style="font-size: 1.05rem;">${s.name}</strong>
+              ${isSelf ? '<span class="badge bg-indigo">حسابك الشخصي</span>' : ''}
+            </div>
+            <div class="text-xs text-muted mt-1">
+              <i class="fa-solid fa-layer-group text-indigo"></i> ${s.group || 'بدون مجموعة'} • 
+              <span class="text-emerald font-weight-bold">${ptsInfo.attendedSessionsCount} جلسات حضور</span>
+            </div>
           </div>
         </div>
-        <div class="flex-align-center gap-2">
+
+        <div class="flex-align-center gap-3 flex-wrap">
           <span class="badge-shield ${shield.class}">${shield.name}</span>
-          <strong class="text-amber">${s.rating} نقطة</strong>
+          <div class="text-left" style="text-align: left;">
+            <strong class="text-amber block" style="font-size: 1.2rem;">${s.rating} نقطة</strong>
+            <span class="text-xs text-muted block">حضور: ${ptsInfo.attendancePts} | مواجهات: ${ptsInfo.battlePts} | تميز: ${ptsInfo.bonusPts}</span>
+          </div>
         </div>
       </div>
     `;
   }).join('');
 }
+
 
 function renderStudentLectures() {
   const grid = document.getElementById('st-lectures-grid');
@@ -1103,28 +1649,39 @@ function renderStudentAttendanceStats() {
   const st = appState.activeStudent;
   if (!st) return;
 
-  let present = 0, absent = 0, late = 0;
+  let totalSessions = 0;
+  let attendedCount = 0;
   const historyList = [];
 
-  Object.keys(appState.attendance).forEach(date => {
-    const status = appState.attendance[date][st.id];
-    if (status === 'present') { present++; historyList.push({ date, status: 'حاضر ✅' }); }
-    if (status === 'absent') { absent++; historyList.push({ date, status: 'غائب ❌' }); }
-    if (status === 'late') { late++; historyList.push({ date, status: 'متأخر ⏰' }); }
+  appState.groups.forEach(g => {
+    if (g.name === st.group && g.sessions) {
+      g.sessions.forEach(sess => {
+        totalSessions++;
+        const sessMap = appState.sessionAttendance[sess.id] || {};
+        const isPresent = sessMap[st.id] !== undefined ? sessMap[st.id] : true;
+        if (isPresent) attendedCount++;
+        historyList.push({
+          date: sess.date,
+          sessionName: sess.name,
+          status: isPresent ? 'حاضر ✅' : 'غائب ❌'
+        });
+      });
+    }
   });
 
-  const total = present + absent + late;
-  const percent = total > 0 ? Math.round((present / total) * 100) : 100;
-  document.getElementById('st-attendance-percent').textContent = `${percent}%`;
+  const percent = totalSessions > 0 ? Math.round((attendedCount / totalSessions) * 100) : 100;
+  const pEl = document.getElementById('st-attendance-percent');
+  if (pEl) pEl.textContent = `${percent}%`;
 
   const tbody = document.getElementById('st-attendance-history-body');
   if (tbody) {
     tbody.innerHTML = historyList.length > 0 ? historyList.map(h => `
       <tr>
         <td>${h.date}</td>
+        <td><strong>${h.sessionName}</strong></td>
         <td><strong>${h.status}</strong></td>
       </tr>
-    `).join('') : `<tr><td colspan="2" class="text-center text-muted">لا يوجد سجلات حضور مسجلة بعد</td></tr>`;
+    `).join('') : `<tr><td colspan="3" class="text-center text-muted">لا يوجد جلسات حضور مسجلة لشعبتك بعد</td></tr>`;
   }
 }
 
@@ -1132,7 +1689,8 @@ function renderStudentGrades() {
   const st = appState.activeStudent;
   if (!st) return;
 
-  document.getElementById('st-grade-score').textContent = `${st.gradeScore} / 100`;
+  const scoreEl = document.getElementById('st-grade-score');
+  if (scoreEl) scoreEl.textContent = `${st.gradeScore} / 100`;
 
   const tasksList = document.getElementById('st-tasks-list');
   if (tasksList) {
@@ -1147,3 +1705,83 @@ function renderStudentGrades() {
     `).join('');
   }
 }
+
+// ==========================================================================
+// 10. POINTS MANAGEMENT & CALCULATOR SYSTEM
+// ==========================================================================
+
+function renderPointsManagementTable() {
+  const selectEl = document.getElementById('points-student-select');
+  if (selectEl) {
+    selectEl.innerHTML = appState.students.map(s => `<option value="${s.id}">${s.name} (${s.group || 'بدون مجموعة'})</option>`).join('');
+  }
+
+  const tbody = document.getElementById('points-table-body');
+  if (!tbody) return;
+
+  if (appState.students.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-muted">لا يوجد طلاب مسجلين حالياً. قم بإضافة طلاب لحساب وإسناد النقاط.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = appState.students.map(s => {
+    const ptsInfo = calculateStudentPoints(s);
+    s.rating = ptsInfo.total;
+    const shield = getShieldForRating(s.rating);
+
+    return `
+      <tr>
+        <td>
+          <div class="flex-align-center gap-2">
+            <img src="${s.avatar}" class="avatar-sm" alt="Avatar">
+            <strong>${s.name}</strong>
+          </div>
+        </td>
+        <td><span class="badge bg-subtle text-indigo">${s.group || 'غير محدد'}</span></td>
+        <td><strong class="text-indigo">${ptsInfo.attendedSessionsCount} جلسات</strong></td>
+        <td><span class="badge bg-emerald">+${ptsInfo.attendancePts} نقطة</span></td>
+        <td><span class="badge bg-amber">+${ptsInfo.battlePts} نقطة</span></td>
+        <td><span class="badge bg-purple">${ptsInfo.bonusPts >= 0 ? '+' : ''}${ptsInfo.bonusPts} نقطة</span></td>
+        <td><strong class="text-amber" style="font-size: 1.1rem;">${ptsInfo.total} نقطة</strong></td>
+        <td><span class="badge-shield ${shield.class}">${shield.name}</span></td>
+        <td>
+          <div class="flex-align-center gap-1">
+            <button class="btn btn-xs btn-emerald" onclick="quickAddPoints('${s.id}', 50)">+50</button>
+            <button class="btn btn-xs btn-purple" onclick="quickAddPoints('${s.id}', 100)">+100</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+
+function grantManualPoints(event) {
+  event.preventDefault();
+  const studentId = document.getElementById('points-student-select').value;
+  const pts = parseInt(document.getElementById('points-amount-input').value) || 0;
+  const reason = document.getElementById('points-reason-input').value.trim() || 'نقاط تميز';
+
+  const st = appState.students.find(s => s.id === studentId);
+  if (!st) return;
+
+  st.bonusPoints = (st.bonusPoints || 0) + pts;
+  saveState();
+  renderPointsManagementTable();
+  renderStudentsTable();
+  renderDashboardStats();
+  document.getElementById('points-grant-form').reset();
+  showToast(`تم إضافة ${pts} نقطة للطالب (${st.name}) - ${reason}`, "success");
+}
+
+function quickAddPoints(studentId, points) {
+  const st = appState.students.find(s => s.id === studentId);
+  if (!st) return;
+  st.bonusPoints = (st.bonusPoints || 0) + points;
+  saveState();
+  renderPointsManagementTable();
+  renderStudentsTable();
+  renderDashboardStats();
+  showToast(`تم إضافة +${points} نقطة مكافأة للطالب (${st.name})`, "success");
+}
+
