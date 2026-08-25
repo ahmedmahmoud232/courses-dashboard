@@ -2090,3 +2090,21 @@ body {
     font-size: 0.98rem !important;
   }
 }
+
+/* Exam Option Radio Pills */
+.exam-option-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.exam-option-pill:hover {
+  border-color: var(--primary-indigo);
+  background: var(--primary-indigo-light);
+}
+
+.exam-option-pill input[type="radio"]:checked + span {
+  color: var(--primary-indigo);
+  font-weight: 700;
+}

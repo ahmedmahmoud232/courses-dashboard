@@ -14,30 +14,7 @@ const INITIAL_DATA = {
   questionCollections: [],
   lectures: [],
   tasks: [],
-  exams: [
-    {
-      id: 'ex-101',
-      title: 'اختبار خوارزميات التعلم الآلي والأنظمة المدمجة',
-      group: 'all',
-      durationMinutes: 15,
-      description: 'اختبار تقييمي لقياس مدى استيعاب خوارزميات التعلم الآلي والأنظمة الإلكترونية.',
-      questions: [
-        {
-          id: 'q1',
-          text: 'ما هي الخوارزمية الأكثر استخداماً في تصنيف البيانات الخطية؟',
-          options: ['Linear Regression', 'Logistic Regression', 'K-Means Clustering', 'Decision Trees'],
-          correctIndex: 1
-        },
-        {
-          id: 'q2',
-          text: 'أي من المكونات التالية يُستخدم لمعالجة مصفوفات الأعداد في الحسابات الفائقة للذكاء الاصطناعي؟',
-          options: ['GPU / TPU', 'Hard Disk Drive', 'Audio Card', 'Power Supply Unit'],
-          correctIndex: 0
-        }
-      ],
-      createdAt: new Date().toISOString().split('T')[0]
-    }
-  ],
+  exams: [],
   examSubmissions: [],
   sessionAttendance: {},
   battles: []
@@ -99,6 +76,12 @@ function loadState() {
   if (!appState.questionCollections || appState.questionCollections.length === 0) {
     appState.questionCollections = [...INITIAL_DATA.questionCollections];
   }
+  if (!appState.exams) {
+    appState.exams = [];
+  }
+  if (!appState.examSubmissions) {
+    appState.examSubmissions = [];
+  }
   if (appState.groups) {
     appState.groups.forEach(g => {
       if (!g.sessions) g.sessions = [];
@@ -119,6 +102,8 @@ function saveState(syncToCloud = true) {
     questionCollections: appState.questionCollections || [],
     lectures: appState.lectures || [],
     tasks: appState.tasks || [],
+    exams: appState.exams || [],
+    examSubmissions: appState.examSubmissions || [],
     sessionAttendance: appState.sessionAttendance || {},
     battles: appState.battles || [],
     updatedAt: new Date().toISOString()
@@ -178,6 +163,12 @@ function initFirebaseSync() {
           }
           if (Array.isArray(remoteData.tasks) && remoteData.tasks.length > 0) {
             appState.tasks = mergeDataLists(appState.tasks, remoteData.tasks, 'id');
+          }
+          if (Array.isArray(remoteData.exams)) {
+            appState.exams = remoteData.exams;
+          }
+          if (Array.isArray(remoteData.examSubmissions)) {
+            appState.examSubmissions = remoteData.examSubmissions;
           }
           if (remoteData.sessionAttendance && Object.keys(remoteData.sessionAttendance).length > 0) {
             appState.sessionAttendance = { ...appState.sessionAttendance, ...remoteData.sessionAttendance };
@@ -1678,6 +1669,7 @@ function renderStudentDashboardView() {
   renderStudentLectures();
   renderStudentAttendanceStats();
   renderStudentGrades();
+  renderStudentExamsView();
 }
 
 function showStudentTab(tabId, clickedBtn = null) {
@@ -1699,6 +1691,8 @@ function showStudentTab(tabId, clickedBtn = null) {
   if (target) {
     target.classList.add('active');
   }
+
+  if (tabId === 'st-exams') renderStudentExamsView();
 }
 
 function renderStudentLeaderboard() {
@@ -1905,5 +1899,474 @@ function quickAddPoints(studentId, points) {
   renderStudentsTable();
   renderDashboardStats();
   showToast(`تم إضافة +${points} نقطة مكافأة للطالب (${st.name})`, "success");
+}
+
+
+// ==========================================================================
+// 12. EXAMS MANAGEMENT SYSTEM (TEACHER & STUDENT SIDES)
+// ==========================================================================
+
+function renderTeacherExams() {
+  const container = document.getElementById('exams-grid');
+  if (!container) return;
+
+  const exams = appState.exams || [];
+  if (exams.length === 0) {
+    container.innerHTML = `
+      <div class="card p-5 text-center text-muted" style="grid-column: 1 / -1;">
+        <i class="fa-solid fa-file-pen display-4 mb-3 text-dim"></i>
+        <h3>لا توجد اختبارات مضافة حالياً</h3>
+        <p class="text-sm mt-1 mb-3">اضغط على زر إضافة اختبار جديد لإنشاء اختبار مع الأسئلة والإجابات وتحديد الإجابة الصحيحة.</p>
+        <button class="btn btn-primary" onclick="openCreateExamModal()"><i class="fa-solid fa-plus"></i> إضافة اختبار جديد</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = exams.map(ex => {
+    const questionsCount = ex.questions ? ex.questions.length : 0;
+    const submissions = (appState.examSubmissions || []).filter(s => s.examId === ex.id);
+    return `
+      <div class="card p-4">
+        <div class="flex-between mb-3">
+          <span class="badge bg-indigo text-xs"><i class="fa-solid fa-file-pen"></i> اختبار أكاديمي</span>
+          <span class="text-xs text-muted"><i class="fa-solid fa-clock"></i> ${ex.durationMinutes || 15} دقيقة</span>
+        </div>
+        <h3 class="mb-2 text-main">${ex.title}</h3>
+        <p class="text-muted text-sm mb-3">${ex.description || 'اختبار لقياس مستوى استيعاب الطلاب.'}</p>
+        <div class="p-3 bg-subtle border-radius mb-3 flex-between flex-wrap gap-2 text-xs text-muted">
+          <span>عدد الأسئلة: <strong class="text-main">${questionsCount} سؤال</strong></span>
+          <span>المجموعة: <strong class="text-indigo">${ex.group === 'all' ? 'جميع المجموعات' : ex.group}</strong></span>
+          <span>إجابات الطلاب: <strong class="text-emerald">${submissions.length} إجابة</strong></span>
+        </div>
+        <div class="flex-between gap-2 border-top pt-3 mt-2">
+          <button class="btn btn-xs btn-outline text-rose" onclick="deleteExam('${ex.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          <span class="text-xs text-muted">نقاط السؤال: <strong>50 نقطة</strong></span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+let examModalQuestions = [];
+
+function openCreateExamModal() {
+  populateDropdowns();
+  const select = document.getElementById('form-exam-group');
+  if (select) {
+    select.innerHTML = `<option value="all">جميع المجموعات والشُعب</option>` + (appState.groups || []).map(g => `<option value="${g.name}">${g.name}</option>`).join('');
+  }
+
+  document.getElementById('exam-form').reset();
+  examModalQuestions = [
+    { type: 'select', text: '', optionsCount: 4, options: ['', '', '', ''], correctIndex: 0, correctText: '' }
+  ];
+  renderExamQuestionsForm();
+  openModal('exam-modal');
+}
+
+function addQuestionToExamModal() {
+  examModalQuestions.push({ type: 'select', text: '', optionsCount: 4, options: ['', '', '', ''], correctIndex: 0, correctText: '' });
+  renderExamQuestionsForm();
+}
+
+function removeQuestionFromExamModal(index) {
+  if (examModalQuestions.length <= 1) {
+    showToast("يجب أن يحتوي الاختبار على سؤال واحد على الأقل!", "error");
+    return;
+  }
+  examModalQuestions.splice(index, 1);
+  renderExamQuestionsForm();
+}
+
+function updateQuestionType(idx, type) {
+  examModalQuestions[idx].type = type;
+  if (type === 'select' && (!examModalQuestions[idx].options || examModalQuestions[idx].options.length === 0)) {
+    examModalQuestions[idx].optionsCount = 4;
+    examModalQuestions[idx].options = ['', '', '', ''];
+    examModalQuestions[idx].correctIndex = 0;
+  }
+  renderExamQuestionsForm();
+}
+
+function updateQuestionOptionsCount(idx, count) {
+  const c = parseInt(count) || 4;
+  examModalQuestions[idx].optionsCount = c;
+  const currentOpts = examModalQuestions[idx].options || [];
+  while (currentOpts.length < c) currentOpts.push('');
+  examModalQuestions[idx].options = currentOpts.slice(0, c);
+  if (examModalQuestions[idx].correctIndex >= c) examModalQuestions[idx].correctIndex = 0;
+  renderExamQuestionsForm();
+}
+
+function renderExamQuestionsForm() {
+  const container = document.getElementById('exam-questions-container');
+  if (!container) return;
+
+  container.innerHTML = examModalQuestions.map((q, idx) => `
+    <div class="card p-3 mb-3 bg-subtle border border-indigo">
+      <div class="flex-between mb-2">
+        <strong class="text-indigo text-sm"><i class="fa-solid fa-circle-question"></i> السؤال رقم (${idx + 1}):</strong>
+        <button type="button" class="btn btn-xs btn-outline text-rose" onclick="removeQuestionFromExamModal(${idx})"><i class="fa-solid fa-trash"></i> حذف السؤال</button>
+      </div>
+
+      <div class="grid-2col gap-2 mb-2">
+        <div class="form-group mb-0">
+          <label class="text-xs font-weight-bold block mb-1">نوع السؤال:</label>
+          <select class="form-control form-control-sm" onchange="updateQuestionType(${idx}, this.value)">
+            <option value="select" ${q.type === 'select' || !q.type ? 'selected' : ''}>اختيار من متعدد (Multiple Choice)</option>
+            <option value="text" ${q.type === 'text' ? 'selected' : ''}>إجابة نصية (Short Text)</option>
+          </select>
+        </div>
+        ${(q.type === 'select' || !q.type) ? `
+          <div class="form-group mb-0">
+            <label class="text-xs font-weight-bold block mb-1">عدد الخيارات والإجابات:</label>
+            <select class="form-control form-control-sm" onchange="updateQuestionOptionsCount(${idx}, this.value)">
+              <option value="2" ${q.optionsCount === 2 ? 'selected' : ''}>خياران (2)</option>
+              <option value="3" ${q.optionsCount === 3 ? 'selected' : ''}>3 خيارات</option>
+              <option value="4" ${q.optionsCount === 4 || !q.optionsCount ? 'selected' : ''}>4 خيارات</option>
+              <option value="5" ${q.optionsCount === 5 ? 'selected' : ''}>5 خيارات</option>
+            </select>
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="form-group mb-2">
+        <label class="text-xs font-weight-bold block mb-1">نص السؤال:</label>
+        <input type="text" class="form-control form-control-sm" placeholder="أدخل نص السؤال هنا..." value="${q.text || ''}" oninput="examModalQuestions[${idx}].text = this.value" required>
+      </div>
+
+      ${(q.type === 'select' || !q.type) ? `
+        <div class="grid-2col gap-2 mb-2">
+          ${(q.options || ['', '', '', '']).map((opt, optIdx) => `
+            <div>
+              <label class="text-xs block mb-1">الخيار (${optIdx + 1}):</label>
+              <input type="text" class="form-control form-control-sm" placeholder="الخيار رقم ${optIdx + 1}" value="${opt}" oninput="examModalQuestions[${idx}].options[${optIdx}] = this.value" required>
+            </div>
+          `).join('')}
+        </div>
+        <div class="form-group mb-0">
+          <label class="text-xs font-weight-bold block mb-1 text-emerald">اختر الإجابة الصحيحة:</label>
+          <select class="form-control form-control-sm" onchange="examModalQuestions[${idx}].correctIndex = parseInt(this.value)">
+            ${(q.options || []).map((opt, optIdx) => `
+              <option value="${optIdx}" ${q.correctIndex === optIdx ? 'selected' : ''}>الخيار (${optIdx + 1}): ${opt || `خيار ${optIdx + 1}`}</option>
+            `).join('')}
+          </select>
+        </div>
+      ` : `
+        <div class="form-group mb-0">
+          <label class="text-xs font-weight-bold block mb-1 text-emerald">الإجابة النموذجية الصحيحة:</label>
+          <input type="text" class="form-control form-control-sm" placeholder="أدخل الإجابة النصية النموذجية الصحيحة..." value="${q.correctText || ''}" oninput="examModalQuestions[${idx}].correctText = this.value" required>
+        </div>
+      `}
+    </div>
+  `).join('');
+}
+
+function saveExamForm(event) {
+  event.preventDefault();
+  const title = document.getElementById('form-exam-title').value.trim();
+  const group = document.getElementById('form-exam-group').value;
+  const durationMinutes = parseInt(document.getElementById('form-exam-duration').value) || 15;
+  const description = document.getElementById('form-exam-desc').value.trim();
+
+  for (let i = 0; i < examModalQuestions.length; i++) {
+    const q = examModalQuestions[i];
+    if (!q.text.trim()) {
+      showToast(`يرجى كتابة نص السؤال رقم (${i + 1})`, "error");
+      return;
+    }
+    if ((q.type === 'select' || !q.type) && q.options.some(opt => !opt.trim())) {
+      showToast(`يرجى إكمال جميع خيارات السؤال رقم (${i + 1})`, "error");
+      return;
+    }
+    if (q.type === 'text' && !q.correctText.trim()) {
+      showToast(`يرجى تحديد الإجابة النموذجية للسؤال رقم (${i + 1})`, "error");
+      return;
+    }
+  }
+
+  const newExam = {
+    id: 'ex-' + Date.now(),
+    title,
+    group,
+    durationMinutes,
+    description,
+    questions: examModalQuestions,
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+
+  if (!appState.exams) appState.exams = [];
+  appState.exams.push(newExam);
+  saveState(true);
+  closeModal('exam-modal');
+  showToast("تم إنشاء الاختبار الأكاديمي وحفظه في Firebase بنجاح 📝", "success");
+  renderTeacherExams();
+}
+
+function deleteExam(examId) {
+  if (!confirm("هل أنت تأكد من رغبتك في حذف هذا الاختبار؟")) return;
+  appState.exams = (appState.exams || []).filter(e => e.id !== examId);
+  saveState(true);
+  showToast("تم حذف الاختبار بنجاح", "info");
+  renderTeacherExams();
+}
+
+// Student Exams System Logic
+function renderStudentExamsView() {
+  const container = document.getElementById('st-exams-grid');
+  if (!container) return;
+
+  const st = appState.activeStudent;
+  if (!st) return;
+
+  const allExams = appState.exams || [];
+  const studentExams = allExams.filter(ex => !ex.group || ex.group === 'all' || ex.group === st.group || (st.group && ex.group && ex.group.includes(st.group)));
+  const submissions = appState.examSubmissions || [];
+
+  if (studentExams.length === 0) {
+    container.innerHTML = `
+      <div class="card p-5 text-center text-muted" style="grid-column: 1 / -1;">
+        <i class="fa-solid fa-file-pen display-4 mb-3 text-dim"></i>
+        <h3>لا توجد اختبارات مخصصة لشُعبتك حالياً</h3>
+        <p class="text-sm mt-1">سيظهر أي اختبار جديد يضيفه المحاضر هنا فوراً.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = studentExams.map(ex => {
+    const studentSubs = submissions.filter(s => s.studentId === st.id && s.examId === ex.id);
+    const attemptsCount = studentSubs.length;
+    const attemptsLeft = Math.max(0, 3 - attemptsCount);
+    
+    let bestScore = 0;
+    let bestCorrect = 0;
+    studentSubs.forEach(sub => {
+      if ((sub.correctAnswers || 0) > bestCorrect) {
+        bestCorrect = sub.correctAnswers || 0;
+        bestScore = sub.score || 0;
+      }
+    });
+
+    const isExhausted = attemptsCount >= 3;
+    const hasAttempted = attemptsCount > 0;
+
+    return `
+      <div class="card p-4">
+        <div class="flex-between mb-2">
+          <span class="badge ${isExhausted ? 'bg-rose' : 'bg-indigo'} text-xs">
+            ${isExhausted ? 'استنفذت المحاولات (3/3)' : `المحاولات المتبقية: ${attemptsLeft} / 3`}
+          </span>
+          <span class="text-xs text-muted"><i class="fa-solid fa-clock"></i> ${ex.durationMinutes || 15} دقيقة</span>
+        </div>
+        <h3 class="mb-2 text-main">${ex.title}</h3>
+        <p class="text-muted text-sm mb-3">${ex.description || 'اختبار تفاعلي لقياس المعرفة واكتساب النقاط.'}</p>
+        
+        <div class="p-3 bg-subtle border-radius mb-3 flex-between flex-wrap gap-2 text-xs">
+          <span>عدد الأسئلة: <strong>${ex.questions ? ex.questions.length : 0} سؤال</strong></span>
+          <span>أفضل نتيجة: <strong class="text-emerald">${bestCorrect} / ${ex.questions ? ex.questions.length : 0}</strong></span>
+          <span>نقاط مكتسبة: <strong class="text-amber">${bestCorrect * 50} نقطة</strong></span>
+        </div>
+
+        <div class="flex-between gap-2 pt-2 border-top flex-wrap">
+          ${hasAttempted ? `
+            <button class="btn btn-xs btn-outline text-indigo" onclick="viewExamFeedback('${ex.id}')">
+              <i class="fa-solid fa-eye"></i> مراجعة التعقيبات
+            </button>
+          ` : '<span></span>'}
+          ${isExhausted ? `
+            <button class="btn btn-secondary btn-sm" disabled>
+              <i class="fa-solid fa-lock"></i> تم استنفاد 3 محاولات
+            </button>
+          ` : `
+            <button class="btn btn-primary btn-sm" onclick="openStudentExamModal('${ex.id}')">
+              <i class="fa-solid fa-pen"></i> بدء الاختبار (${attemptsCount === 0 ? 'المحاولة الأولى' : 'محاولة تحسين'})
+            </button>
+          `}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+let activeStudentExam = null;
+
+function openStudentExamModal(examId) {
+  const ex = (appState.exams || []).find(e => e.id === examId);
+  if (!ex) return;
+
+  const st = appState.activeStudent;
+  if (!st) return;
+
+  const studentSubs = (appState.examSubmissions || []).filter(s => s.studentId === st.id && s.examId === ex.id);
+  if (studentSubs.length >= 3) {
+    showToast("لقد استنفذت الحد الأقصى للمحاولات (3 محاولات) لهذا الاختبار!", "error");
+    return;
+  }
+
+  activeStudentExam = ex;
+  document.getElementById('st-exam-modal-title').textContent = ex.title;
+  document.getElementById('st-exam-modal-desc').textContent = ex.description || 'أجب على الأسئلة التالية واضغط تسليم التقييم.';
+  
+  const container = document.getElementById('st-exam-questions-list');
+  if (container && ex.questions) {
+    container.innerHTML = ex.questions.map((q, idx) => `
+      <div class="card p-3 mb-3 bg-subtle">
+        <strong class="text-main block mb-2 font-weight-bold text-sm">س${idx + 1}: ${q.text}</strong>
+        ${q.type === 'text' ? `
+          <input type="text" name="st-question-${idx}" class="form-control form-control-sm" placeholder="اكتب إجابتك النصية هنا..." required>
+        ` : `
+          <div class="flex-column gap-2">
+            ${(q.options || []).map((opt, optIdx) => `
+              <label class="exam-option-pill flex-align-center gap-2 p-2 border-radius cursor-pointer border">
+                <input type="radio" name="st-question-${idx}" value="${optIdx}" required>
+                <span class="text-sm">${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `).join('');
+  }
+
+  openModal('st-exam-modal');
+}
+
+function submitStudentExam(event) {
+  event.preventDefault();
+  if (!activeStudentExam || !appState.activeStudent) return;
+
+  const ex = activeStudentExam;
+  const st = appState.activeStudent;
+  const questions = ex.questions || [];
+
+  const userAnswersReview = [];
+  let correctCount = 0;
+
+  questions.forEach((q, idx) => {
+    let isCorrect = false;
+    let studentAnsText = '';
+    let correctAnsText = '';
+
+    if (q.type === 'text') {
+      const inputEl = document.querySelector(`input[name="st-question-${idx}"]`);
+      studentAnsText = inputEl ? inputEl.value.trim() : '';
+      correctAnsText = (q.correctText || '').trim();
+      
+      const normStudent = studentAnsText.toLowerCase().replace(/\s+/g, ' ');
+      const normCorrect = correctAnsText.toLowerCase().replace(/\s+/g, ' ');
+      isCorrect = (normStudent !== '' && (normStudent === normCorrect || normCorrect.includes(normStudent)));
+    } else {
+      const selected = document.querySelector(`input[name="st-question-${idx}"]:checked`);
+      const selectedIdx = selected ? parseInt(selected.value) : -1;
+      studentAnsText = selectedIdx >= 0 && q.options && q.options[selectedIdx] ? q.options[selectedIdx] : 'لم تُحدد إجابة';
+      correctAnsText = q.options && q.options[q.correctIndex] ? q.options[q.correctIndex] : '';
+      isCorrect = (selectedIdx === q.correctIndex);
+    }
+
+    if (isCorrect) correctCount++;
+
+    userAnswersReview.push({
+      questionText: q.text,
+      type: q.type || 'select',
+      studentAnswerText: studentAnsText,
+      correctAnswerText: correctAnsText,
+      isCorrect
+    });
+  });
+
+  const totalQuestions = questions.length;
+  const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+  const pointsEarned = correctCount * 50;
+
+  const studentSubs = (appState.examSubmissions || []).filter(s => s.studentId === st.id && s.examId === ex.id);
+  const attemptNum = studentSubs.length + 1;
+
+  const submissionRecord = {
+    studentId: st.id,
+    examId: ex.id,
+    score: scorePercent,
+    correctAnswers: correctCount,
+    totalQuestions,
+    attemptNumber: attemptNum,
+    userAnswersReview,
+    timestamp: new Date().toISOString()
+  };
+
+  if (!appState.examSubmissions) appState.examSubmissions = [];
+  appState.examSubmissions.push(submissionRecord);
+
+  saveState(true);
+  closeModal('st-exam-modal');
+
+  if (typeof confetti === 'function' && scorePercent >= 70) {
+    confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+  }
+
+  showToast(`أحسنت! الإجابات الصحيحة: ${correctCount} من ${totalQuestions} (${scorePercent}%) | +${pointsEarned} نقطة! 🎯`, "success");
+  
+  if (typeof renderStudentDashboardView === 'function') {
+    renderStudentDashboardView();
+  }
+  renderStudentExamsView();
+  showStudentExamFeedback(submissionRecord, ex.title);
+}
+
+function showStudentExamFeedback(submissionRecord, examTitle) {
+  const summaryBox = document.getElementById('st-feedback-summary');
+  const reviewList = document.getElementById('st-feedback-review-list');
+  const subtitle = document.getElementById('st-feedback-subtitle');
+
+  if (subtitle) subtitle.textContent = examTitle;
+
+  if (summaryBox) {
+    summaryBox.innerHTML = `
+      <div class="flex-between flex-wrap gap-2 text-sm">
+        <span>النتيجة الإجمالية: <strong class="text-indigo font-weight-bold block mt-1" style="font-size: 1.5rem;">${submissionRecord.score}%</strong></span>
+        <span>الإجابات الصحيحة: <strong class="text-emerald font-weight-bold block mt-1" style="font-size: 1.2rem;">${submissionRecord.correctAnswers} / ${submissionRecord.totalQuestions}</strong></span>
+        <span>النقاط المكتسبة: <strong class="text-amber font-weight-bold block mt-1" style="font-size: 1.2rem;">+${submissionRecord.correctAnswers * 50} نقطة</strong></span>
+      </div>
+    `;
+  }
+
+  if (reviewList && submissionRecord.userAnswersReview) {
+    reviewList.innerHTML = submissionRecord.userAnswersReview.map((item, idx) => `
+      <div class="card p-3 mb-3 ${item.isCorrect ? 'border-emerald' : 'border-rose'} bg-subtle">
+        <div class="flex-between mb-2">
+          <strong class="text-main text-sm">س${idx + 1}: ${item.questionText}</strong>
+          <span class="badge ${item.isCorrect ? 'bg-emerald' : 'bg-rose'} text-xs">
+            ${item.isCorrect ? 'إجابة صحيحة +50 نقطة ✅' : 'إجابة خاطئة ❌'}
+          </span>
+        </div>
+        <div class="text-xs flex-column gap-1">
+          <div>إجابتك: <strong class="${item.isCorrect ? 'text-emerald' : 'text-rose'}">${item.studentAnswerText || 'لا توجد'}</strong></div>
+          ${!item.isCorrect ? `<div class="mt-1">الإجابة النموذجية الصحيحة: <strong class="text-emerald">${item.correctAnswerText}</strong></div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  openModal('st-exam-feedback-modal');
+}
+
+function viewExamFeedback(examId) {
+  const st = appState.activeStudent;
+  if (!st) return;
+  const ex = (appState.exams || []).find(e => e.id === examId);
+  if (!ex) return;
+
+  const studentSubs = (appState.examSubmissions || []).filter(s => s.studentId === st.id && s.examId === ex.id);
+  if (studentSubs.length === 0) {
+    showToast("لم تقم بإجراء هذا الاختبار بعد!", "info");
+    return;
+  }
+
+  let bestSub = studentSubs[0];
+  studentSubs.forEach(s => {
+    if ((s.correctAnswers || 0) > (bestSub.correctAnswers || 0)) bestSub = s;
+  });
+
+  showStudentExamFeedback(bestSub, ex.title);
 }
 

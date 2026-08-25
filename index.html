@@ -75,6 +75,10 @@
       <i class="fa-solid fa-book-open"></i>
       <span>المحاضرات</span>
     </button>
+    <button class="mobile-nav-btn" onclick="showTeacherTab('exams-tab', this)">
+      <i class="fa-solid fa-file-pen"></i>
+      <span>الاختبارات</span>
+    </button>
   </nav>
 
   <!-- Main Container -->
@@ -123,6 +127,10 @@
           <button class="nav-item" onclick="showTeacherTab('points-tab', this)">
             <i class="fa-solid fa-coins"></i>
             <span>إدارة النقاط</span>
+          </button>
+          <button class="nav-item" onclick="showTeacherTab('exams-tab', this)">
+            <i class="fa-solid fa-file-pen"></i>
+            <span>الامتحانات والفيزيات</span>
           </button>
         </nav>
 
@@ -554,6 +562,23 @@
           </div>
         </div>
 
+        <!-- 11. EXAMS MANAGEMENT TAB -->
+        <div id="exams-tab" class="tab-content">
+          <div class="tab-header">
+            <div>
+              <h2><i class="fa-solid fa-file-pen"></i> الاختبارات والتقييمات الأكاديمية</h2>
+              <p class="text-muted hide-mobile">إنشاء وإدارة الاختبارات الإلكترونية وإضافة الأسئلة وتحديد الإجابات الصحيحة.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateExamModal()">
+              <i class="fa-solid fa-plus"></i> إضافة اختبار جديد
+            </button>
+          </div>
+
+          <div id="exams-grid" class="cards-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
       </section>
 
     </div>
@@ -563,6 +588,58 @@
   <!-- ============================================================== -->
   <!-- MODALS SYSTEM                                                  -->
   <!-- ============================================================== -->
+
+  <!-- Create New Exam Modal -->
+  <div id="exam-modal" class="modal-overlay">
+    <div class="modal-card max-w-md" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 id="exam-modal-title">إنشاء اختبار أكاديمي جديد</h3>
+        <button class="modal-close" onclick="closeModal('exam-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="exam-form" onsubmit="saveExamForm(event)">
+          <div class="grid-2col gap-2 mb-3">
+            <div class="form-group">
+              <label class="font-weight-bold block mb-1">عنوان الاختبار:</label>
+              <input type="text" id="form-exam-title" class="form-control" placeholder="مثال: اختبار الوحدة الأولى" required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold block mb-1">المجموعة المستهدفة:</label>
+              <select id="form-exam-group" class="form-control" required></select>
+            </div>
+          </div>
+          <div class="grid-2col gap-2 mb-3">
+            <div class="form-group">
+              <label class="font-weight-bold block mb-1">مدة الاختبار (بالدقائق):</label>
+              <input type="number" id="form-exam-duration" class="form-control" min="5" max="180" value="15" required>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold block mb-1">وصف أو تعليمات الاختبار:</label>
+              <input type="text" id="form-exam-desc" class="form-control" placeholder="مثال: 10 أسئلة اختيار من متعدد">
+            </div>
+          </div>
+
+          <hr class="my-3 border-subtle">
+
+          <div class="flex-between mb-2">
+            <h4 class="text-indigo mb-0"><i class="fa-solid fa-list-ol"></i> الأسئلة والخيارات</h4>
+            <button type="button" class="btn btn-xs btn-outline" onclick="addQuestionToExamModal()">
+              <i class="fa-solid fa-plus"></i> إضافة سؤال جديد
+            </button>
+          </div>
+
+          <div id="exam-questions-container" class="mb-3">
+            <!-- Dynamic question blocks -->
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('exam-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ الاختبار</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- Register / Edit Student Modal -->
   <div id="student-modal" class="modal-overlay">

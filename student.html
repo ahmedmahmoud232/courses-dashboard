@@ -79,6 +79,10 @@
       <i class="fa-solid fa-graduation-cap"></i>
       <span>الدرجات</span>
     </button>
+    <button class="mobile-nav-btn" onclick="showStudentTab('st-exams', this)">
+      <i class="fa-solid fa-file-pen"></i>
+      <span>الاختبارات</span>
+    </button>
   </nav>
 
   <!-- Main Container -->
@@ -164,6 +168,10 @@
             <i class="fa-solid fa-graduation-cap"></i>
             <span>الدرجات</span>
           </button>
+          <button class="st-tab-btn" onclick="showStudentTab('st-exams', this)">
+            <i class="fa-solid fa-file-pen"></i>
+            <span>الاختبارات</span>
+          </button>
         </div>
 
         <!-- Student Tab Contents -->
@@ -211,9 +219,65 @@
           </div>
         </div>
 
+        <div id="st-exams" class="st-tab-content">
+          <div class="card p-3 mb-3 flex-between flex-wrap gap-2">
+            <div>
+              <h3 class="mb-1 flex-align-center gap-2"><i class="fa-solid fa-file-pen text-indigo"></i> الاختبارات والتقييمات التفاعلية</h3>
+              <p class="text-muted text-xs">لكل اختبار 3 محاولات متاحة (محاولة أولى + محاولتا تحسين). تُحسب 50 نقطة لكل إجابة صحيحة!</p>
+            </div>
+            <span class="badge bg-indigo text-xs">3 محاولات كحد أقصى</span>
+          </div>
+          <div id="st-exams-grid" class="cards-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
+
+  <!-- Student Take Exam Modal -->
+  <div id="st-exam-modal" class="modal-overlay">
+    <div class="modal-card max-w-md" style="max-width: 650px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="st-exam-modal-title">الاختبار الأكاديمي</h3>
+          <p id="st-exam-modal-desc" class="text-xs text-muted mt-1"></p>
+        </div>
+        <button class="modal-close" onclick="closeModal('st-exam-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="st-exam-form" onsubmit="submitStudentExam(event)">
+          <div id="st-exam-questions-list" class="mb-3">
+            <!-- Questions rendered dynamically -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('st-exam-modal')">إلغاء</button>
+            <button type="submit" class="btn btn-primary btn-lg"><i class="fa-solid fa-paper-plane"></i> تسليم نتائج التقييم</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <!-- Student Exam Feedback Review Modal -->
+  <div id="st-exam-feedback-modal" class="modal-overlay">
+    <div class="modal-card max-w-md" style="max-width: 700px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="st-feedback-title" class="text-indigo">نتائج التقييم والمراجعة التفصيلية</h3>
+          <p id="st-feedback-subtitle" class="text-xs text-muted mt-1"></p>
+        </div>
+        <button class="modal-close" onclick="closeModal('st-exam-feedback-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="st-feedback-summary" class="p-3 bg-subtle border-radius mb-3 text-center"></div>
+        <h4 class="mb-3 text-main"><i class="fa-solid fa-list-check"></i> مراجعة الإجابات والتعقيبات</h4>
+        <div id="st-feedback-review-list" class="mb-3"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="closeModal('st-exam-feedback-modal')">إغلاق المراجعة</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Firebase Compatibility SDKs & App Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
