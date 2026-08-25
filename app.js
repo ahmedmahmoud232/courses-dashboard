@@ -85,21 +85,21 @@ function loadState() {
   initFirebaseSync();
 }
 
-function saveState() {
+function saveState(syncToCloud = true) {
   const stateData = {
-    students: appState.students,
-    groups: appState.groups,
-    questionCollections: appState.questionCollections,
-    lectures: appState.lectures,
-    tasks: appState.tasks,
-    sessionAttendance: appState.sessionAttendance,
-    battles: appState.battles,
+    students: appState.students || [],
+    groups: appState.groups || [],
+    questionCollections: appState.questionCollections || [],
+    lectures: appState.lectures || [],
+    tasks: appState.tasks || [],
+    sessionAttendance: appState.sessionAttendance || {},
+    battles: appState.battles || [],
     updatedAt: new Date().toISOString()
   };
 
   localStorage.setItem('course_control_panel_state_v5', JSON.stringify(stateData));
 
-  if (window.FirebaseSystem) {
+  if (syncToCloud && window.FirebaseSystem) {
     if (!window.FirebaseSystem.isConfigured) {
       window.FirebaseSystem.init();
     }
@@ -109,6 +109,26 @@ function saveState() {
   }
 }
 
+function mergeDataLists(localList, remoteList, key = 'id') {
+  if (!Array.isArray(remoteList) || remoteList.length === 0) return localList || [];
+  if (!Array.isArray(localList) || localList.length === 0) return remoteList;
+
+  const map = new Map();
+  // Remote items take precedence for existing IDs
+  remoteList.forEach(item => {
+    const k = item && item[key] ? item[key] : (item && item.name ? item.name : JSON.stringify(item));
+    map.set(k, item);
+  });
+  // Retain local items created locally if missing in remote
+  localList.forEach(item => {
+    const k = item && item[key] ? item[key] : (item && item.name ? item.name : JSON.stringify(item));
+    if (!map.has(k)) {
+      map.set(k, item);
+    }
+  });
+  return Array.from(map.values());
+}
+
 function initFirebaseSync() {
   if (window.FirebaseSystem) {
     if (!window.FirebaseSystem.isConfigured) {
@@ -116,27 +136,35 @@ function initFirebaseSync() {
     }
     if (window.FirebaseSystem.isConfigured) {
       window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
-        if (remoteData) {
-          if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
-          if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
-          if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
-          if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
-          if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
-          if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
-          if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
+        if (remoteData && typeof remoteData === 'object') {
+          if (Array.isArray(remoteData.students) && remoteData.students.length > 0) {
+            appState.students = mergeDataLists(appState.students, remoteData.students, 'id');
+          }
+          if (Array.isArray(remoteData.groups) && remoteData.groups.length > 0) {
+            appState.groups = mergeDataLists(appState.groups, remoteData.groups, 'id');
+          }
+          if (Array.isArray(remoteData.questionCollections) && remoteData.questionCollections.length > 0) {
+            appState.questionCollections = mergeDataLists(appState.questionCollections, remoteData.questionCollections, 'id');
+          }
+          if (Array.isArray(remoteData.lectures) && remoteData.lectures.length > 0) {
+            appState.lectures = mergeDataLists(appState.lectures, remoteData.lectures, 'id');
+          }
+          if (Array.isArray(remoteData.tasks) && remoteData.tasks.length > 0) {
+            appState.tasks = mergeDataLists(appState.tasks, remoteData.tasks, 'id');
+          }
+          if (remoteData.sessionAttendance && Object.keys(remoteData.sessionAttendance).length > 0) {
+            appState.sessionAttendance = { ...appState.sessionAttendance, ...remoteData.sessionAttendance };
+          }
+          if (Array.isArray(remoteData.battles) && remoteData.battles.length > 0) {
+            appState.battles = mergeDataLists(appState.battles, remoteData.battles, 'id');
+          }
 
-          localStorage.setItem('course_control_panel_state_v5', JSON.stringify({
-            students: appState.students,
-            groups: appState.groups,
-            questionCollections: appState.questionCollections,
-            lectures: appState.lectures,
-            tasks: appState.tasks,
-            sessionAttendance: appState.sessionAttendance,
-            battles: appState.battles,
-            updatedAt: new Date().toISOString()
-          }));
-
+          saveState(false);
           refreshAllUI();
+        } else {
+          // Cloud doc does not exist yet: seed local state to Cloud Firestore
+          console.log("☁️ Seeding initial state to Cloud Firestore...");
+          saveState(true);
         }
       });
     }
@@ -1510,6 +1538,7 @@ function logoutStudent() {
   appState.activeStudent = null;
   localStorage.removeItem('logged_student_id');
   document.getElementById('student-app-navbar')?.classList.add('hidden');
+  document.getElementById('student-mobile-nav')?.classList.add('hidden');
   document.getElementById('student-login-card')?.classList.remove('hidden');
   document.getElementById('student-dashboard-content')?.classList.add('hidden');
 }
@@ -1519,6 +1548,7 @@ function renderStudentDashboardView() {
   if (!st) return;
 
   document.getElementById('student-app-navbar')?.classList.remove('hidden');
+  document.getElementById('student-mobile-nav')?.classList.remove('hidden');
   document.getElementById('student-login-card')?.classList.add('hidden');
   document.getElementById('student-dashboard-content')?.classList.remove('hidden');
 
@@ -1542,9 +1572,12 @@ function renderStudentDashboardView() {
   if (pName) pName.textContent = st.name;
   if (pId) pId.textContent = st.id;
   if (pAge) pAge.textContent = st.age;
-  if (pGrp) pGrp.textContent = st.group;
+  if (pGrp) pGrp.textContent = st.group || 'شُعبة عامة';
 
+  const ptsInfo = calculateStudentPoints(st);
+  st.rating = ptsInfo.total;
   const shield = getShieldForRating(st.rating);
+
   const bFloat = document.getElementById('st-badge-floating');
   const bName = document.getElementById('st-badge-name');
   const rPts = document.getElementById('st-rating-pts');
@@ -1562,6 +1595,14 @@ function renderStudentDashboardView() {
   const pFill = document.getElementById('st-progress-fill');
   if (pFill) pFill.style.width = `${fillPercent}%`;
 
+  // Populate Quick Stats Bar
+  const sPts = document.getElementById('st-stat-points');
+  const sShield = document.getElementById('st-stat-shield');
+  const sGrade = document.getElementById('st-stat-grade');
+  if (sPts) sPts.textContent = st.rating;
+  if (sShield) sShield.textContent = shield.name;
+  if (sGrade) sGrade.textContent = `${st.gradeScore || 95} / 100`;
+
   renderStudentLeaderboard();
   renderStudentLectures();
   renderStudentAttendanceStats();
@@ -1569,10 +1610,11 @@ function renderStudentDashboardView() {
 }
 
 function showStudentTab(tabId, clickedBtn = null) {
-  document.querySelectorAll('.student-nav-tabs .st-tab-btn').forEach(btn => {
+  // Update desktop and mobile tab buttons
+  document.querySelectorAll('.student-nav-tabs .st-tab-btn, #student-mobile-nav .mobile-nav-btn').forEach(btn => {
     const onclickAttr = btn.getAttribute('onclick') || '';
     if (clickedBtn) {
-      btn.classList.toggle('active', btn === clickedBtn);
+      btn.classList.toggle('active', btn === clickedBtn || onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
     } else {
       btn.classList.toggle('active', onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
     }
@@ -1611,48 +1653,26 @@ function renderStudentLeaderboard() {
   }
 
   container.innerHTML = sorted.map((s, idx) => {
-    const shield = getShieldForRating(s.rating);
     const isSelf = appState.activeStudent && s.id === appState.activeStudent.id;
     const rank = idx + 1;
-
-    let rankBadge = `<span class="font-weight-bold text-muted">#${rank}</span>`;
-    let rankClass = '';
-    if (rank === 1) {
-      rankBadge = `<span class="badge bg-amber" style="font-size: 0.9rem;">👑 #1</span>`;
-      rankClass = 'border-amber bg-subtle';
-    } else if (rank === 2) {
-      rankBadge = `<span class="badge bg-subtle text-indigo" style="font-size: 0.85rem;">🥈 #2</span>`;
-    } else if (rank === 3) {
-      rankBadge = `<span class="badge bg-subtle text-rose" style="font-size: 0.85rem;">🥉 #3</span>`;
-    }
-
-    const ptsInfo = calculateStudentPoints(s);
+    const rankBadge = `#${rank}`;
+    const rankClass = rank <= 3 ? `rank-${rank}` : '';
 
     return `
-      <div class="card p-3 mb-2 flex-between flex-wrap gap-2 ${rankClass} ${isSelf ? 'border-indigo' : ''}">
+      <div class="leaderboard-card ${rankClass} ${isSelf ? 'is-self' : ''}">
         <div class="flex-align-center gap-3">
-          <div class="rank-box text-center" style="min-width: 45px;">
+          <div class="rank-badge-box">
             ${rankBadge}
           </div>
-          <img src="${s.avatar}" class="avatar-md" alt="Avatar">
-          <div>
-            <div class="flex-align-center gap-2">
-              <strong style="font-size: 1.05rem;">${s.name}</strong>
-              ${isSelf ? '<span class="badge bg-indigo">حسابك الشخصي</span>' : ''}
-            </div>
-            <div class="text-xs text-muted mt-1">
-              <i class="fa-solid fa-layer-group text-indigo"></i> ${s.group || 'بدون مجموعة'} • 
-              <span class="text-emerald font-weight-bold">${ptsInfo.attendedSessionsCount} جلسات حضور</span>
-            </div>
+          <img src="${s.avatar}" class="avatar-md" alt="${s.name}">
+          <div class="flex-align-center gap-2">
+            <strong class="text-main" style="font-size: 1.05rem;">${s.name}</strong>
+            ${isSelf ? '<span class="badge bg-indigo text-xs">حسابك</span>' : ''}
           </div>
         </div>
 
-        <div class="flex-align-center gap-3 flex-wrap">
-          <span class="badge-shield ${shield.class}">${shield.name}</span>
-          <div class="text-left" style="text-align: left;">
-            <strong class="text-amber block" style="font-size: 1.2rem;">${s.rating} نقطة</strong>
-            <span class="text-xs text-muted block">حضور: ${ptsInfo.attendancePts} | مواجهات: ${ptsInfo.battlePts} | تميز: ${ptsInfo.bonusPts}</span>
-          </div>
+        <div class="leaderboard-points-box">
+          <strong class="text-amber" style="font-size: 1.25rem;">${s.rating || 0} نقطة</strong>
         </div>
       </div>
     `;
@@ -1700,7 +1720,9 @@ function renderStudentAttendanceStats() {
 
   const percent = totalSessions > 0 ? Math.round((attendedCount / totalSessions) * 100) : 100;
   const pEl = document.getElementById('st-attendance-percent');
+  const statAttEl = document.getElementById('st-stat-attendance');
   if (pEl) pEl.textContent = `${percent}%`;
+  if (statAttEl) statAttEl.textContent = `${percent}%`;
 
   const tbody = document.getElementById('st-attendance-history-body');
   if (tbody) {

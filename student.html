@@ -34,7 +34,7 @@
           <i class="fa-solid fa-user-graduate"></i>
         </div>
         <div class="brand-text">
-          <span class="system-title">بوابة الطالب</span>
+          <span class="system-title">بوابة الطالب الأكاديمية</span>
           <span class="course-subtitle hide-mobile">الذكاء الاصطناعي في إنتاج الأنظمة الإلكترونية</span>
         </div>
       </div>
@@ -61,14 +61,34 @@
     </div>
   </header>
 
+  <!-- Student Mobile Bottom Navigation Bar (< 768px screens) -->
+  <nav class="mobile-bottom-nav hidden" id="student-mobile-nav">
+    <button class="mobile-nav-btn active" onclick="showStudentTab('st-leaderboard', this)">
+      <i class="fa-solid fa-trophy text-amber"></i>
+      <span>المتصدرون</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showStudentTab('st-lectures', this)">
+      <i class="fa-solid fa-book-open"></i>
+      <span>المحاضرات</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showStudentTab('st-attendance', this)">
+      <i class="fa-solid fa-calendar-check text-emerald"></i>
+      <span>الحضور</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="showStudentTab('st-grades', this)">
+      <i class="fa-solid fa-graduation-cap text-indigo"></i>
+      <span>الدرجات</span>
+    </button>
+  </nav>
+
   <!-- Main Container -->
   <main class="main-wrapper">
     <div id="view-student" class="view-panel active">
 
-      <!-- Student Login Form (Clean Distraction-Free Mobile Login) -->
-      <div id="student-login-card" class="student-login-wrapper card">
+      <!-- Student Login Form (Clean Distraction-Free Mobile & Desktop Login) -->
+      <div id="student-login-card" class="student-login-wrapper card p-4 mx-auto" style="max-width: 440px;">
         <div class="text-center mb-4">
-          <div class="login-icon-box">
+          <div class="login-icon-box bg-purple mx-auto mb-3">
             <i class="fa-solid fa-user-graduate"></i>
           </div>
           <h2>تسجيل دخول الطالب</h2>
@@ -77,22 +97,30 @@
 
         <form onsubmit="handleStudentLogin(event)">
           <div class="form-group mb-3">
-            <label>الرقم الأكاديمي (ID):</label>
-            <input type="text" id="login-student-id" class="form-control" placeholder="أدخل الرقم الأكاديمي" required>
+            <label class="font-weight-bold block mb-1">الرقم الأكاديمي (ID):</label>
+            <input type="text" id="login-student-id" class="form-control" placeholder="أدخل الرقم الأكاديمي (مثال: 2026101)" required>
           </div>
           <div class="form-group mb-4">
-            <label>كلمة المرور:</label>
+            <label class="font-weight-bold block mb-1">كلمة المرور:</label>
             <input type="password" id="login-student-pass" class="form-control" placeholder="••••••••" required>
           </div>
           <button type="submit" class="btn btn-primary btn-block btn-lg">
             <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
           </button>
         </form>
+
+        <div class="border-top pt-3 mt-4 text-center">
+          <span class="text-xs text-muted block mb-2">تسجيل سريع للتجربة:</span>
+          <div class="flex-center gap-2 flex-wrap">
+            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026101', '123456')">طالب 1 (2026101)</button>
+            <button class="btn btn-xs btn-outline" onclick="quickFillLogin('2026102', '123456')">طالب 2 (2026102)</button>
+          </div>
+        </div>
       </div>
 
       <!-- Student Dashboard Content -->
-      <div id="student-dashboard-content" class="student-dashboard hidden">
-        <!-- Student Header Card -->
+      <div id="student-dashboard-content" class="student-dashboard width-100 hidden">
+        <!-- Student Header Hero Card -->
         <div class="student-hero-card card p-4 mb-4">
           <div class="flex-between flex-wrap gap-3">
             <div class="flex-align-center gap-3">
@@ -102,7 +130,7 @@
               </div>
               <div>
                 <h2 id="st-profile-name" class="mb-1">اسم الطالب</h2>
-                <div class="flex-align-center gap-2 text-sm text-muted">
+                <div class="flex-align-center gap-2 text-sm text-muted flex-wrap">
                   <span>ID: <code id="st-profile-id" class="text-indigo">2026101</code></span>
                   <span>•</span>
                   <span>العمر: <span id="st-profile-age">20</span> سنة</span>
@@ -117,11 +145,11 @@
             <div class="shield-progress-card">
               <div class="flex-between mb-1">
                 <span id="st-badge-name" class="badge-shield shield-gold">درع ذهبي</span>
-                <span class="text-xs text-muted">مستوى التطور</span>
+                <span class="text-xs text-muted font-weight-bold">مستوى التطور الأكاديمي</span>
               </div>
               <div class="points-progress-bar">
                 <div class="flex-between text-xs text-muted mb-1">
-                  <span>النقاط: <strong id="st-rating-pts">500</strong> / <span
+                  <span>إجمالي النقاط: <strong id="st-rating-pts" class="text-amber">500</strong> / <span
                       id="st-next-level-pts">1000</span></span>
                 </div>
                 <div class="progress-track">
@@ -132,18 +160,53 @@
           </div>
         </div>
 
-        <!-- Student Tabs Navigation -->
+        <!-- Student Quick Stats Overview -->
+        <div class="stats-grid mb-4">
+          <div class="stat-card">
+            <div class="stat-icon bg-amber"><i class="fa-solid fa-coins"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">إجمالي النقاط</span>
+              <h3 id="st-stat-points">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon bg-purple"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">درع التطور</span>
+              <h3 id="st-stat-shield" style="font-size: 0.95rem;">-</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon bg-emerald"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">نسبة الحضور</span>
+              <h3 id="st-stat-attendance">100%</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon bg-cyan"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">التقييم المستحق</span>
+              <h3 id="st-stat-grade">0 / 100</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Tabs Navigation (Desktop & Mobile) -->
         <div class="student-nav-tabs card p-2 mb-3">
-          <button class="st-tab-btn active" onclick="showStudentTab('st-leaderboard')">
+          <button class="st-tab-btn active" onclick="showStudentTab('st-leaderboard', this)">
             <i class="fa-solid fa-trophy text-amber"></i> المتصدرون والدروع
           </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-lectures')">
+          <button class="st-tab-btn" onclick="showStudentTab('st-lectures', this)">
             <i class="fa-solid fa-book-open"></i> المحاضرات
           </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-attendance')">
+          <button class="st-tab-btn" onclick="showStudentTab('st-attendance', this)">
             <i class="fa-solid fa-calendar-check text-emerald"></i> الحضور والغياب
           </button>
-          <button class="st-tab-btn" onclick="showStudentTab('st-grades')">
+          <button class="st-tab-btn" onclick="showStudentTab('st-grades', this)">
             <i class="fa-solid fa-graduation-cap text-indigo"></i> الدرجات والواجبات
           </button>
         </div>
@@ -151,7 +214,7 @@
         <!-- Student Tab Contents -->
         <div id="st-leaderboard" class="st-tab-content active">
           <div class="card p-3">
-            <h3 class="mb-3"><i class="fa-solid fa-crown text-amber"></i> قائمة متصدري الشُعبة</h3>
+            <h3 class="mb-3 flex-align-center gap-2"><i class="fa-solid fa-crown text-amber"></i> قائمة متصدري الشُعبة</h3>
             <div id="st-leaderboard-list" class="leaderboard-list"></div>
           </div>
         </div>
@@ -161,8 +224,8 @@
         </div>
 
         <div id="st-attendance" class="st-tab-content">
-          <div class="card p-4 text-center mb-3">
-            <span class="text-muted text-sm">نسبة حضورك الإجمالية</span>
+          <div class="card p-4 text-center mb-3 bg-subtle">
+            <span class="text-muted text-sm block">نسبة حضورك الإجمالية للجلسات</span>
             <h1 id="st-attendance-percent" class="text-emerald display-4 font-weight-bold mt-1">100%</h1>
           </div>
           <div class="card">
@@ -182,12 +245,12 @@
         </div>
 
         <div id="st-grades" class="st-tab-content">
-          <div class="card p-4 text-center mb-3">
-            <span class="text-muted text-sm">الدرجة النهائية المستحقة:</span>
+          <div class="card p-4 text-center mb-3 bg-subtle">
+            <span class="text-muted text-sm block">الدرجة النهائية المستحقة:</span>
             <h1 id="st-grade-score" class="text-indigo font-weight-bold display-4 mt-1">95 / 100</h1>
           </div>
           <div class="card p-3">
-            <h4 class="mb-2">الواجبات والتكاليف</h4>
+            <h4 class="mb-3"><i class="fa-solid fa-list-check text-indigo"></i> الواجبات والتكاليف الميدانية</h4>
             <div id="st-tasks-list"></div>
           </div>
         </div>
@@ -204,3 +267,4 @@
 </body>
 
 </html>
+

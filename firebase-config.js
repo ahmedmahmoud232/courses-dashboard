@@ -41,9 +41,19 @@ window.FirebaseSystem = {
           this.app = window.firebase.app();
         }
         this.db = window.firebase.firestore();
+
+        // Enable offline persistence for seamless local & cloud synchronization
+        this.db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+          if (err.code === 'failed-precondition') {
+            console.warn("Firestore persistence precondition failed (multiple tabs open)");
+          } else if (err.code === 'unimplemented') {
+            console.warn("Firestore persistence not supported in this browser");
+          }
+        });
+
         this.isConfigured = true;
         this.isOnline = true;
-        console.log("🔥 Firebase Firestore initialized successfully for project:", this.config.projectId);
+        console.log("🔥 Firebase Firestore connected successfully for project:", this.config.projectId);
       } catch (e) {
         console.warn("⚠️ Firebase initialization notice:", e.message);
         this.isOnline = false;
@@ -54,12 +64,29 @@ window.FirebaseSystem = {
     }
   },
 
+  // Reconnect / Reset Firebase connection cleanly
+  reconnect() {
+    try {
+      this.listeners.forEach(unsub => {
+        if (typeof unsub === 'function') unsub();
+      });
+      this.listeners = [];
+      this.isConfigured = false;
+      this.init();
+      return this.isConfigured;
+    } catch (e) {
+      console.error("Firebase reconnect error:", e);
+      return false;
+    }
+  },
+
   // Save State to Cloud Firestore with Fallback
   async saveCloudState(collectionName, docId, data) {
     if (!this.isConfigured || !this.db) {
       this.init();
     }
     if (!this.isConfigured || !this.db) {
+      console.warn("Firebase not configured; saved state stored locally.");
       return false;
     }
     try {
@@ -67,6 +94,7 @@ window.FirebaseSystem = {
         ...data,
         updatedAt: window.firebase?.firestore?.FieldValue?.serverTimestamp() || new Date().toISOString()
       }, { merge: true });
+      console.log("☁️ State successfully saved to Firebase Firestore doc:", docId);
       return true;
     } catch (e) {
       console.warn("Cloud Firestore save warning:", e.message);
@@ -85,6 +113,9 @@ window.FirebaseSystem = {
         .onSnapshot((doc) => {
           if (doc.exists) {
             callback(doc.data());
+          } else {
+            console.log("☁️ Document does not exist in Cloud Firestore yet. Calling initial seed fallback.");
+            callback(null);
           }
         }, (err) => {
           console.warn("Firestore snapshot error:", err.message);
@@ -97,10 +128,9 @@ window.FirebaseSystem = {
     }
   },
 
-
   saveConfig(configObject) {
     localStorage.setItem('firebase_config_course_dashboard', JSON.stringify(configObject));
-    window.location.reload();
+    this.reconnect();
   }
 };
 
@@ -116,4 +146,5 @@ window.addEventListener('DOMContentLoaded', () => {
     window.FirebaseSystem.init();
   }
 });
+
 
