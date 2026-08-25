@@ -14,6 +14,31 @@ const INITIAL_DATA = {
   questionCollections: [],
   lectures: [],
   tasks: [],
+  exams: [
+    {
+      id: 'ex-101',
+      title: 'اختبار خوارزميات التعلم الآلي والأنظمة المدمجة',
+      group: 'all',
+      durationMinutes: 15,
+      description: 'اختبار تقييمي لقياس مدى استيعاب خوارزميات التعلم الآلي والأنظمة الإلكترونية.',
+      questions: [
+        {
+          id: 'q1',
+          text: 'ما هي الخوارزمية الأكثر استخداماً في تصنيف البيانات الخطية؟',
+          options: ['Linear Regression', 'Logistic Regression', 'K-Means Clustering', 'Decision Trees'],
+          correctIndex: 1
+        },
+        {
+          id: 'q2',
+          text: 'أي من المكونات التالية يُستخدم لمعالجة مصفوفات الأعداد في الحسابات الفائقة للذكاء الاصطناعي؟',
+          options: ['GPU / TPU', 'Hard Disk Drive', 'Audio Card', 'Power Supply Unit'],
+          correctIndex: 0
+        }
+      ],
+      createdAt: new Date().toISOString().split('T')[0]
+    }
+  ],
+  examSubmissions: [],
   sessionAttendance: {},
   battles: []
 };
@@ -31,6 +56,8 @@ let appState = {
   questionCollections: [],
   lectures: [],
   tasks: [],
+  exams: [],
+  examSubmissions: [],
   sessionAttendance: {},
   battles: [],
   currentBattle: null,
@@ -174,7 +201,7 @@ function initFirebaseSync() {
 
 
 function calculateStudentPoints(student) {
-  if (!student) return { attendedSessionsCount: 0, attendancePts: 0, bonusPts: 0, battlePts: 0, total: 0 };
+  if (!student) return { attendedSessionsCount: 0, attendancePts: 0, bonusPts: 0, battlePts: 0, examPts: 0, total: 0 };
 
   let attendedSessionsCount = 0;
 
@@ -190,16 +217,33 @@ function calculateStudentPoints(student) {
     });
   }
 
+  let examPts = 0;
+  if (appState.examSubmissions && Array.isArray(appState.examSubmissions)) {
+    const examBestCorrect = {};
+    appState.examSubmissions.forEach(sub => {
+      if (sub.studentId === student.id) {
+        const correct = sub.correctAnswers || 0;
+        if (!examBestCorrect[sub.examId] || correct > examBestCorrect[sub.examId]) {
+          examBestCorrect[sub.examId] = correct;
+        }
+      }
+    });
+    Object.values(examBestCorrect).forEach(correctCount => {
+      examPts += correctCount * 50;
+    });
+  }
+
   const attendancePts = attendedSessionsCount * 50;
   const bonusPts = student.bonusPoints || 0;
   const battlePts = student.battlePoints || 0;
-  const total = attendancePts + bonusPts + battlePts;
+  const total = attendancePts + bonusPts + battlePts + examPts;
 
   return {
     attendedSessionsCount,
     attendancePts,
     bonusPts,
     battlePts,
+    examPts,
     total
   };
 }
@@ -470,11 +514,30 @@ function renderStudentsTable() {
   }).join('');
 }
 
+function handleStudentAvatarUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const avatarInput = document.getElementById('form-student-avatar');
+    const avatarPreview = document.getElementById('form-student-avatar-preview');
+    if (avatarInput) avatarInput.value = dataUrl;
+    if (avatarPreview) avatarPreview.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
 function openRegisterStudentModal() {
   document.getElementById('student-modal-title').textContent = "تسجيل طالب جديد وتعيين المجموعة";
   document.getElementById('student-form').reset();
   document.getElementById('form-student-index').value = '';
   document.getElementById('form-student-id').readOnly = false;
+  const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.floor(Math.random() * 1000)}`;
+  const avatarInput = document.getElementById('form-student-avatar');
+  const avatarPreview = document.getElementById('form-student-avatar-preview');
+  if (avatarInput) avatarInput.value = defaultAvatar;
+  if (avatarPreview) avatarPreview.src = defaultAvatar;
   populateDropdowns();
   openModal('student-modal');
 }
@@ -492,14 +555,22 @@ function openEditStudentModal(studentId) {
   document.getElementById('form-student-pass').value = st.pass;
   document.getElementById('form-student-age').value = st.age;
   document.getElementById('form-student-group').value = st.group || '';
-  document.getElementById('form-student-avatar').value = st.avatar;
+  
+  const avatarInput = document.getElementById('form-student-avatar');
+  const avatarPreview = document.getElementById('form-student-avatar-preview');
+  if (avatarInput) avatarInput.value = st.avatar;
+  if (avatarPreview) avatarPreview.src = st.avatar;
 
   openModal('student-modal');
 }
 
 function generateRandomAvatar() {
   const randomSeed = Math.floor(Math.random() * 10000);
-  document.getElementById('form-student-avatar').value = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
+  const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
+  const avatarInput = document.getElementById('form-student-avatar');
+  const avatarPreview = document.getElementById('form-student-avatar-preview');
+  if (avatarInput) avatarInput.value = avatarUrl;
+  if (avatarPreview) avatarPreview.src = avatarUrl;
 }
 
 function saveStudentForm(event) {

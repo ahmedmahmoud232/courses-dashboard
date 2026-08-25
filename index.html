@@ -49,16 +49,6 @@
         <a href="student.html" target="_blank" class="btn btn-outline btn-sm" title="بوابة الطلاب الخارجية">
           <i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="hide-mobile">بوابة الطلاب الخارجية</span>
         </a>
-
-        <!-- Current User Info Badge -->
-        <div id="user-badge" class="user-badge">
-          <img id="header-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Teacher" alt="Avatar"
-            class="avatar-sm">
-          <div class="user-meta">
-            <span id="header-user-name" class="user-name">د. المعلم</span>
-            <span id="header-user-role" class="user-role-tag">المشرف الأكاديمي</span>
-          </div>
-        </div>
       </div>
     </div>
   </header>
@@ -74,11 +64,11 @@
       <span>الطلاب</span>
     </button>
     <button class="mobile-nav-btn" onclick="showTeacherTab('battle-tab', this)">
-      <i class="fa-solid fa-swords text-rose"></i>
+      <i class="fa-solid fa-award"></i>
       <span>المواجهة</span>
     </button>
     <button class="mobile-nav-btn" onclick="showTeacherTab('question-collections-tab', this)">
-      <i class="fa-solid fa-layer-group text-purple"></i>
+      <i class="fa-solid fa-folder-open"></i>
       <span>الأسئلة</span>
     </button>
     <button class="mobile-nav-btn" onclick="showTeacherTab('lectures-tab', this)">
@@ -94,47 +84,67 @@
       <!-- Desktop Sidebar Navigation -->
       <aside class="sidebar">
         <nav class="side-nav">
-          <button class="nav-item active" onclick="showTeacherTab('dashboard-tab')">
+          <button class="nav-item active" onclick="showTeacherTab('dashboard-tab', this)">
             <i class="fa-solid fa-chart-pie"></i>
             <span>نظرة عامة</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('students-tab')">
+          <button class="nav-item" onclick="showTeacherTab('students-tab', this)">
             <i class="fa-solid fa-users"></i>
             <span>إدارة الطلاب</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('groups-tab')">
+          <button class="nav-item" onclick="showTeacherTab('groups-tab', this)">
             <i class="fa-solid fa-layer-group"></i>
             <span>المجموعات والجلسات</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('attendance-tab')">
+          <button class="nav-item" onclick="showTeacherTab('attendance-tab', this)">
             <i class="fa-solid fa-clipboard-user"></i>
             <span>حضور الجلسات</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('battle-tab')">
-            <i class="fa-solid fa-swords text-rose"></i>
-            <span>حلبة المواجهة (Battle)</span>
+          <button class="nav-item" onclick="showTeacherTab('battle-tab', this)">
+            <i class="fa-solid fa-award"></i>
+            <span>حلبة المواجهة</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('question-collections-tab')">
-            <i class="fa-solid fa-layer-group text-purple"></i>
+          <button class="nav-item" onclick="showTeacherTab('question-collections-tab', this)">
+            <i class="fa-solid fa-folder-open"></i>
             <span>مجموعات الأسئلة</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('lectures-tab')">
+          <button class="nav-item" onclick="showTeacherTab('lectures-tab', this)">
             <i class="fa-solid fa-book-open-reader"></i>
             <span>المحاضرات والمحتوى</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('tasks-tab')">
+          <button class="nav-item" onclick="showTeacherTab('tasks-tab', this)">
             <i class="fa-solid fa-list-check"></i>
             <span>المهام والواجبات</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('grades-tab')">
+          <button class="nav-item" onclick="showTeacherTab('grades-tab', this)">
             <i class="fa-solid fa-star-half-stroke"></i>
             <span>الدرجات والتقييمات</span>
           </button>
-          <button class="nav-item" onclick="showTeacherTab('points-tab')">
-            <i class="fa-solid fa-coins text-amber"></i>
+          <button class="nav-item" onclick="showTeacherTab('points-tab', this)">
+            <i class="fa-solid fa-coins"></i>
             <span>إدارة النقاط</span>
           </button>
         </nav>
+
+        <!-- System Status Card -->
+        <div class="sidebar-system-status p-3 mt-4">
+          <div class="flex-between mb-2">
+            <span class="text-xs font-weight-bold flex-align-center gap-1">
+              <span class="status-dot online"></span> حالة النظام
+            </span>
+            <span class="badge bg-indigo text-xs">نشط</span>
+          </div>
+          <div class="text-xs text-muted">
+            <div class="flex-between mb-1">
+              <span>خادم البيانات:</span>
+              <strong class="text-main">متصل 🟢</strong>
+            </div>
+            <div class="flex-between">
+              <span>زمن الاستجابة:</span>
+              <strong class="text-main">12 ms</strong>
+            </div>
+          </div>
+        </div>
       </aside>
 
       <!-- Main Dashboard Content Area -->
@@ -205,7 +215,7 @@
             <!-- Quick Action & Battle Mode Hero -->
             <div class="card p-4 text-center bg-subtle">
               <div class="login-icon-box bg-purple">
-                <i class="fa-solid fa-swords"></i>
+                <i class="fa-solid fa-award"></i>
               </div>
               <h3>حلبة المنافسة والمواجهة M3 المباشرة</h3>
               <p class="text-muted text-sm mt-1">منافسة فورية بين طالبين واحتساب النقاط وترقية دروع التطور تلقائياً!</p>
@@ -344,7 +354,7 @@
         <div id="battle-tab" class="tab-content">
           <div class="tab-header">
             <div>
-              <h2>حلبة المواجهة والأسئلة (Battle Mode)</h2>
+              <h2><i class="fa-solid fa-award"></i> حلبة المواجهة والأسئلة (Battle Mode)</h2>
               <p class="text-muted hide-mobile">تحديات مباشرة 1v1 لزيادة النقاط وتطوير الدرع!</p>
             </div>
             <button class="btn btn-purple" onclick="openCreateCollectionModal()">
@@ -403,7 +413,8 @@
           <div class="tab-header">
             <div>
               <h2>مجموعات الأسئلة (Question Collections)</h2>
-              <p class="text-muted hide-mobile">إنشاء وتعديل وتصنيف بنوك الأسئلة لاستخدامها في حلبة المواجهة (Battle Mode).</p>
+              <p class="text-muted hide-mobile">إنشاء وتعديل وتصنيف بنوك الأسئلة لاستخدامها في حلبة المواجهة (Battle
+                Mode).</p>
             </div>
             <button class="btn btn-primary" onclick="openCreateCollectionModal()">
               <i class="fa-solid fa-folder-plus"></i> إنشاء مجموعة أسئلة جديد
@@ -482,7 +493,8 @@
           <div class="tab-header">
             <div>
               <h2>إدارة واحتساب النقاط والدروع</h2>
-              <p class="text-muted">احتساب تلقائي 50 نقطة لكل جلسة حضور + إضافة وتعديل نقاط التميز والمكافآت اليدوية.</p>
+              <p class="text-muted">احتساب تلقائي 50 نقطة لكل جلسة حضور + إضافة وتعديل نقاط التميز والمكافآت اليدوية.
+              </p>
             </div>
           </div>
 
@@ -497,12 +509,14 @@
                 </div>
                 <div class="form-group">
                   <label>عدد النقاط (+ أو -):</label>
-                  <input type="number" id="points-amount-input" class="form-control" placeholder="مثال: 50 أو -20" required>
+                  <input type="number" id="points-amount-input" class="form-control" placeholder="مثال: 50 أو -20"
+                    required>
                 </div>
               </div>
               <div class="form-group mb-3">
                 <label>سبب التقييم / نوع النشاط:</label>
-                <input type="text" id="points-reason-input" class="form-control" placeholder="مثال: مشاركة متميزة، الإجابة على سؤال التحدي، واجب إضافي...">
+                <input type="text" id="points-reason-input" class="form-control"
+                  placeholder="مثال: مشاركة متميزة، الإجابة على سؤال التحدي، واجب إضافي...">
               </div>
               <button type="submit" class="btn btn-emerald">
                 <i class="fa-solid fa-plus-circle"></i> إضافة النقاط للحساب
@@ -584,11 +598,22 @@
               <select id="form-student-group" class="form-control"></select>
             </div>
           </div>
-          <div class="form-group">
-            <label>رابط الصورة الشخصية:</label>
-            <div class="input-with-btn">
-              <input type="text" id="form-student-avatar" class="form-control" placeholder="رابط صورة أو اضغط إنشاء">
-              <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomAvatar()">رمز عشوائي</button>
+          <div class="form-group text-center">
+            <label class="block mb-2 font-weight-bold">الصورة الشخصية للطالب:</label>
+            <div class="flex-center flex-column gap-2 mb-2">
+              <img id="form-student-avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default"
+                alt="Avatar Preview" class="avatar-md">
+              <input type="hidden" id="form-student-avatar"
+                value="https://api.dicebear.com/7.x/bottts/svg?seed=Default">
+              <div class="flex-center gap-2 flex-wrap mt-1">
+                <label for="form-student-avatar-file" class="btn btn-primary btn-sm cursor-pointer mb-0">
+                  <i class="fa-solid fa-upload"></i> رفع صورة للطالب
+                </label>
+                <input type="file" id="form-student-avatar-file" accept="image/*" class="hidden"
+                  onchange="handleStudentAvatarUpload(event)">
+                <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomAvatar()">رمز
+                  عشوائي</button>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
