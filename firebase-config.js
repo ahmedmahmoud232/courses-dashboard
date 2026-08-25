@@ -57,6 +57,9 @@ window.FirebaseSystem = {
   // Save State to Cloud Firestore with Fallback
   async saveCloudState(collectionName, docId, data) {
     if (!this.isConfigured || !this.db) {
+      this.init();
+    }
+    if (!this.isConfigured || !this.db) {
       return false;
     }
     try {
@@ -73,6 +76,9 @@ window.FirebaseSystem = {
 
   // Listen to Cloud Firestore Real-time Updates
   subscribeToDoc(collectionName, docId, callback) {
+    if (!this.isConfigured || !this.db) {
+      this.init();
+    }
     if (!this.isConfigured || !this.db) return null;
     try {
       const unsubscribe = this.db.collection(collectionName).doc(docId)
@@ -90,6 +96,7 @@ window.FirebaseSystem = {
       return null;
     }
   },
+
 
   saveConfig(configObject) {
     localStorage.setItem('firebase_config_course_dashboard', JSON.stringify(configObject));
