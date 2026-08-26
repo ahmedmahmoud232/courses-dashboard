@@ -143,6 +143,7 @@ function saveState(syncToCloud = true) {
     examSubmissions: appState.examSubmissions || [],
     sessionAttendance: appState.sessionAttendance || {},
     battles: appState.battles || [],
+    currentBattle: appState.currentBattle || null,
     updatedAt: new Date().toISOString()
   };
 
@@ -186,35 +187,30 @@ function initFirebaseSync() {
     if (window.FirebaseSystem.isConfigured) {
       window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
         if (remoteData && typeof remoteData === 'object') {
-          if (Array.isArray(remoteData.students) && remoteData.students.length > 0) {
-            appState.students = mergeDataLists(appState.students, remoteData.students, 'id');
-          }
-          if (Array.isArray(remoteData.groups) && remoteData.groups.length > 0) {
-            appState.groups = mergeDataLists(appState.groups, remoteData.groups, 'id');
-          }
-          if (Array.isArray(remoteData.questionCollections) && remoteData.questionCollections.length > 0) {
-            appState.questionCollections = mergeDataLists(appState.questionCollections, remoteData.questionCollections, 'id');
-          }
-          if (Array.isArray(remoteData.lectures) && remoteData.lectures.length > 0) {
-            appState.lectures = mergeDataLists(appState.lectures, remoteData.lectures, 'id');
-          }
-          if (Array.isArray(remoteData.tasks) && remoteData.tasks.length > 0) {
-            appState.tasks = mergeDataLists(appState.tasks, remoteData.tasks, 'id');
-          }
-          if (Array.isArray(remoteData.exams) && remoteData.exams.length > 0) {
-            appState.exams = mergeDataLists(appState.exams, remoteData.exams, 'id');
-          }
-          if (Array.isArray(remoteData.examSubmissions) && remoteData.examSubmissions.length > 0) {
-            appState.examSubmissions = mergeDataLists(appState.examSubmissions, remoteData.examSubmissions, 'id');
-          }
-          if (remoteData.sessionAttendance && Object.keys(remoteData.sessionAttendance).length > 0) {
-            appState.sessionAttendance = { ...appState.sessionAttendance, ...remoteData.sessionAttendance };
-          }
-          if (Array.isArray(remoteData.battles) && remoteData.battles.length > 0) {
-            appState.battles = mergeDataLists(appState.battles, remoteData.battles, 'id');
-          }
+          if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
+          if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
+          if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
+          if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
+          if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
+          if (Array.isArray(remoteData.exams)) appState.exams = remoteData.exams;
+          if (Array.isArray(remoteData.examSubmissions)) appState.examSubmissions = remoteData.examSubmissions;
+          if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
+          if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
+          if (remoteData.currentBattle !== undefined) appState.currentBattle = remoteData.currentBattle;
 
-          saveState(false);
+          localStorage.setItem('course_control_panel_state_v5', JSON.stringify({
+            students: appState.students,
+            groups: appState.groups,
+            questionCollections: appState.questionCollections,
+            lectures: appState.lectures,
+            tasks: appState.tasks,
+            exams: appState.exams,
+            examSubmissions: appState.examSubmissions,
+            sessionAttendance: appState.sessionAttendance,
+            battles: appState.battles,
+            updatedAt: new Date().toISOString()
+          }));
+          
           refreshAllUI();
         } else {
           // Cloud doc does not exist yet: seed local state to Cloud Firestore
