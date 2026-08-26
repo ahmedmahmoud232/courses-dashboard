@@ -397,12 +397,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showTeacherTab(tabId, clickedBtn = null) {
-  document.querySelectorAll('.sidebar .nav-item').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.mobile-bottom-nav .mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
-
-  if (clickedBtn) {
-    clickedBtn.classList.add('active');
-  }
+  document.querySelectorAll('.sidebar .nav-item, #mobile-nav .mobile-nav-btn').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (clickedBtn) {
+      btn.classList.toggle('active', btn === clickedBtn || onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
+    } else {
+      btn.classList.toggle('active', onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
+    }
+  });
 
   document.querySelectorAll('.content-area .tab-content').forEach(tab => tab.classList.remove('active'));
   const target = document.getElementById(tabId);
@@ -417,7 +419,11 @@ function showTeacherTab(tabId, clickedBtn = null) {
     populateBattleSelectors();
   }
   if (tabId === 'question-collections-tab') renderQuestionCollectionsGrid();
+  if (tabId === 'lectures-tab') renderLecturesGrid();
+  if (tabId === 'tasks-tab') renderTasksList();
   if (tabId === 'grades-tab') renderGradesTable();
+  if (tabId === 'points-tab') renderPointsManagementTable();
+  if (tabId === 'exams-tab') renderTeacherExams();
 }
 
 function populateDropdowns() {
