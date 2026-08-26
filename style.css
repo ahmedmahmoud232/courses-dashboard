@@ -679,9 +679,11 @@ body {
   0% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
@@ -1727,23 +1729,22 @@ body {
   }
 
   .mobile-bottom-nav {
-    display: flex !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 62px !important;
-    background: var(--bg-glass) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-top: 1px solid var(--border-color) !important;
-    z-index: 99999 !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    padding: 0 4px !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12) !important;
-    padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
 
   .mobile-bottom-nav.hidden {
@@ -2109,7 +2110,79 @@ body {
   background: var(--primary-indigo-light);
 }
 
-.exam-option-pill input[type="radio"]:checked + span {
+.exam-option-pill input[type="radio"]:checked+span {
   color: var(--primary-indigo);
   font-weight: 700;
+}
+
+/* ==========================================================================
+ * STUDENT PORTAL DEDICATED MOBILE BOTTOM NAVIGATION SYSTEM
+ * ========================================================================== */
+
+.st-mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .st-mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    background: var(--bg-glass) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid var(--border-color) !important;
+    z-index: 99999 !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 4px !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .st-mobile-bottom-nav.hidden {
+    display: none !important;
+  }
+
+  .st-mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-family: var(--font-arabic);
+    padding: 6px 0;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .st-mobile-nav-item i {
+    font-size: 1.2rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .st-mobile-nav-item.active {
+    color: var(--primary-indigo) !important;
+    font-weight: 700 !important;
+  }
+
+  .st-mobile-nav-item.active i {
+    transform: translateY(-2px) scale(1.1);
+    color: var(--primary-indigo) !important;
+  }
+
+  .student-dashboard .main-wrapper,
+  #view-student {
+    padding-bottom: 5rem !important;
+  }
 }

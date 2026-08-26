@@ -1643,7 +1643,7 @@ function logoutStudent() {
   appState.activeStudent = null;
   localStorage.removeItem('logged_student_id');
   document.getElementById('student-app-navbar')?.classList.add('hidden');
-  document.getElementById('student-mobile-nav')?.classList.add('hidden');
+  document.getElementById('st-mobile-bottom-nav')?.classList.add('hidden');
   document.getElementById('student-login-card')?.classList.remove('hidden');
   document.getElementById('student-dashboard-content')?.classList.add('hidden');
 }
@@ -1653,7 +1653,7 @@ function renderStudentDashboardView() {
   if (!st) return;
 
   document.getElementById('student-app-navbar')?.classList.remove('hidden');
-  document.getElementById('student-mobile-nav')?.classList.remove('hidden');
+  document.getElementById('st-mobile-bottom-nav')?.classList.remove('hidden');
   document.getElementById('student-login-card')?.classList.add('hidden');
   document.getElementById('student-dashboard-content')?.classList.remove('hidden');
 
@@ -1717,7 +1717,7 @@ function renderStudentDashboardView() {
 
 function showStudentTab(tabId, clickedBtn = null) {
   // Update desktop and mobile tab buttons
-  document.querySelectorAll('.student-nav-tabs .st-tab-btn, #student-mobile-nav .mobile-nav-btn').forEach(btn => {
+  document.querySelectorAll('.student-nav-tabs .st-tab-btn, .st-mobile-bottom-nav .st-mobile-nav-item').forEach(btn => {
     const onclickAttr = btn.getAttribute('onclick') || '';
     if (clickedBtn) {
       btn.classList.toggle('active', btn === clickedBtn || onclickAttr.includes(`'${tabId}'`) || onclickAttr.includes(`"${tabId}"`));
