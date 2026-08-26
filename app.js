@@ -133,6 +133,16 @@ function loadState() {
 }
 
 function saveState(syncToCloud = true) {
+  if (appState.students && Array.isArray(appState.students)) {
+    appState.students.forEach(s => {
+      const ptsInfo = calculateStudentPoints(s);
+      s.rating = ptsInfo.total;
+      s.attendancePts = ptsInfo.attendancePts;
+      s.examPts = ptsInfo.examPts;
+      s.shield = getShieldForRating(s.rating).name;
+    });
+  }
+
   const stateData = {
     students: appState.students || [],
     groups: appState.groups || [],
@@ -272,6 +282,19 @@ function calculateStudentPoints(student) {
   };
 }
 
+function checkAndRestoreStudentSession() {
+  const savedStudentId = localStorage.getItem('logged_student_id');
+  if (savedStudentId && appState.students && appState.students.length > 0) {
+    const st = appState.students.find(s => s.id === savedStudentId);
+    if (st) {
+      appState.activeStudent = st;
+      renderStudentDashboardView();
+      return true;
+    }
+  }
+  return false;
+}
+
 function refreshAllUI() {
   populateDropdowns();
   renderDashboardStats();
@@ -285,6 +308,9 @@ function refreshAllUI() {
   populateAttendanceGroupDropdown();
   populateBattleCollectionDropdown();
   populateBattleSelectors();
+
+  checkAndRestoreStudentSession();
+
   if (appState.activeStudent) {
     renderStudentDashboardView();
   }
@@ -382,16 +408,7 @@ function closeModal(id) {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
-
-  const savedStudentId = localStorage.getItem('logged_student_id');
-  if (savedStudentId) {
-    const st = appState.students.find(s => s.id === savedStudentId);
-    if (st) {
-      appState.activeStudent = st;
-      renderStudentDashboardView();
-    }
-  }
-
+  checkAndRestoreStudentSession();
   populateDropdowns();
   refreshAllUI();
 });
@@ -1925,10 +1942,8 @@ function grantManualPoints(event) {
   if (!st) return;
 
   st.bonusPoints = (st.bonusPoints || 0) + pts;
-  saveState();
-  renderPointsManagementTable();
-  renderStudentsTable();
-  renderDashboardStats();
+  saveState(true);
+  refreshAllUI();
   document.getElementById('points-grant-form').reset();
   showToast(`تم إضافة ${pts} نقطة للطالب (${st.name}) - ${reason}`, "success");
 }
@@ -1937,10 +1952,8 @@ function quickAddPoints(studentId, points) {
   const st = appState.students.find(s => s.id === studentId);
   if (!st) return;
   st.bonusPoints = (st.bonusPoints || 0) + points;
-  saveState();
-  renderPointsManagementTable();
-  renderStudentsTable();
-  renderDashboardStats();
+  saveState(true);
+  refreshAllUI();
   showToast(`تم إضافة +${points} نقطة مكافأة للطالب (${st.name})`, "success");
 }
 
