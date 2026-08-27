@@ -220,7 +220,7 @@ function initFirebaseSync() {
             battles: appState.battles,
             updatedAt: new Date().toISOString()
           }));
-          
+
           refreshAllUI();
         } else {
           // Cloud doc does not exist yet: seed local state to Cloud Firestore
@@ -569,7 +569,7 @@ function handleStudentAvatarUpload(event) {
   const file = event.target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const dataUrl = e.target.result;
     const avatarInput = document.getElementById('form-student-avatar');
     const avatarPreview = document.getElementById('form-student-avatar-preview');
@@ -606,7 +606,7 @@ function openEditStudentModal(studentId) {
   document.getElementById('form-student-pass').value = st.pass;
   document.getElementById('form-student-age').value = st.age;
   document.getElementById('form-student-group').value = st.group || '';
-  
+
   const avatarInput = document.getElementById('form-student-avatar');
   const avatarPreview = document.getElementById('form-student-avatar-preview');
   if (avatarInput) avatarInput.value = st.avatar;
@@ -885,34 +885,46 @@ function renderQuestionCollectionsGrid() {
   const container = document.getElementById('collections-grid');
   if (!container) return;
 
-  container.innerHTML = appState.questionCollections.map((col, idx) => `
-    <div class="card p-4 flex-between flex-column">
-      <div>
-        <div class="flex-between mb-2">
-          <span class="badge bg-purple">مجموعة ${idx + 1} (${col.questions ? col.questions.length : 0} أسئلة)</span>
-          <div class="flex-align-center gap-1">
-            <button class="btn btn-xs btn-outline" onclick="openEditCollectionModal('${col.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
-            <button class="btn btn-xs btn-outline text-rose" onclick="deleteCollection('${col.id}')"><i class="fa-solid fa-trash"></i></button>
+  container.innerHTML = appState.questionCollections.map((col, idx) => {
+    const questionCount = col.questions ? col.questions.length : 0;
+    const sampleQuestions = col.questions && col.questions.length > 0
+      ? col.questions.slice(0, 3).map(q => `<li>${q.q || q}</li>`).join('')
+      : `<li>--- •</li>`;
+
+    return `
+      <div class="q-collection-card">
+        <div>
+          <div class="q-collection-header">
+            <span class="q-collection-badge">مجموعة ${idx + 1} (${questionCount} أسئلة)</span>
+            <div class="q-collection-actions">
+              <button class="btn-edit-collection" onclick="openEditCollectionModal('${col.id}')">
+                تعديل <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn-delete-collection" onclick="deleteCollection('${col.id}')" title="حذف">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <h3 class="q-collection-title">${col.title}</h3>
+          ${col.desc ? `<p class="text-muted text-xs mb-3 text-center">${col.desc}</p>` : ''}
+
+          <div class="mt-3">
+            <div class="q-collection-samples-title">عينات الأسئلة المتضمنة:</div>
+            <ul class="q-collection-samples-list">
+              ${sampleQuestions}
+            </ul>
           </div>
         </div>
-        <h3 class="mb-1 text-indigo">${col.title}</h3>
-        <p class="text-muted text-xs mb-3">${col.desc || ''}</p>
 
-        <div class="border-top pt-2">
-          <span class="text-xs font-weight-bold text-muted block mb-1">عينات الأسئلة المتضمنة:</span>
-          <ul class="text-xs text-muted pr-3">
-            ${(col.questions || []).slice(0, 3).map(q => `<li>${q.q}</li>`).join('')}
-          </ul>
+        <div class="mt-3">
+          <button class="btn-battle-gradient" onclick="startBattleWithCollection('${col.id}')">
+            اختيار هذا البنك للمواجهة
+          </button>
         </div>
       </div>
-
-      <div class="mt-3 border-top pt-2 flex-between width-100">
-        <button class="btn btn-battle btn-xs btn-block" onclick="startBattleWithCollection('${col.id}')">
-          <i class="fa-solid fa-swords"></i> اختيار هذا البنك للمواجهة
-        </button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function openCreateCollectionModal() {
@@ -1369,44 +1381,168 @@ function startBattleWithCollection(collectionId) {
   onBattleCollectionChange();
 }
 
+let battleTeamsState = {
+  t1: [],
+  t2: []
+};
+
 function populateBattleSelectors() {
-  const p1Sel = document.getElementById('battle-p1-select');
-  const p2Sel = document.getElementById('battle-p2-select');
-  if (!p1Sel || !p2Sel) return;
+  if (appState.students && appState.students.length > 0) {
+    if (battleTeamsState.t1.length === 0 && battleTeamsState.t2.length === 0) {
+      battleTeamsState.t1 = [appState.students[0].id];
+      if (appState.students.length > 1) {
+        battleTeamsState.t2 = [appState.students[1].id];
+      }
+    } else {
+      const validIds = appState.students.map(s => s.id);
+      battleTeamsState.t1 = battleTeamsState.t1.filter(id => validIds.includes(id));
+      battleTeamsState.t2 = battleTeamsState.t2.filter(id => validIds.includes(id));
+    }
+  } else {
+    battleTeamsState.t1 = [];
+    battleTeamsState.t2 = [];
+  }
 
-  const options = appState.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-  p1Sel.innerHTML = options;
-  p2Sel.innerHTML = options;
-  if (appState.students.length > 1) p2Sel.selectedIndex = 1;
-
-  updateBattlePreview('p1');
-  updateBattlePreview('p2');
+  renderBattleTeamsSetup();
 }
 
-function updateBattlePreview(playerKey) {
-  const selId = playerKey === 'p1' ? 'battle-p1-select' : 'battle-p2-select';
-  const previewDiv = document.getElementById(`${playerKey}-preview`);
-  const studentId = document.getElementById(selId)?.value;
+function renderBattleTeamsSetup() {
+  const t1Container = document.getElementById('team1-student-list');
+  const t2Container = document.getElementById('team2-student-list');
+  if (!t1Container || !t2Container) return;
 
-  const st = appState.students.find(s => s.id === studentId);
-  if (st && previewDiv) {
+  if (!appState.students || appState.students.length === 0) {
+    t1Container.innerHTML = `<div class="text-center text-xs text-muted p-2">لا يوجد طلاب مضافين</div>`;
+    t2Container.innerHTML = `<div class="text-center text-xs text-muted p-2">لا يوجد طلاب مضافين</div>`;
+    return;
+  }
+
+  t1Container.innerHTML = appState.students.map(s => {
+    const isSelectedInT1 = battleTeamsState.t1.includes(s.id);
+    const isSelectedInT2 = battleTeamsState.t2.includes(s.id);
+
+    return `
+      <label class="checklist-row row-t1 ${isSelectedInT2 ? 'disabled' : ''}" title="${isSelectedInT2 ? 'الطالب مضاف للفريق الثاني' : 'تحديد / إلغاء تحديد'}">
+        <input type="checkbox" ${isSelectedInT1 ? 'checked' : ''} ${isSelectedInT2 ? 'disabled' : ''} onchange="toggleStudentInTeam('${s.id}', 't1')">
+        <span class="font-weight-bold ${isSelectedInT1 ? 'text-purple' : ''}">${s.name}</span>
+        ${isSelectedInT2 ? '<span class="text-xs text-muted mr-auto">(في الفريق الثاني)</span>' : ''}
+      </label>
+    `;
+  }).join('');
+
+  t2Container.innerHTML = appState.students.map(s => {
+    const isSelectedInT1 = battleTeamsState.t1.includes(s.id);
+    const isSelectedInT2 = battleTeamsState.t2.includes(s.id);
+
+    return `
+      <label class="checklist-row row-t2 ${isSelectedInT1 ? 'disabled' : ''}" title="${isSelectedInT1 ? 'الطالب مضاف للفريق الأول' : 'تحديد / إلغاء تحديد'}">
+        <input type="checkbox" ${isSelectedInT2 ? 'checked' : ''} ${isSelectedInT1 ? 'disabled' : ''} onchange="toggleStudentInTeam('${s.id}', 't2')">
+        <span class="font-weight-bold ${isSelectedInT2 ? 'text-rose' : ''}">${s.name}</span>
+        ${isSelectedInT1 ? '<span class="text-xs text-muted mr-auto">(في الفريق الأول)</span>' : ''}
+      </label>
+    `;
+  }).join('');
+
+  updateTeamPreviews();
+}
+
+function toggleStudentInTeam(studentId, targetTeamKey) {
+  if (targetTeamKey === 't1') {
+    if (battleTeamsState.t1.includes(studentId)) {
+      battleTeamsState.t1 = battleTeamsState.t1.filter(id => id !== studentId);
+    } else {
+      battleTeamsState.t1.push(studentId);
+      battleTeamsState.t2 = battleTeamsState.t2.filter(id => id !== studentId);
+    }
+  } else if (targetTeamKey === 't2') {
+    if (battleTeamsState.t2.includes(studentId)) {
+      battleTeamsState.t2 = battleTeamsState.t2.filter(id => id !== studentId);
+    } else {
+      battleTeamsState.t2.push(studentId);
+      battleTeamsState.t1 = battleTeamsState.t1.filter(id => id !== studentId);
+    }
+  }
+
+  renderBattleTeamsSetup();
+}
+
+function randomizeBattleTeams() {
+  if (!appState.students || appState.students.length === 0) return;
+
+  const shuffled = [...appState.students].sort(() => 0.5 - Math.random());
+  const half = Math.ceil(shuffled.length / 2);
+
+  battleTeamsState.t1 = shuffled.slice(0, half).map(s => s.id);
+  battleTeamsState.t2 = shuffled.slice(half).map(s => s.id);
+
+  showToast("تم توزيع الطلاب عشوائياً بين الفريقين بنجاح", "info");
+  renderBattleTeamsSetup();
+}
+
+function clearAllBattleTeams() {
+  battleTeamsState.t1 = [];
+  battleTeamsState.t2 = [];
+  renderBattleTeamsSetup();
+}
+
+function updateTeamPreviews() {
+  const t1Badge = document.getElementById('t1-count-badge');
+  const t2Badge = document.getElementById('t2-count-badge');
+
+  if (t1Badge) t1Badge.textContent = `${battleTeamsState.t1.length} طلاب`;
+  if (t2Badge) t2Badge.textContent = `${battleTeamsState.t2.length} طلاب`;
+
+  renderTeamPreview('t1', battleTeamsState.t1);
+  renderTeamPreview('t2', battleTeamsState.t2);
+}
+
+function renderTeamPreview(teamKey, studentIds) {
+  const previewDiv = document.getElementById(`${teamKey}-preview`);
+  if (!previewDiv) return;
+
+  const selectedStudents = appState.students.filter(s => studentIds.includes(s.id));
+
+  if (selectedStudents.length === 0) {
+    previewDiv.innerHTML = `<div class="text-muted text-xs text-center p-2">لم يتم اختيار طلاب بهذا الفريق</div>`;
+    return;
+  }
+
+  if (selectedStudents.length === 1) {
+    const st = selectedStudents[0];
     const shield = getShieldForRating(st.rating);
     previewDiv.innerHTML = `
-      <img src="${st.avatar}" class="avatar-md mb-1" alt="Avatar">
-      <h4>${st.name}</h4>
-      <div class="mt-1"><span class="badge-shield ${shield.class}">${shield.name}</span></div>
+      <h4 class="text-sm font-weight-bold mb-1">${st.name}</h4>
+      <div><span class="badge-shield ${shield.class}">${shield.name}</span></div>
       <div class="text-indigo text-xs mt-1">النقاط: ${st.rating}</div>
+    `;
+  } else {
+    previewDiv.innerHTML = `
+      <h4 class="text-sm font-weight-bold mb-2 ${teamKey === 't1' ? 'text-purple' : 'text-rose'}">${selectedStudents.length} طلاب متنافسين</h4>
+      <div class="team-members-chips">
+        ${selectedStudents.map(st => `<span class="team-member-chip">${st.name}</span>`).join('')}
+      </div>
     `;
   }
 }
 
 function startBattleArena() {
-  const p1Id = document.getElementById('battle-p1-select').value;
-  const p2Id = document.getElementById('battle-p2-select').value;
-  const colId = document.getElementById('battle-collection-select').value;
+  const t1Ids = battleTeamsState.t1;
+  const t2Ids = battleTeamsState.t2;
+  const colId = document.getElementById('battle-collection-select')?.value;
 
-  if (p1Id === p2Id) {
-    showToast("يرجى اختيار طالبين مختلفين للمواجهة!", "error");
+  if (!t1Ids || t1Ids.length === 0) {
+    showToast("يرجى اختيار طالب واحد على الأقل في الفريق الأول!", "error");
+    return;
+  }
+
+  if (!t2Ids || t2Ids.length === 0) {
+    showToast("يرجى اختيار طالب واحد على الأقل في الفريق الثاني!", "error");
+    return;
+  }
+
+  const conflict = t1Ids.filter(id => t2Ids.includes(id));
+  if (conflict.length > 0) {
+    showToast("خطأ: يرجى عدم تكرار الطلاب بين الفريقين!", "error");
     return;
   }
 
@@ -1421,13 +1557,17 @@ function startBattleArena() {
       }
     ];
 
-  const p1 = appState.students.find(s => s.id === p1Id);
-  const p2 = appState.students.find(s => s.id === p2Id);
+  const t1Students = appState.students.filter(s => t1Ids.includes(s.id));
+  const t2Students = appState.students.filter(s => t2Ids.includes(s.id));
 
   appState.currentBattle = {
-    p1, p2,
-    p1Score: 0, p2Score: 0,
-    turnPlayer: 'p1',
+    t1Students,
+    t2Students,
+    t1Score: 0,
+    t2Score: 0,
+    t1TurnIdx: 0,
+    t2TurnIdx: 0,
+    turnTeam: 't1',
     currentQuestionIndex: 0,
     questions: questionPool.sort(() => 0.5 - Math.random())
   };
@@ -1448,33 +1588,58 @@ function renderBattleQuestion() {
   }
 
   const q = b.questions[b.currentQuestionIndex];
-  const activePlayer = b.turnPlayer === 'p1' ? b.p1 : b.p2;
-  const otherPlayer = b.turnPlayer === 'p1' ? b.p2 : b.p1;
+
+  const isT1Turn = b.turnTeam === 't1';
+  const activeTeamStudents = isT1Turn ? b.t1Students : b.t2Students;
+  const activeTurnIdx = isT1Turn ? (b.t1TurnIdx % b.t1Students.length) : (b.t2TurnIdx % b.t2Students.length);
+  const activePlayer = activeTeamStudents[activeTurnIdx];
+  const activeTeamLabel = isT1Turn ? 'الفريق الأول (أ)' : 'الفريق الثاني (ب)';
+  const otherTeamLabel = isT1Turn ? 'الفريق الثاني (ب)' : 'الفريق الأول (أ)';
 
   activeScreen.innerHTML = `
     <div class="flex-between mb-3">
       <span class="badge bg-indigo">السؤال ${b.currentQuestionIndex + 1} / ${b.questions.length}</span>
-      <button class="btn btn-xs btn-outline" onclick="cancelBattleArena()">إلغاء المواجهة</button>
+      <button class="btn btn-xs btn-outline text-rose" onclick="cancelBattleArena()">إلغاء المواجهة</button>
     </div>
 
-    <!-- Live Competitor Cards -->
+    <!-- Live Competitor Team Cards -->
     <div class="grid-2col mb-3">
-      <div class="card p-3 text-center ${b.turnPlayer === 'p1' ? 'border-indigo bg-subtle' : ''}">
-        <img src="${b.p1.avatar}" class="avatar-sm" alt="Avatar">
-        <div class="text-xs font-weight-bold mt-1">${b.p1.name}</div>
-        <h3 class="text-indigo mt-1">+${b.p1Score} نقاط</h3>
+      <div class="card p-3 text-center ${isT1Turn ? 'border-indigo bg-subtle' : ''}">
+        <div class="font-weight-bold text-indigo mb-2"><i class="fa-solid fa-users"></i> الفريق الأول (${b.t1Students.length} طلاب)</div>
+        <div class="flex-center gap-1 flex-wrap mb-2" style="display: flex; justify-content: center; gap: 6px;">
+          ${b.t1Students.map(s => `
+            <span class="badge bg-purple-subtle text-xs" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;">
+              <img src="${s.avatar}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+              <span>${s.name}</span>
+            </span>
+          `).join('')}
+        </div>
+        <h3 class="text-indigo mt-1">+${b.t1Score} نقاط</h3>
       </div>
-      <div class="card p-3 text-center ${b.turnPlayer === 'p2' ? 'border-pink bg-subtle' : ''}">
-        <img src="${b.p2.avatar}" class="avatar-sm" alt="Avatar">
-        <div class="text-xs font-weight-bold mt-1">${b.p2.name}</div>
-        <h3 class="text-rose mt-1">+${b.p2Score} نقاط</h3>
+      
+      <div class="card p-3 text-center ${!isT1Turn ? 'border-pink bg-subtle' : ''}">
+        <div class="font-weight-bold text-rose mb-2"><i class="fa-solid fa-users"></i> الفريق الثاني (${b.t2Students.length} طلاب)</div>
+        <div class="flex-center gap-1 flex-wrap mb-2" style="display: flex; justify-content: center; gap: 6px;">
+          ${b.t2Students.map(s => `
+            <span class="badge bg-rose-subtle text-xs" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;">
+              <img src="${s.avatar}" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+              <span>${s.name}</span>
+            </span>
+          `).join('')}
+        </div>
+        <h3 class="text-rose mt-1">+${b.t2Score} نقاط</h3>
       </div>
     </div>
 
     <!-- Active Question Container -->
     <div class="card p-4 text-center mb-3">
-      <div class="badge bg-purple mb-2">الدور الآن للـ متنافس: ${activePlayer.name}</div>
-      <h3 class="mb-3">${q.q}</h3>
+      <div class="badge bg-purple mb-2 p-2" style="display: inline-flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap;">
+        <img src="${activePlayer.avatar}" style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #ffffff; object-fit: cover;" alt="Avatar">
+        <span>الدور الآن على: <strong>${activeTeamLabel}</strong></span>
+        <span>•</span>
+        <span>المجيب: <u class="text-amber font-weight-bold">${activePlayer.name}</u></span>
+      </div>
+      <h3 class="mb-3 mt-2">${q.q}</h3>
       <div class="grid-2col gap-2 mt-3">
         ${q.options.map((opt, idx) => `
           <button class="btn btn-outline p-3 text-right" onclick="submitBattleAnswer(${idx})">
@@ -1484,12 +1649,12 @@ function renderBattleQuestion() {
       </div>
     </div>
 
-    <!-- Interactive Actions: Pass to Other Student & Fair Tie -->
+    <!-- Interactive Actions: Pass to Other Team & Fair Tie -->
     <div class="border-top pt-3 text-center">
       <span class="text-xs text-muted block mb-2 font-weight-bold">خيارات التحكيم والدور:</span>
       <div class="flex-center gap-2 flex-wrap" style="display: flex; justify-content: center;">
         <button class="btn btn-purple btn-sm" onclick="passQuestionToOtherStudent()">
-          <i class="fa-solid fa-share-nodes"></i> تحويل السؤال للمنافس (${otherPlayer.name})
+          <i class="fa-solid fa-share-nodes"></i> تحويل السؤال إلى (${otherTeamLabel})
         </button>
         <button class="btn btn-outline text-amber btn-sm" onclick="declareBattleManualWinner('draw')">
           <i class="fa-solid fa-handshake"></i> حسم التعادل العادل (Fair Tie)
@@ -1502,17 +1667,29 @@ function renderBattleQuestion() {
 function submitBattleAnswer(selectedOptIdx) {
   const b = appState.currentBattle;
   const q = b.questions[b.currentQuestionIndex];
-  const activePlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
+
+  const isT1 = b.turnTeam === 't1';
+  const activeStudents = isT1 ? b.t1Students : b.t2Students;
+  const activeIdx = isT1 ? (b.t1TurnIdx % b.t1Students.length) : (b.t2TurnIdx % b.t2Students.length);
+  const activePlayer = activeStudents[activeIdx];
+  const teamName = isT1 ? 'الفريق الأول' : 'الفريق الثاني';
 
   if (selectedOptIdx === q.answer) {
-    showToast(`إجابة صحيحة من (${activePlayerName})! +50 نقطة`, "success");
-    if (b.turnPlayer === 'p1') b.p1Score += 50;
-    else b.p2Score += 50;
+    showToast(`إجابة صحيحة من (${teamName} - ${activePlayer.name})! +50 نقطة`, "success");
+    if (isT1) {
+      b.t1Score += 50;
+      b.t1TurnIdx++;
+    } else {
+      b.t2Score += 50;
+      b.t2TurnIdx++;
+    }
   } else {
-    showToast(`إجابة خاطئة من (${activePlayerName})!`, "error");
+    showToast(`إجابة خاطئة من (${activePlayer.name})!`, "error");
+    if (isT1) b.t1TurnIdx++;
+    else b.t2TurnIdx++;
   }
 
-  b.turnPlayer = b.turnPlayer === 'p1' ? 'p2' : 'p1';
+  b.turnTeam = isT1 ? 't2' : 't1';
   b.currentQuestionIndex++;
   renderBattleQuestion();
 }
@@ -1521,11 +1698,11 @@ function passQuestionToOtherStudent() {
   const b = appState.currentBattle;
   if (!b) return;
 
-  const currentPlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
-  b.turnPlayer = b.turnPlayer === 'p1' ? 'p2' : 'p1';
-  const newPlayerName = b.turnPlayer === 'p1' ? b.p1.name : b.p2.name;
+  const currentTeamName = b.turnTeam === 't1' ? 'الفريق الأول' : 'الفريق الثاني';
+  b.turnTeam = b.turnTeam === 't1' ? 't2' : 't1';
+  const newTeamName = b.turnTeam === 't1' ? 'الفريق الأول' : 'الفريق الثاني';
 
-  showToast(`لم يعرف (${currentPlayerName}) الإجابة! تم تحويل نفس السؤال إلى (${newPlayerName})`, "info");
+  showToast(`تم تحويل نفس السؤال من (${currentTeamName}) إلى (${newTeamName})`, "info");
   renderBattleQuestion();
 }
 
@@ -1534,9 +1711,9 @@ function declareBattleManualWinner(choice) {
   if (!b) return;
 
   if (choice === 'draw') {
-    b.p1Score += 100;
-    b.p2Score += 100;
-    showToast(`تم حسم المواجهة بالتعادل العادل لتشجيع المتنافسين! 🤝`, "info");
+    b.t1Score += 100;
+    b.t2Score += 100;
+    showToast(`تم حسم المواجهة بالتعادل العادل بين الفريقين! 🤝`, "info");
   }
 
   finishBattleArena();
@@ -1546,23 +1723,34 @@ function finishBattleArena() {
   const b = appState.currentBattle;
   const activeScreen = document.getElementById('active-battle-screen');
 
-  let winnerText = "تعادل عادل وحماسي بين البطلين! 🤝";
-  if (b.p1Score > b.p2Score) winnerText = `الفائز بالمواجهة: ${b.p1.name}! 🎉`;
-  else if (b.p2Score > b.p1Score) winnerText = `الفائز بالمواجهة: ${b.p2.name}! 🎉`;
-
-  const p1Idx = appState.students.findIndex(s => s.id === b.p1.id);
-  const p2Idx = appState.students.findIndex(s => s.id === b.p2.id);
-  if (p1Idx !== -1) {
-    appState.students[p1Idx].battlePoints = (appState.students[p1Idx].battlePoints || 0) + b.p1Score;
-  }
-  if (p2Idx !== -1) {
-    appState.students[p2Idx].battlePoints = (appState.students[p2Idx].battlePoints || 0) + b.p2Score;
+  let winnerText = "تعادل عادل وحماسي بين الفريقين! 🤝";
+  if (b.t1Score > b.t2Score) {
+    const names = b.t1Students.map(s => s.name).join('، ');
+    winnerText = `الفائز بالمواجهة: الفريق الأول (${names})! 🎉`;
+  } else if (b.t2Score > b.t1Score) {
+    const names = b.t2Students.map(s => s.name).join('، ');
+    winnerText = `الفائز بالمواجهة: الفريق الثاني (${names})! 🎉`;
   }
 
+  b.t1Students.forEach(st => {
+    const sIdx = appState.students.findIndex(s => s.id === st.id);
+    if (sIdx !== -1) {
+      appState.students[sIdx].battlePoints = (appState.students[sIdx].battlePoints || 0) + b.t1Score;
+    }
+  });
+
+  b.t2Students.forEach(st => {
+    const sIdx = appState.students.findIndex(s => s.id === st.id);
+    if (sIdx !== -1) {
+      appState.students[sIdx].battlePoints = (appState.students[sIdx].battlePoints || 0) + b.t2Score;
+    }
+  });
 
   appState.battles.push({
-    p1: b.p1.id, p2: b.p2.id,
-    p1Score: b.p1Score, p2Score: b.p2Score,
+    t1: b.t1Students.map(s => s.id),
+    t2: b.t2Students.map(s => s.id),
+    t1Score: b.t1Score,
+    t2Score: b.t2Score,
     date: new Date().toISOString()
   });
 
@@ -1576,17 +1764,36 @@ function finishBattleArena() {
         <i class="fa-solid fa-trophy"></i>
       </div>
       <h2 class="text-indigo mb-2">${winnerText}</h2>
-      <p class="text-muted text-sm mb-4">تم احتساب النقاط وتحديث التقييم والدروع في حسابات الطلاب بنجاح</p>
-      <div class="grid-2col max-w-sm mx-auto mb-4 gap-2">
-        <div class="card p-3 bg-subtle border-cyan">
-          <strong>${b.p1.name}</strong>
-          <div class="text-indigo font-weight-bold mt-1">+${b.p1Score} نقطة</div>
+      <p class="text-muted text-sm mb-4">تم احتساب وتوزيع النقاط بنجاح على جميع طلاب الفريقين المشاركين</p>
+      
+      <div class="grid-2col max-w-lg mx-auto mb-4 gap-3">
+        <div class="card p-3 bg-subtle border-indigo text-right">
+          <h4 class="text-indigo font-weight-bold mb-2 text-center">الفريق الأول (+${b.t1Score} نقاط)</h4>
+          <div class="flex-column gap-2" style="display: flex; flex-direction: column; gap: 6px;">
+            ${b.t1Students.map(s => `
+              <div class="flex-align-center gap-2 p-2 rounded bg-card" style="display: flex; align-items: center; gap: 8px; background: var(--bg-card, #ffffff); padding: 6px 10px; border-radius: 8px;">
+                <img src="${s.avatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+                <span class="font-weight-bold text-sm" style="flex: 1;">${s.name}</span>
+                <span class="badge bg-purple-subtle text-xs">+${b.t1Score} نقطة</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
-        <div class="card p-3 bg-subtle border-pink">
-          <strong>${b.p2.name}</strong>
-          <div class="text-rose font-weight-bold mt-1">+${b.p2Score} نقطة</div>
+
+        <div class="card p-3 bg-subtle border-pink text-right">
+          <h4 class="text-rose font-weight-bold mb-2 text-center">الفريق الثاني (+${b.t2Score} نقاط)</h4>
+          <div class="flex-column gap-2" style="display: flex; flex-direction: column; gap: 6px;">
+            ${b.t2Students.map(s => `
+              <div class="flex-align-center gap-2 p-2 rounded bg-card" style="display: flex; align-items: center; gap: 8px; background: var(--bg-card, #ffffff); padding: 6px 10px; border-radius: 8px;">
+                <img src="${s.avatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+                <span class="font-weight-bold text-sm" style="flex: 1;">${s.name}</span>
+                <span class="badge bg-rose-subtle text-xs">+${b.t2Score} نقطة</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
+      
       <button class="btn btn-primary btn-lg" onclick="cancelBattleArena()">العودة لحلبة المواجهة</button>
     </div>
   `;
@@ -2195,7 +2402,7 @@ function renderStudentExamsView() {
     const studentSubs = submissions.filter(s => s.studentId === st.id && s.examId === ex.id);
     const attemptsCount = studentSubs.length;
     const attemptsLeft = Math.max(0, 3 - attemptsCount);
-    
+
     let bestScore = 0;
     let bestCorrect = 0;
     studentSubs.forEach(sub => {
@@ -2277,7 +2484,7 @@ function openStudentExamModal(examId) {
   activeStudentExam = ex;
   document.getElementById('st-exam-modal-title').textContent = ex.title;
   document.getElementById('st-exam-modal-desc').textContent = ex.description || 'أجب على الأسئلة التالية واضغط تسليم التقييم.';
-  
+
   const durationMins = ex.durationMinutes || 15;
   examSecondsRemaining = durationMins * 60;
 
@@ -2345,7 +2552,7 @@ function submitStudentExam(event) {
       const inputEl = document.querySelector(`input[name="st-question-${idx}"]`);
       studentAnsText = inputEl ? inputEl.value.trim() : '';
       correctAnsText = (q.correctText || '').trim();
-      
+
       const normStudent = studentAnsText.toLowerCase().replace(/\s+/g, ' ');
       const normCorrect = correctAnsText.toLowerCase().replace(/\s+/g, ' ');
       isCorrect = (normStudent !== '' && (normStudent === normCorrect || normCorrect.includes(normStudent)));
@@ -2397,7 +2604,7 @@ function submitStudentExam(event) {
   }
 
   showToast(`أحسنت! الإجابات الصحيحة: ${correctCount} من ${totalQuestions} (${scorePercent}%) | +${pointsEarned} نقطة! 🎯`, "success");
-  
+
   if (typeof renderStudentDashboardView === 'function') {
     renderStudentDashboardView();
   }

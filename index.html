@@ -372,37 +372,53 @@
 
           <div id="battle-setup-card" class="card p-4">
             <div class="text-center mb-4">
-              <h2 class="text-indigo mb-1"><i class="fa-solid fa-swords text-rose"></i> مواجهة الذكاء الاصطناعي 1v1</h2>
-              <p class="text-muted text-sm">اختر طالبين ومجموعة الأسئلة المطلوبة لبدء المواجهة المباشرة</p>
+              <h2 class="text-indigo mb-1"><i class="fa-solid fa-swords text-rose"></i> حلبة مواجهة الفرق والطلاب (Team Battle Arena)</h2>
+              <p class="text-muted text-sm">حدد طلاب الفريق الأول وطلاب الفريق الثاني (لا يمكن إدراج الطالب في الفريقين معاً)</p>
             </div>
 
             <!-- Question Collection Selection & Edit Controls in Battle Setup -->
             <div class="form-group mb-4 max-w-md mx-auto">
               <div class="flex-between mb-1">
-                <label class="font-weight-bold block"><i class="fa-solid fa-folder-open text-purple"></i> اختر مجموعة
-                  الأسئلة للمواجهة:</label>
+                <label class="font-weight-bold block"><i class="fa-solid fa-folder-open text-purple"></i> اختر مجموعة الأسئلة للمواجهة:</label>
                 <button class="btn btn-xs btn-outline" onclick="openEditSelectedBattleCollection()">
                   <i class="fa-solid fa-pen"></i> تعديل البنك المحدد
                 </button>
               </div>
-              <select id="battle-collection-select" class="form-control text-center"
-                onchange="onBattleCollectionChange()"></select>
+              <select id="battle-collection-select" class="form-control text-center" onchange="onBattleCollectionChange()"></select>
               <span id="battle-collection-info" class="text-xs text-muted block text-center mt-1"></span>
             </div>
 
+            <!-- Team Selection Quick Actions Bar -->
+            <div class="flex-center gap-2 mb-3 flex-wrap" style="display: flex; justify-content: center;">
+              <button class="btn btn-xs btn-outline text-indigo" onclick="randomizeBattleTeams()">
+                <i class="fa-solid fa-shuffle"></i> توزيع الطلاب عشوائياً بين الفريقين
+              </button>
+              <button class="btn btn-xs btn-outline text-rose" onclick="clearAllBattleTeams()">
+                <i class="fa-solid fa-rotate-left"></i> تفريغ وإعادة ضبط الفريقين
+              </button>
+            </div>
+
             <div class="battle-vs-container">
-              <div class="player-select-box">
-                <label>المتنافس الأول:</label>
-                <select id="battle-p1-select" class="form-control mt-1" onchange="updateBattlePreview('p1')"></select>
-                <div id="p1-preview" class="player-card-preview mt-2"></div>
+              <!-- Team 1 Selection Card -->
+              <div class="player-select-box team-select-card team-t1-box">
+                <div class="flex-between mb-2">
+                  <label class="font-weight-bold text-indigo"><i class="fa-solid fa-users text-purple"></i> الفريق الأول (أ)</label>
+                  <span id="t1-count-badge" class="badge bg-purple-subtle text-purple">0 طلاب</span>
+                </div>
+                <div id="team1-student-list" class="team-student-list"></div>
+                <div id="t1-preview" class="player-card-preview mt-2"></div>
               </div>
 
               <div class="vs-badge">VS</div>
 
-              <div class="player-select-box">
-                <label>المتنافس الثاني:</label>
-                <select id="battle-p2-select" class="form-control mt-1" onchange="updateBattlePreview('p2')"></select>
-                <div id="p2-preview" class="player-card-preview mt-2"></div>
+              <!-- Team 2 Selection Card -->
+              <div class="player-select-box team-select-card team-t2-box">
+                <div class="flex-between mb-2">
+                  <label class="font-weight-bold text-rose"><i class="fa-solid fa-users text-rose"></i> الفريق الثاني (ب)</label>
+                  <span id="t2-count-badge" class="badge bg-rose-subtle text-rose">0 طلاب</span>
+                </div>
+                <div id="team2-student-list" class="team-student-list"></div>
+                <div id="t2-preview" class="player-card-preview mt-2"></div>
               </div>
             </div>
 
