@@ -137,10 +137,20 @@ function saveState(syncToCloud = true) {
     appState.students.forEach(s => {
       const ptsInfo = calculateStudentPoints(s);
       s.rating = ptsInfo.total;
+      s.totalPoints = ptsInfo.total;
       s.attendancePts = ptsInfo.attendancePts;
       s.examPts = ptsInfo.examPts;
+      s.battlePts = ptsInfo.battlePts;
+      s.battlePoints = s.battlePoints || 0;
       s.shield = getShieldForRating(s.rating).name;
     });
+
+    if (appState.activeStudent) {
+      const updatedActive = appState.students.find(s => s.id === appState.activeStudent.id);
+      if (updatedActive) {
+        appState.activeStudent = updatedActive;
+      }
+    }
   }
 
   const stateData = {
