@@ -1,7 +1,7 @@
 /**
- * Firebase Integration Module & Local Fallback Store
+ * Firebase Integration Module & Local-First Dual Sync Engine
  * System: Control Panel (لوحة التحكم) - AI in Electronic Systems Production
- * Refactored Architecture for Dual Sync (Firestore + LocalStorage)
+ * Architecture: Enterprise Realtime Firestore Sync + Local Cache + Multi-Tab Resilience
  */
 
 const DEFAULT_FIREBASE_CONFIG = {
@@ -22,6 +22,7 @@ window.FirebaseSystem = {
   app: null,
   config: DEFAULT_FIREBASE_CONFIG,
   listeners: [],
+  debounceTimer: null,
 
   init() {
     const savedConfig = localStorage.getItem('firebase_config_course_dashboard');
@@ -29,7 +30,7 @@ window.FirebaseSystem = {
       try {
         this.config = JSON.parse(savedConfig);
       } catch (e) {
-        console.warn("Error parsing saved Firebase config, falling back to default:", e.message);
+        console.warn("⚠️ Error parsing saved Firebase config, using default:", e.message);
       }
     }
 
@@ -42,29 +43,29 @@ window.FirebaseSystem = {
         }
         this.db = window.firebase.firestore();
 
-        // Enable offline persistence for seamless local & cloud synchronization
+        // Enable resilient offline persistence
         this.db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
           if (err.code === 'failed-precondition') {
-            console.warn("Firestore persistence precondition failed (multiple tabs open)");
+            console.warn("ℹ️ Firestore persistence: Multiple tabs open. Active tab persistence enabled.");
           } else if (err.code === 'unimplemented') {
-            console.warn("Firestore persistence not supported in this browser");
+            console.warn("ℹ️ Firestore persistence not supported in this environment.");
           }
         });
 
         this.isConfigured = true;
         this.isOnline = true;
-        console.log("🔥 Firebase Firestore connected successfully for project:", this.config.projectId);
+        console.log("🔥 Firebase Firestore Enterprise Engine Connected:", this.config.projectId);
       } catch (e) {
         console.warn("⚠️ Firebase initialization notice:", e.message);
         this.isOnline = false;
       }
     } else {
-      console.log("ℹ️ Operating in offline / LocalStorage fallback mode.");
+      console.log("ℹ️ Running in Local-First offline fallback mode.");
       this.isOnline = false;
     }
   },
 
-  // Reconnect / Reset Firebase connection cleanly
+  // Reconnect & Reset active listeners cleanly
   reconnect() {
     try {
       this.listeners.forEach(unsub => {
@@ -80,50 +81,68 @@ window.FirebaseSystem = {
     }
   },
 
-  // Save State to Cloud Firestore with Fallback
-  async saveCloudState(collectionName, docId, data) {
+  // Save State to Cloud Firestore with Debounced Batch Writes
+  saveCloudState(collectionName, docId, data, immediate = false) {
     if (!this.isConfigured || !this.db) {
       this.init();
     }
     if (!this.isConfigured || !this.db) {
-      console.warn("Firebase not configured; saved state stored locally.");
-      return false;
+      return Promise.resolve(false);
     }
-    try {
-      await this.db.collection(collectionName).doc(docId).set({
-        ...data,
-        updatedAt: window.firebase?.firestore?.FieldValue?.serverTimestamp() || new Date().toISOString()
-      }, { merge: true });
-      console.log("☁️ State successfully saved to Firebase Firestore doc:", docId);
-      return true;
-    } catch (e) {
-      console.warn("Cloud Firestore save warning:", e.message);
-      return false;
+
+    const performSave = async () => {
+      try {
+        const payload = {
+          ...data,
+          updatedAt: window.firebase?.firestore?.FieldValue?.serverTimestamp() || new Date().toISOString()
+        };
+        await this.db.collection(collectionName).doc(docId).set(payload, { merge: true });
+        console.log("☁️ Real-time Cloud Sync completed for doc:", docId);
+        return true;
+      } catch (e) {
+        console.warn("☁️ Cloud Firestore save warning:", e.message);
+        return false;
+      }
+    };
+
+    if (immediate) {
+      return performSave();
     }
+
+    // Debounce non-critical continuous writes (300ms)
+    return new Promise((resolve) => {
+      if (this.debounceTimer) clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(async () => {
+        const res = await performSave();
+        resolve(res);
+      }, 300);
+    });
   },
 
-  // Listen to Cloud Firestore Real-time Updates
+  // Subscribe to Cloud Firestore Real-time Snapshot Updates
   subscribeToDoc(collectionName, docId, callback) {
     if (!this.isConfigured || !this.db) {
       this.init();
     }
     if (!this.isConfigured || !this.db) return null;
+
     try {
       const unsubscribe = this.db.collection(collectionName).doc(docId)
         .onSnapshot((doc) => {
           if (doc.exists) {
             callback(doc.data());
           } else {
-            console.log("☁️ Document does not exist in Cloud Firestore yet. Calling initial seed fallback.");
+            console.log("☁️ Firestore document initializing...");
             callback(null);
           }
         }, (err) => {
-          console.warn("Firestore snapshot error:", err.message);
+          console.warn("Firestore snapshot stream notice:", err.message);
         });
+
       this.listeners.push(unsubscribe);
       return unsubscribe;
     } catch (e) {
-      console.warn("Failed to subscribe to Firestore doc:", e.message);
+      console.warn("Failed to subscribe to Firestore snapshot:", e.message);
       return null;
     }
   },
@@ -134,11 +153,11 @@ window.FirebaseSystem = {
   }
 };
 
-// Initialize on load
+// Auto-initialize on system ready
 try {
   window.FirebaseSystem.init();
 } catch (e) {
-  console.warn("Immediate Firebase init error:", e);
+  console.warn("Immediate Firebase init exception:", e);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

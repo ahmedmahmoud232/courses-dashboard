@@ -9,11 +9,220 @@
 // ==========================================================================
 
 const INITIAL_DATA = {
-  students: [],
-  groups: [],
-  questionCollections: [],
-  lectures: [],
-  tasks: [],
+  students: [
+    {
+      id: '2026101',
+      name: 'محمد عصام',
+      pass: '123456',
+      age: 14,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: 'المعهد النموذجي',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=MohamedEssam',
+      bonusPoints: 100,
+      battlePoints: 150,
+      gradeScore: 95
+    },
+    {
+      id: '2026102',
+      name: 'حمزه حمدي',
+      pass: '123456',
+      age: 15,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: 'الثانوية العسكرية',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=HamzaHamdy',
+      bonusPoints: 100,
+      battlePoints: 150,
+      gradeScore: 92
+    },
+    {
+      id: '2026103',
+      name: 'محمود محمد',
+      pass: '123456',
+      age: 14,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: 'المعهد النموذجي',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=MahmoudMohamed',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 90
+    },
+    {
+      id: '2026104',
+      name: 'أحمد محمد',
+      pass: '123456',
+      age: 13,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: 'طه حسين',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=AhmedMohamed',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 94
+    },
+    {
+      id: '2026105',
+      name: 'محمد أحمد حسن',
+      pass: '123456',
+      age: 14,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: 'المعهد النموذجي',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=MohamedAhmedHassan',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 96
+    },
+    {
+      id: '2026106',
+      name: 'آدم أحمد مرزوق',
+      pass: '123456',
+      age: 14,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: '',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=AdamAhmed',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 91
+    },
+    {
+      id: '2026107',
+      name: 'د. حمدي شحات',
+      pass: '123456',
+      age: 20,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: '',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=DrHamdy',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 98
+    },
+    {
+      id: '2026108',
+      name: 'م. عمار',
+      pass: '123456',
+      age: 20,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: '',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Ammar',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 97
+    },
+    {
+      id: '2026109',
+      name: 'عبدالرحمن',
+      pass: '123456',
+      age: 16,
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      notes: '',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Abdelrahman',
+      bonusPoints: 100,
+      battlePoints: 100,
+      gradeScore: 93
+    }
+  ],
+  groups: [
+    {
+      id: 'grp-1',
+      name: 'شُعبة الذكاء الاصطناعي 1',
+      sessions: [
+        { id: 'sess-101', title: 'محاضرة 1: التجهيز ونظام التقييم والأنظمة', date: '2026-08-25' },
+        { id: 'sess-102', title: 'محاضرة 2: تطبيقات TinyML والأنظمة الإلكترونية', date: '2026-08-27' }
+      ]
+    }
+  ],
+  questionCollections: [
+    {
+      id: 'col-1',
+      title: 'محاضرة 1',
+      desc: 'عينات الأسئلة المتضمنة في الأنظمة المدمجة والذكاء الاصطناعي',
+      questions: [
+        {
+          q: 'ما هو الهدف الأساسي من دمج الذكاء الاصطناعي في الأنظمة المدمجة؟',
+          options: ['اتخاذ قرارات ذكية محلياً على الشريحة', 'زيادة حجم الجهاز', 'إلغاء الطاقة الكهربائية', 'تبطئ سرعة المعالجة'],
+          answer: 0
+        },
+        {
+          q: 'ما هي البيئة الأساسية المستخدمة لترجمة نماذج التعلم الآلي للمتحكمات؟',
+          options: ['TensorFlow Lite for Microcontrollers', 'Microsoft Paint', 'Adobe Photoshop', 'Notepad'],
+          answer: 0
+        }
+      ]
+    },
+    {
+      id: 'col-2',
+      title: 'محاضرة 2',
+      desc: 'أسئلة مسابقات وتطبيقات TinyML وتصنيع الشرائح الإلكترونية',
+      questions: [
+        {
+          q: 'ما المقصود بتطبيقات TinyML في الأنظمة الإلكترونية؟',
+          options: ['تشغيل نماذج الذكاء الاصطناعي على متحكمات منخفضة الطاقة', 'استخدام خوادم ضخمة جداً', 'تصنيع ألواح النحاس', 'شاشات العرض الكبيرة'],
+          answer: 0
+        },
+        {
+          q: 'ما فائدة استخدام تقنية الإشارات الرقمية DSP مع المتحكمات؟',
+          options: ['تسريع معالجة الإشارات والصوت والحساسات', 'زيادة استهلاك البطارية', 'مسح الذاكرة العشوائية', 'إيقاف النظام'],
+          answer: 0
+        }
+      ]
+    },
+    {
+      id: 'col-3',
+      title: 'بنك أسئلة: Define & Empathize (التفكير التصميمي)',
+      desc: 'مجموعة أسئلة تفاعلية للمنافسة في مرحلتي التعاطف مع المستخدم (Empathize) وتحديد المشكلة (Define)',
+      questions: [
+        {
+          q: 'ما هي الخطوة الأولى في منهجية التفكير التصميمي (Design Thinking)؟',
+          options: ['التعاطف مع المستخدم (Empathize)', 'تحديد المشكلة (Define)', 'توليد الأفكار (Ideate)', 'بناء النموذج الأول (Prototype)'],
+          answer: 0
+        },
+        {
+          q: 'ما هو الهدف الأساسي من مرحلة التعاطف (Empathize)؟',
+          options: ['فهم احتياجات وشعور وتحديات المستخدم الحقيقي', 'كتابة الأكواد البرمجية', 'بيع المنتج في السوق', 'حساب تكلفة المشروع'],
+          answer: 0
+        },
+        {
+          q: 'في مرحلة التحديد (Define)، ماذا نقوم بصياغته بناءً على نتائج التعاطف؟',
+          options: ['بيان المشكلة الموجهة للمستخدم (Problem Statement / POV)', 'فاتورة الشراء', 'التصميم النهائي', 'عرض الخادم'],
+          answer: 0
+        },
+        {
+          q: 'أي من أدوات مرحلة التعاطف تُستخدم لتمثيل شخصية المستخدم المستهدف وتطلعاته؟',
+          options: ['خرائط شخصية المستخدم (User Persona & Empathy Maps)', 'قواعد البيانات SQL', 'مخططات شبكات الإنترنت', 'لوحات المكونات الإلكترونية'],
+          answer: 0
+        },
+        {
+          q: 'كيف ننتقل بفاعلية من مرحلة Define إلى مرحلة توليد الأفكار Ideate؟',
+          options: ['باستخدام أسئلة "كيف يمكننا؟" (How Might We - HMW)', 'بوقف المشروع', 'بإلغاء أفكار المستخدمين', 'بتقليل ميزانية التطوير'],
+          answer: 0
+        }
+      ]
+    }
+  ],
+  lectures: [
+    {
+      id: 'lec-1',
+      title: 'محاضرة 1: مقدمة في الذكاء الاصطناعي والأنظمة المدمجة',
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      date: '2026-08-25',
+      description: 'شرح مفصل لمفاهيم الذكاء الاصطناعي ونظام الغياب والتقييم والأنظمة الإلكترونية المدمجة.',
+      link: 'https://youtube.com'
+    },
+    {
+      id: 'lec-2',
+      title: 'محاضرة 2: تطبيقات TinyML والتعلم الآلي على المتحكمات',
+      group: 'شُعبة الذكاء الاصطناعي 1',
+      date: '2026-08-27',
+      description: 'تشغيل نماذج التعلم الآلي والبرومبت الصحيح ومعرض الأعمال والتطبيقات العملية.',
+      link: 'https://youtube.com'
+    }
+  ],
+  tasks: [
+    {
+      id: 'task-1',
+      title: 'تسليم مشروع البرومبت وتجهيز جهاز الأنظمة الإلكترونية',
+      dueDate: '2026-08-30',
+      description: 'إعداد البيئة التطويرية للأنظمة الإلكترونية وتجربة أول نموذج ذكاء اصطناعي.'
+    }
+  ],
   exams: [
     {
       id: 'ex-101',
@@ -53,7 +262,16 @@ const INITIAL_DATA = {
     }
   ],
   examSubmissions: [],
-  sessionAttendance: {},
+  sessionAttendance: {
+    'sess-101': {
+      '2026101': true, '2026102': true, '2026103': true, '2026104': true,
+      '2026105': true, '2026106': true, '2026107': true, '2026108': true, '2026109': true
+    },
+    'sess-102': {
+      '2026101': true, '2026102': true, '2026103': true, '2026104': true,
+      '2026105': true, '2026106': true, '2026107': true, '2026108': true, '2026109': true
+    }
+  },
   battles: []
 };
 
@@ -98,20 +316,35 @@ function getShieldForRating(rating) {
 }
 
 function loadState() {
-  const saved = localStorage.getItem('course_control_panel_state_v5');
+  const saved = localStorage.getItem('course_control_panel_state_v5') || localStorage.getItem('course_control_panel_backup_v1');
   if (saved) {
     try {
-      appState = { ...appState, ...JSON.parse(saved) };
+      const parsed = JSON.parse(saved);
+      appState = { ...appState, ...parsed };
     } catch (e) {
       appState = { ...appState, ...INITIAL_DATA };
     }
   } else {
     appState = { ...appState, ...INITIAL_DATA };
-    saveState();
+  }
+
+  // Ensure all 9 students exist in appState.students
+  if (!appState.students || appState.students.length === 0) {
+    appState.students = [...INITIAL_DATA.students];
+  } else {
+    appState.students = mergeDataLists(appState.students, INITIAL_DATA.students, 'id');
+  }
+
+  if (!appState.groups || appState.groups.length === 0) {
+    appState.groups = [...INITIAL_DATA.groups];
+  } else {
+    appState.groups = mergeDataLists(appState.groups, INITIAL_DATA.groups, 'id');
   }
 
   if (!appState.questionCollections || appState.questionCollections.length === 0) {
     appState.questionCollections = [...INITIAL_DATA.questionCollections];
+  } else {
+    appState.questionCollections = mergeDataLists(appState.questionCollections, INITIAL_DATA.questionCollections, 'id');
   }
   if (!appState.exams || appState.exams.length === 0) {
     appState.exams = [...INITIAL_DATA.exams];
@@ -132,7 +365,11 @@ function loadState() {
   initFirebaseSync();
 }
 
+let isSyncingFromCloud = false;
+
 function saveState(syncToCloud = true) {
+  if (isSyncingFromCloud) return;
+
   if (appState.students && Array.isArray(appState.students)) {
     appState.students.forEach(s => {
       const ptsInfo = calculateStudentPoints(s);
@@ -168,6 +405,9 @@ function saveState(syncToCloud = true) {
   };
 
   localStorage.setItem('course_control_panel_state_v5', JSON.stringify(stateData));
+  if (stateData.students.length > 0) {
+    localStorage.setItem('course_control_panel_backup_v1', JSON.stringify(stateData));
+  }
 
   if (syncToCloud && window.FirebaseSystem) {
     if (!window.FirebaseSystem.isConfigured) {
@@ -180,22 +420,41 @@ function saveState(syncToCloud = true) {
 }
 
 function mergeDataLists(localList, remoteList, key = 'id') {
-  if (!Array.isArray(remoteList) || remoteList.length === 0) return localList || [];
-  if (!Array.isArray(localList) || localList.length === 0) return remoteList;
+  const local = Array.isArray(localList) ? localList : [];
+  const remote = Array.isArray(remoteList) ? remoteList : [];
+
+  if (remote.length === 0) return local;
+  if (local.length === 0) return remote;
 
   const map = new Map();
-  // Remote items take precedence for existing IDs
-  remoteList.forEach(item => {
-    const k = item && item[key] ? item[key] : (item && item.name ? item.name : JSON.stringify(item));
+
+  remote.forEach(item => {
+    if (!item) return;
+    const k = item[key] || item.name || item.title || JSON.stringify(item);
     map.set(k, item);
   });
-  // Retain local items created locally if missing in remote
-  localList.forEach(item => {
-    const k = item && item[key] ? item[key] : (item && item.name ? item.name : JSON.stringify(item));
+
+  local.forEach(item => {
+    if (!item) return;
+    const k = item[key] || item.name || item.title || JSON.stringify(item);
     if (!map.has(k)) {
       map.set(k, item);
+    } else {
+      const existing = map.get(k);
+      const merged = { ...existing, ...item };
+      if (existing.battlePoints || item.battlePoints) {
+        merged.battlePoints = Math.max(existing.battlePoints || 0, item.battlePoints || 0);
+      }
+      if (existing.bonusPoints || item.bonusPoints) {
+        merged.bonusPoints = Math.max(existing.bonusPoints || 0, item.bonusPoints || 0);
+      }
+      if (existing.rating || item.rating) {
+        merged.rating = Math.max(existing.rating || 0, item.rating || 0);
+      }
+      map.set(k, merged);
     }
   });
+
   return Array.from(map.values());
 }
 
@@ -207,18 +466,26 @@ function initFirebaseSync() {
     if (window.FirebaseSystem.isConfigured) {
       window.FirebaseSystem.subscribeToDoc('dashboard', 'main_state', (remoteData) => {
         if (remoteData && typeof remoteData === 'object') {
-          if (Array.isArray(remoteData.students)) appState.students = remoteData.students;
-          if (Array.isArray(remoteData.groups)) appState.groups = remoteData.groups;
-          if (Array.isArray(remoteData.questionCollections)) appState.questionCollections = remoteData.questionCollections;
-          if (Array.isArray(remoteData.lectures)) appState.lectures = remoteData.lectures;
-          if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
-          if (Array.isArray(remoteData.exams)) appState.exams = remoteData.exams;
-          if (Array.isArray(remoteData.examSubmissions)) appState.examSubmissions = remoteData.examSubmissions;
-          if (Array.isArray(remoteData.battles)) appState.battles = remoteData.battles;
-          if (remoteData.sessionAttendance) appState.sessionAttendance = remoteData.sessionAttendance;
-          if (remoteData.currentBattle !== undefined) appState.currentBattle = remoteData.currentBattle;
+          isSyncingFromCloud = true;
 
-          localStorage.setItem('course_control_panel_state_v5', JSON.stringify({
+          appState.students = mergeDataLists(appState.students, remoteData.students, 'id');
+          appState.groups = mergeDataLists(appState.groups, remoteData.groups, 'id');
+          appState.questionCollections = mergeDataLists(appState.questionCollections, remoteData.questionCollections, 'id');
+          appState.lectures = mergeDataLists(appState.lectures, remoteData.lectures, 'id');
+          appState.tasks = mergeDataLists(appState.tasks, remoteData.tasks, 'id');
+          appState.exams = mergeDataLists(appState.exams, remoteData.exams, 'id');
+          appState.examSubmissions = mergeDataLists(appState.examSubmissions, remoteData.examSubmissions, 'id');
+          appState.battles = mergeDataLists(appState.battles, remoteData.battles, 'date');
+
+          if (remoteData.sessionAttendance) {
+            appState.sessionAttendance = { ...appState.sessionAttendance, ...remoteData.sessionAttendance };
+          }
+
+          if (remoteData.currentBattle !== undefined && remoteData.currentBattle !== null) {
+            appState.currentBattle = remoteData.currentBattle;
+          }
+
+          const updatedState = {
             students: appState.students,
             groups: appState.groups,
             questionCollections: appState.questionCollections,
@@ -229,13 +496,20 @@ function initFirebaseSync() {
             sessionAttendance: appState.sessionAttendance,
             battles: appState.battles,
             updatedAt: new Date().toISOString()
-          }));
+          };
+
+          localStorage.setItem('course_control_panel_state_v5', JSON.stringify(updatedState));
+          if (appState.students.length > 0) {
+            localStorage.setItem('course_control_panel_backup_v1', JSON.stringify(updatedState));
+          }
 
           refreshAllUI();
+          isSyncingFromCloud = false;
         } else {
-          // Cloud doc does not exist yet: seed local state to Cloud Firestore
-          console.log("☁️ Seeding initial state to Cloud Firestore...");
-          saveState(true);
+          if (appState.students && appState.students.length > 0) {
+            console.log("☁️ Seeding initial state to Cloud Firestore...");
+            saveState(true);
+          }
         }
       });
     }
